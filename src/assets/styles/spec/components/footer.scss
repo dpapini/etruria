@@ -1,0 +1,10 @@
+.footer {
+  z-index: 1;
+  position: static;
+  bottom: 0;
+  width: 100%;
+  padding-left: $offscreen-size;  
+  @include between($breakpoint-md, $breakpoint-xl) {
+    padding-left: $collapsed-size;
+  }
+}

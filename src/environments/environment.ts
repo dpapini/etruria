@@ -3,7 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  apiUrl: 'http://10.0.127.12:8080/kogetapi/',
+  apiUrlDebug: 'http://10.0.127.12/kogetaservice/kogetapi/',
 };
 
 /*

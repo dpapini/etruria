@@ -1,0 +1,71 @@
+// ---------------------------------------------------------
+// @TOC
+
+// + @Topbar
+// + @Collapsed State
+
+// ---------------------------------------------------------
+// @Topbar
+// ---------------------------------------------------------
+.navbar{
+  height: $header-height;
+  width: calc(100% - $offscreen-size);
+  background-color: $default-white !important;
+  border-bottom: 1px solid rgba(0, 0, 0, .0625);
+  transition: all 0.2s ease;
+  position: fixed;
+  z-index:800;
+  margin-bottom: 0;
+  padding: 0;
+
+  >span.navbar-brand{
+    width: $offscreen-size;
+    @include to($breakpoint-md) {
+      width: auto;      
+    }
+  }
+  .navbar-inner{
+    display: flex;
+    justify-content: space-between;
+    flex-basis: 100%;
+    
+    // @include to($breakpoint-sm) {
+    //   flex-basis: auto;
+    // }
+    
+    > button.navbar-toggler{    
+        display: flex;
+        padding-left: 10px;
+    }
+
+    .navbar-collapse{
+      padding-left: 10px;
+      display: flex;
+      padding-right: 20px;
+
+      @include to($breakpoint-md) {
+        float: right;
+        display: flex !important;
+        flex-basis: auto;
+      }
+    }
+  }
+
+}
+
+// ---------------------------------------------------------
+// @Collapsed State
+// ---------------------------------------------------------
+.is-collapsed{
+  .navbar {
+    width: 100%;
+
+    @include to($breakpoint-md) {
+      width: 100%;
+    }
+
+    @include between($breakpoint-md, $breakpoint-xl) {
+      width: 100%;
+    }
+  }
+}

@@ -1,0 +1,21 @@
+.dropdown-toggle::after {
+    display:none;
+}
+.dropdown-menu a{
+    display: flex;
+    justify-content: space-between
+}
+.dropdown-item div{
+    display: flex;
+}
+.dropdown-item fa-icon{
+    float: right;
+    width: 15px;
+}
+.badge {
+    top: 1.5rem;
+    height: 1rem;
+    width: 1rem;
+    position: relative;
+    left: -1.4rem;
+}
