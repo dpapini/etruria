@@ -15,8 +15,8 @@ export interface UserModel {
     Role: RoleModel;
     State: StateModel;
     Tag: string;
-    // IdContatto: number;
-    // Contatto: ContattoModel;
+    IdContact: number;
+    Contact: ContactModel;
     TsLogged: Date;
 }
 
