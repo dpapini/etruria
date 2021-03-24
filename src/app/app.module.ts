@@ -1,3 +1,4 @@
+import { ToastEffects } from './core/toaster/store/toaster.effects';
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
@@ -19,16 +20,19 @@ import { LoaderInterceptor } from './core/loader/loader.interceptor';
 import { LoaderService } from './core/loader/loader.service';
 import { Loginffects } from './core/login/store/login.effetcs';
 import { LoginReducer, LoginState } from './core/login/store/login.reducer';
+import { ToastReducer, ToastState } from './core/toaster/store/toaster.reducer';
 
 export interface AppState {
-  TeknoLoginState: LoginState;
+  EtruriaLoginState: LoginState;
+  EtruriaToastState: ToastState,
 }
 export const reducers: ActionReducerMap<AppState> = {
-  TeknoLoginState: LoginReducer,
+  EtruriaLoginState: LoginReducer,
+  EtruriaToastState: ToastReducer,
 };
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({ keys: ['TeknoLoginState'], rehydrate: true, removeOnUndefined: true })(reducer);
+  return localStorageSync({ keys: ['EtruriaLoginState'], rehydrate: true, removeOnUndefined: true })(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];
@@ -51,7 +55,7 @@ registerLocaleData(localeIt, 'it-IT');
     }),
     StoreModule.forRoot(reducers, { metaReducers }),
     StoreDevtoolsModule.instrument({ maxAge: 20 }),
-    EffectsModule.forRoot([Loginffects]),
+    EffectsModule.forRoot([Loginffects, ToastEffects]),
 
   ],
   providers: [

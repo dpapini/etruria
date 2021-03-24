@@ -1,6 +1,6 @@
 export class MenuModel {
     Id: number;
-    Text: string;
+    Label: string;
     Path: string;
     Ico: string;
     IcoName: string;

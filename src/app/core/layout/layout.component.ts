@@ -10,14 +10,14 @@ export class LayoutComponent implements OnInit {
   collapsedSidebar = false;
   constructor(private router: Router) {
 
-    this.collapsedSidebar = (localStorage.getItem('TeknoLayout')) ? JSON.parse(localStorage.getItem('TeknoLayout')) : !window.innerWidth;
+    this.collapsedSidebar = (localStorage.getItem('EtruriaLayout')) ? JSON.parse(localStorage.getItem('EtruriaLayout')) : !window.innerWidth;
   }
 
   ngOnInit(): void {
     this.router.events.subscribe(
       v => {
         (v instanceof NavigationEnd) ? this.collapsedSidebar = true : null;
-        localStorage.setItem('TeknoLayout', 'true');
+        localStorage.setItem('EtruriaLayout', 'true');
       });
   }
 

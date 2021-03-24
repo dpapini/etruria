@@ -1,4 +1,3 @@
-import { MenuModel } from './../../component/sidebar/model/menuModel';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
@@ -10,7 +9,8 @@ import { AppState } from 'src/app/app.module';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { getIdUser } from 'src/app/core/login/store/login.selectors';
 import { environment } from '../../../../environments/environment';
-import { TeknoHandleError } from './../../services/tekno-handle-error';
+import { EtruriaHandleError } from '../../services/etruria-handle-error';
+import { MenuModel } from './../../component/sidebar/model/menuModel';
 import { login, loginFailed, loginRequest, loginSuccess, logout, logoutComplete } from './login.actions';
 
 const httpOptions = {
@@ -65,7 +65,7 @@ export class Loginffects {
    loginFailed = createEffect(() => this.actions$.pipe(
       ofType(loginFailed),
       map(action => action.error),
-      tap(error => new TeknoHandleError().set(error))
+      tap(error => new EtruriaHandleError().set(error))
    ), { dispatch: false });
 
    logout$ = createEffect(() =>

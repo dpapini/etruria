@@ -12,21 +12,13 @@ const routes: Routes = [
         loadChildren: () => import('src/app/features/dashboard/dashboard.module').then(m => m.DashboardModule)
       },
       {
-        path: 'Utente',
+        path: 'User',
         loadChildren: () => import('src/app/features/user/user.module').then(m => m.UserModule)
       },
-      // {
-      //   path: 'Contatto',
-      //   loadChildren: () => import('src/app/features/contatto/contatto.module').then(m => m.ContattoModule)
-      // },
-      // {
-      //   path: 'AnagrafeCliente',
-      //   loadChildren: () => import('src/app/features/cliente/cliente.module').then(m => m.ClienteModule)
-      // },
-      // {
-      //   path: 'AnagrafeArticolo',
-      //   loadChildren: () => import('src/app/features/articolo/articolo.module').then(m => m.ArticoloModule)
-      // },
+      {
+        path: 'Supplier',
+        loadChildren: () => import('src/app/features/supplier/supplier.module').then(m => m.SupplierModule)
+      },
       {
         path: '', pathMatch: 'full',
         loadChildren: () => import('src/app/features/dashboard/dashboard.module').then(m => m.DashboardModule)

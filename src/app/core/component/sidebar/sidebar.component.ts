@@ -23,7 +23,7 @@ export class SidebarComponent implements OnInit {
   ngOnInit(): void {
     this.d = new MenuModel();
     this.d.Id = 0;
-    this.d.Text = 'DashBoard';
+    this.d.Label = 'DashBoard';
     this.d.IcoName = 'home';
     this.d.Path = '/Home/Dashboard';
   }

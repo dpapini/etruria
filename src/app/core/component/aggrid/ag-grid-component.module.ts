@@ -3,21 +3,24 @@ import { AgGridTrashBtnCellRenderer } from 'src/app/core/component/aggrid/ag-gri
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { AgGridBenchmarkBtnCellRenderer } from './ag-grid-benchmark-btn-cell-render copy';
 
 
 
 @NgModule({
   declarations: [
     AgGridSelectBtnCellRenderer,
-    AgGridTrashBtnCellRenderer
+    AgGridTrashBtnCellRenderer,
+    AgGridBenchmarkBtnCellRenderer,
   ],
   imports: [
     CommonModule,
-    FontAwesomeModule
+    FontAwesomeModule,
   ],
   exports: [
     AgGridSelectBtnCellRenderer,
-    AgGridTrashBtnCellRenderer
+    AgGridTrashBtnCellRenderer,
+    AgGridBenchmarkBtnCellRenderer,
   ]
 })
 export class AgGridComponentModule { }

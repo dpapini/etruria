@@ -1,5 +1,6 @@
 import { StateModel } from './stateModel';
-import { RoleModel } from './roleModel';
+import { DRoleModel } from './droleModel';
+import { ContactModel } from '../../contact/model/contactModel';
 
 export interface UserModel {
     Id: number;
@@ -12,7 +13,7 @@ export interface UserModel {
     TsPwd: Date;
     IdState: number;
     TsState: Date;
-    Role: RoleModel;
+    Role: DRoleModel;
     State: StateModel;
     Tag: string;
     IdContact: number;

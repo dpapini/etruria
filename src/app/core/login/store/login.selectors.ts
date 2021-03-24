@@ -1,11 +1,10 @@
-import { UserModel } from './../../component/user/model/userModel';
 import { createSelector } from '@ngrx/store';
 import { AppState } from 'src/app/app.module';
-import { state } from '@angular/animations';
+import { UserModel } from './../../component/user/model/userModel';
 
-export const getLoginState = (state: AppState) => state.TeknoLoginState;
+export const getLoginState = (state: AppState) => state.EtruriaLoginState;
 
-export const getUserModel = (state: AppState) => state.TeknoLoginState?.userModel;
+export const getUserModel = (state: AppState) => state.EtruriaLoginState?.userModel;
 
 export const getIsLogged = createSelector(
    getLoginState,

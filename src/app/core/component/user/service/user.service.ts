@@ -4,6 +4,7 @@ import { Store } from '@ngrx/store';
 import { of, Observable } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
+import { EtruriaHandleError } from 'src/app/core/services/etruria-handle-error';
 import { environment } from './../../../../../environments/environment';
 import { UserModel, UserSearch } from './../model/userModel';
 
@@ -15,7 +16,7 @@ export class UserService {
   constructor(private http: HttpClient,
     private store: Store<AppState>) { }
 
-  UserCollection(us: UserSearch): Observable<UserModel[]> | Observable<unknown> {
+  UserCollection(us: UserSearch): Observable<UserModel[]> {
     const param = new HttpParams(
       {
         fromObject: {
@@ -26,11 +27,7 @@ export class UserService {
     );
     return this.http.get(environment.apiUrl + 'user/UserCollection', { params: param }).pipe(
       map((um: UserModel[]) => um),
-      catchError(error => {
-        console.log(error)
-        return of();
-      })
-    )
+      catchError(error => EtruriaHandleError))
 
   }
 }

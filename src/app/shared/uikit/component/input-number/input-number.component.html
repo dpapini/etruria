@@ -1,0 +1,10 @@
+<span class="form-group">
+   <label for="inputNumber"
+      [ngClass]="inputNumber.value==='' && inputNumber.value.length===0 ? 'invisible' : 'visible' ">{{label}}</label>
+   <input type="number" class="form-control form-control-sm required" #inputNumber (blur)="onTouched()" [value]="value"
+      [disabled]="disabled"
+      [ngClass]="{'is-invalid': (!invalidIfDirtyOrTouched  && ngControl?.invalid) || (invalidIfDirtyOrTouched && ngControl?.invalid && (ngControl?.dirty || ngControl?.touched))}"
+      [readOnly]="readonly" [attr.placeholder]="placeholder" (input)="onChangeHandler($event)">
+   <span *ngIf="required"
+      [ngClass]="inputNumber.value==='' && inputNumber.value.length>=0 ?'required_input':null "></span>
+</span>

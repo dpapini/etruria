@@ -4,8 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'http://10.0.127.12:8080/kogetapi/',
-  apiUrlDebug: 'http://10.0.127.12/kogetaservice/kogetapi/',
+  apiUrl: 'http://10.0.127.12/etruriaservice/etruriapi/',
 };
 
 /*

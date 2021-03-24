@@ -1,7 +1,7 @@
-import { LoginModel } from '../model/loginModel';
-import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { createAction, props } from '@ngrx/store';
+import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { MenuModel } from '../../component/sidebar/model/menuModel';
+import { LoginModel } from '../model/loginModel';
 
 export enum AuthActionTypes {
    LOGIN = '[Login] Login',

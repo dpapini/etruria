@@ -1,41 +1,48 @@
 import { DatePipe } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { AfterViewChecked, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { AppState } from 'src/app/app.module';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
 import { UserModel, UserSearch, UserTipologiaRicerca } from 'src/app/core/component/user/model/userModel';
 import { UserService } from 'src/app/core/component/user/service/user.service';
+import { UserModalComponent } from './modal/user-modal.component';
+import { addUser, getUsers } from './store/user.actions';
+import { getUserList } from './store/user.selectors';
+
 
 @Component({
   selector: 'app-user',
   templateUrl: './user.component.html',
-  styles: [
-  ]
+  styles: [``],
 })
-export class UserComponent implements OnInit {
-  rowData$: Observable<UserModel[]> | Observable<unknown> = this.userService.UserCollection({ pTyRicerca: UserTipologiaRicerca.RICERCA } as UserSearch);
+export class UserComponent implements OnInit, AfterViewChecked {
+  rowData$: Observable<UserModel[]> = this.store.pipe(select(getUserList))
 
   columnDefs: any = [];
   gridApi;
   gridColumnApi;
   gridOptions;
 
-  constructor(private router: Router, public route: ActivatedRoute,
-    private userService: UserService) {
+  constructor(private router: Router, public route: ActivatedRoute, private modalService: NgbModal,
+    private store: Store<AppState>, private cdref: ChangeDetectorRef,
+  ) {
     this.columnDefs = [
       {
-        headerName: 'Id.', field: 'Id', width: 80,
+        headerName: 'Id', field: 'Id', width: 80,
         minWidth: 80,
         maxWidth: 100
       },
       {
-        headerName: 'Utente', field: 'Contatto.RagioneSociale'
+        headerName: 'Utente', field: 'Userid'
       },
       {
-        headerName: 'Stato', field: 'State.Testo',
+        headerName: 'Stato', field: 'State.Label',
       },
       {
-        headerName: 'Ruolo', field: 'Role.Testo',
+        headerName: 'Ruolo', field: 'Role.Label',
       },
       {
         headerName: 'Ultimo Acceso', field: 'TsLogged',
@@ -73,9 +80,22 @@ export class UserComponent implements OnInit {
         this.getSelectedRows();
       },
     };
+
+
+  }
+  ngAfterViewChecked(): void {
+    this.cdref.detectChanges();
+  }
+  onClickUserAdd(e: Event) {
+    e.preventDefault();
+    const m = this.modalService.open(UserModalComponent, { backdropClass: 'light-blue-backdrop' }).result.then((result) => {
+      this.store.dispatch(addUser(result));
+    }, (reason) => { });
   }
 
   ngOnInit(): void {
+    const userSearch: UserSearch = { pTyRicerca: UserTipologiaRicerca.RICERCA };
+    this.store.dispatch(getUsers({ userSearch }));
   }
 
   getSelectedRows() {
@@ -88,4 +108,5 @@ export class UserComponent implements OnInit {
   onFilterChanged(e: Event) {
     this.gridOptions.api.setQuickFilter((e.target as HTMLInputElement).value);
   }
+
 }

@@ -3,7 +3,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ErrorHandler } from '@angular/core';
 import { throwError } from 'rxjs';
 
-export class TeknoHandleError implements ErrorHandler {
+export class EtruriaHandleError implements ErrorHandler {
    handleError(error: HttpErrorResponse) {
       this.set(error);
    }

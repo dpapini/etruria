@@ -30,7 +30,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     e.preventDefault();
     this.collapsed = !this.collapsed;
     this.humbergerClick.emit(!this.collapsed);
-    localStorage.setItem('TeknoLayout', JSON.stringify(this.collapsed));
+    localStorage.setItem('EtruriaLayout', JSON.stringify(this.collapsed));
   }
 
   viewProfile(e: Event) {
