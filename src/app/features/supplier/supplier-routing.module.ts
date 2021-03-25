@@ -6,8 +6,8 @@ import { SupplierComponent } from './supplier.component';
 
 const routes: Routes = [
   {
-    path: ''
-    , component: SupplierComponent,
+    path: '',
+    component: SupplierComponent,
     children: [
       {
         path: 'Benchmark/:Id',

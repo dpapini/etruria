@@ -9,7 +9,7 @@ import { AppState } from 'src/app/app.module';
 import { UserModel, UserSearch, UserTipologiaRicerca } from 'src/app/core/component/user/model/userModel';
 import { toastSuccess, toastFailure } from 'src/app/core/toaster/store/toaster.actsions';
 import { environment } from '../../../../environments/environment';
-import { addUser, addUserComplete, getUserFailure, getUsers, getUserSuccess } from './user.actions';
+import { addUser, addUserComplete, getUsersFailure, getUsers, getUsersSuccess } from './user.actions';
 
 const httpOptions = {
    headers: new HttpHeaders({
@@ -21,8 +21,7 @@ const httpOptions = {
 export class UsersEffects {
    constructor(private actions$: Actions,
       private store: Store<AppState>,
-      private http: HttpClient,
-      private router: Router) {
+      private http: HttpClient) {
    }
 
    getUsers$ = createEffect(() =>
@@ -38,8 +37,8 @@ export class UsersEffects {
                }
             );
             return this.http.get(environment.apiUrl + 'user/UserCollection', { params: param }).pipe(
-               map((userModels: UserModel[]) => getUserSuccess({ userModels })),
-               catchError(error => of(getUserFailure))
+               map((usersModel: UserModel[]) => getUsersSuccess({ usersModel })),
+               catchError(error => of(getUsersFailure))
             )
          })
       )

@@ -7,7 +7,6 @@ import { Observable } from 'rxjs';
 import { AppState } from 'src/app/app.module';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
 import { UserModel, UserSearch, UserTipologiaRicerca } from 'src/app/core/component/user/model/userModel';
-import { UserService } from 'src/app/core/component/user/service/user.service';
 import { UserModalComponent } from './modal/user-modal.component';
 import { addUser, getUsers } from './store/user.actions';
 import { getUserList } from './store/user.selectors';

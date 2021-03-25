@@ -1,8 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { select, Store } from '@ngrx/store';
+import { Observable, Subscription } from 'rxjs';
+import { AppState } from 'src/app/app.module';
 import { AgGridBenchmarkBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-benchmark-btn-cell-render copy';
 import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
+import { SupplierSearch } from './../../core/component/supplier/model/supplier';
+import { getSuppliers } from './store/supplier.actions';
+import { getSupplier, getSupplierList } from './store/supplier.selectors';
 
 @Component({
   selector: 'app-supplier',
@@ -10,14 +15,15 @@ import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
   styles: [``]
 })
 export class SupplierComponent implements OnInit {
-  rowData$: Observable<SupplierModel[]>
-
   columnDefs: any = [];
   gridApi;
   gridColumnApi;
   gridOptions;
+  subscription: Subscription[] = [];
+  rowData$: Observable<SupplierModel[]> = this.store.pipe(select(getSupplierList))
+  supplier$: Observable<SupplierModel>;
 
-  constructor(private router: Router, public route: ActivatedRoute) {
+  constructor(private router: Router, public route: ActivatedRoute, private store: Store<AppState>) {
     this.columnDefs = [
       {
         headerName: 'Id', field: 'Id', hide: true
@@ -26,7 +32,7 @@ export class SupplierComponent implements OnInit {
         headerName: 'SubId', field: 'SubId', hide: true
       },
       {
-        headerName: 'Id',
+        headerName: 'Id', width: 80, minWidth: 80, maxWidth: 120,
         valueGetter: (params) => {
           if (params.data.Id == null || params.data.SubId == null) return;
           return params.data.Id + '.' + params.data.SubId;
@@ -63,14 +69,18 @@ export class SupplierComponent implements OnInit {
         this.gridApi.hideOverlay();
       },
     };
+
   }
 
   ngOnInit(): void {
+    const supplierSearch: SupplierSearch = {};
+    this.store.dispatch(getSuppliers({ supplierSearch }));
   }
 
   getSelectedRowsByButton(e) {
-    this.router.navigate(['Benchmark', e.rowData.Id], { relativeTo: this.route });
+    this.router.navigate(['Benchmark', e.rowData.Id + '.' + e.rowData.SubId], { relativeTo: this.route });
   }
+
   onFilterChanged(e: Event) {
     this.gridOptions.api.setQuickFilter((e.target as HTMLInputElement).value);
   }

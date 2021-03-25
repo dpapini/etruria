@@ -11,9 +11,9 @@ export class SupplierModel {
 }
 
 export interface SupplierSearch {
-   pId: number;
-   pSubId: number;
-   pLabel: string;
+   pId?: number;
+   pSubId?: number;
+   pLabel?: string;
    pOffSet?: number;
    pNextRow?: number;
 }

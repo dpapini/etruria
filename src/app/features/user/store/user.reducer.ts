@@ -1,21 +1,21 @@
 import { Action, createReducer, on } from '@ngrx/store';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
-import { getUserSuccess } from './user.actions';
+import { getUsersSuccess } from './user.actions';
 
 
 export interface UsersState {
-   userModels: UserModel[];
+   usersModel: UserModel[];
 }
 
-export const initializeAuthState: UsersState = {
-   userModels: null,
+export const initializeUsersState: UsersState = {
+   usersModel: null,
 };
 
 const userReducerInternal = createReducer(
-   initializeAuthState,
+   initializeUsersState,
 
-   on(getUserSuccess, (state, action) => {
-      return { ...state, userModels: [...action.userModels] };
+   on(getUsersSuccess, (state, action) => {
+      return { ...state, usersModel: [...action.usersModel] };
    }),
 );
 

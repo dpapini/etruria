@@ -40,7 +40,7 @@ const reducers: ActionReducerMap<UserState> = {
     NgbModule,
     AgGridModule,
     AgGridModule.withComponents([AgGridSelectBtnCellRenderer]),
-    StoreModule.forFeature('users', reducers),
+    StoreModule.forFeature('EtruriaUsers', reducers),
     EffectsModule.forFeature([UsersEffects])
 
   ],
