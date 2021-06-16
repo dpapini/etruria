@@ -21,6 +21,15 @@ export class DetectionPriceModel {
 }
 
 export interface DetectionPriceSearch {
-   pIdSupplier: number;
-   pSubIdSupplier: number;
+   pIdSupplier?: number;
+   pSubIdSupplier?: number;
+   pTyRicerca?: DetectionPriceTipologiaRicerca;
+   pIdLine?: number[];
+}
+
+export enum DetectionPriceTipologiaRicerca {
+   LINE,
+   AREA,
+   SECTOR,
+   GROUP,
 }

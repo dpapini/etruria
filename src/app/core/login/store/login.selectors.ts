@@ -21,6 +21,11 @@ export const getIdUser = createSelector(
    (profile: UserModel) => profile?.Id
 );
 
+export const getIdBuyer = createSelector(
+   getUserModel,
+   (profile: UserModel) => profile?.IdBuyer || null
+);
+
 export const getShowError = createSelector(
    getLoginState,
    state => state.showError,

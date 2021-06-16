@@ -1,47 +1,148 @@
-import { map, catchError } from 'rxjs/operators';
-import { environment } from './../../../../../environments/environment';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { SupplierSearch, SupplierModel } from '../model/supplier';
-import { EtruriaHandleError } from 'src/app/core/services/etruria-handle-error';
+import { Observable, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import { DetectionPriceModel, DetectionPriceSearch } from '../model/detectionPrice';
-import { ListSupplierSearch, ListSupplierModel, ListSupplierIndexModel } from '../model/listSupplier';
+import { LinePriceModel } from '../model/linePrice';
+import { SupplierAgreementModel, SupplierAgreementSearch } from '../model/supplierAgreement';
+import { environment } from './../../../../../environments/environment';
+
+const httpOptions = {
+  headers: new HttpHeaders({
+    'Content-Type': 'application/json',
+  })
+};
+
 
 @Injectable({
-   providedIn: 'root'
+  providedIn: 'root'
 })
 export class SupplierService {
 
-   constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) { }
 
-   DetectionPriceBySupplier(dps: DetectionPriceSearch) {
-      const param = new HttpParams({
-         fromObject: {
-            pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
-            pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
-         }
-      });
+  DetectionPriceBySupplier(dps: DetectionPriceSearch) {
+    const param = new HttpParams({
+      fromObject: {
+        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
+        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
+        pTyRicerca: (dps.pTyRicerca ? dps.pTyRicerca.toString().trim() : ''),
+        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
+      }
+    });
 
-      return this.http.get(environment.apiUrl + 'supplier/DectionPriceBySupplier', { params: param })
-         .pipe(
-            map((dpm: DetectionPriceModel[]) => dpm),
-            catchError(error => EtruriaHandleError)
-         );
-   }
+    return this.http.get(environment.apiUrl + 'supplier/DetectionPriceBySupplier', { params: param })
+      .pipe(
+        map((dpm: DetectionPriceModel[]) => dpm),
+        catchError(error => of(error))
+      );
+  }
 
-   ListSupplierIndex(lss: ListSupplierSearch) {
-      if (!lss.pId && !lss.pSubId) return;
-      const param = new HttpParams({
-         fromObject: {
-            pId: (lss.pId ? lss.pId.toString().trim() : ''),
-            pSubId: (lss.pSubId ? lss.pSubId.toString().trim() : ''),
-         }
-      });
+  DetectionPriceBylinea(dps: DetectionPriceSearch) {
+    const param = new HttpParams({
+      fromObject: {
+        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
+        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
+        pTyRicerca: (dps.pTyRicerca !== null ? dps.pTyRicerca.toString().trim() : ''),
+        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
+      }
+    });
 
-      return this.http.get(environment.apiUrl + 'supplier/IndicePercentualeListinoLordo', { params: param })
-         .pipe(
-            map((lsim: ListSupplierIndexModel) => lsim),
-            catchError(error => EtruriaHandleError)
-         );
-   }
+    return this.http.get(environment.apiUrl + 'supplier/DetectionPriceBylinea', { params: param })
+      .pipe(
+        map((dpm: DetectionPriceModel) => dpm),
+        catchError(error => of(error))
+      );
+  }
+
+  // ListSupplierIndex(lss: ListSupplierSearch) {
+  //   if (!lss.pId && !lss.pSubId) return;
+  //   const param = new HttpParams({
+  //     fromObject: {
+  //       pId: (lss.pId ? lss.pId.toString().trim() : ''),
+  //       pSubId: (lss.pSubId ? lss.pSubId.toString().trim() : ''),
+  //     }
+  //   });
+
+  //   return this.http.get(environment.apiUrl + 'supplier/IndicePercentualeListinoLordo', { params: param })
+  //     .pipe(
+  //       map((lsim: ListSupplierIndexModel) => lsim),
+  //       catchError(error => of(error))
+  //     );
+  // }
+
+  // ListSupplierIndexDetail(lss: ListSupplierSearch): Observable<ListSupplierIndexDetailModel[]> | Observable<any> {
+  //   if (!lss.pId && !lss.pSubId) return;
+  //   const param = new HttpParams({
+  //     fromObject: {
+  //       pId: (lss.pId ? lss.pId.toString().trim() : ''),
+  //       pSubId: (lss.pSubId ? lss.pSubId.toString().trim() : ''),
+  //       pYear: (lss.pYear ? lss.pYear.toString().trim() : ''),
+  //     }
+  //   });
+
+  //   return this.http.get(environment.apiUrl + 'supplier/IndicePercentualeListinoLordoDettaglio', { params: param })
+  //     .pipe(
+  //       map((lsim: ListSupplierIndexDetailModel[]) => lsim),
+  //       catchError(error => of(error))
+  //     );
+  // }
+
+  LinePriceCollection() {
+    return this.http.get(environment.apiUrl + 'supplier/LinePriceCollection')
+      .pipe(
+        map((lp: LinePriceModel[]) => lp),
+        catchError(error => of(error))
+      );
+  }
+
+  HeaderAgreementCollection(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
+    const param = new HttpParams({
+      fromObject: {
+        pId: (as.pId ? as.pId.toString().trim() : ''),
+        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
+        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
+      }
+    });
+    return this.http.get(environment.apiUrl + 'supplier/PercentualeTestata', { params: param }).pipe(
+      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
+      catchError(error => of(error))
+    )
+  }
+
+  PremiaAgreementCollection(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
+    const param = new HttpParams({
+      fromObject: {
+        pId: (as.pId ? as.pId.toString().trim() : ''),
+        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
+        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
+      }
+    });
+    return this.http.get(environment.apiUrl + 'supplier/PercentualePremia', { params: param }).pipe(
+      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
+      catchError(error => of(error))
+    )
+  }
+
+  PremiaAgreementCollectionPcSecondLivel(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
+    const param = new HttpParams({
+      fromObject: {
+        pId: (as.pId ? as.pId.toString().trim() : ''),
+        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
+        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
+      }
+    });
+    return this.http.get(environment.apiUrl + 'supplier/PercentualePremiaSecondLivel', { params: param }).pipe(
+      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
+      catchError(error => of(error))
+    )
+  }
+
+  PremiaAgreementCollectionFixSecondLivel(sas: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
+    return this.http.post(environment.apiUrl + 'supplier/FissoPremiaSecondLivel', sas, httpOptions).pipe(
+      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
+      catchError(error => of(error))
+    )
+  }
 }
+

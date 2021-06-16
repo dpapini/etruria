@@ -8,6 +8,7 @@ import { catchError, map, switchMap, tap, withLatestFrom } from 'rxjs/operators'
 import { AppState } from 'src/app/app.module';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { getIdUser } from 'src/app/core/login/store/login.selectors';
+import { clearSupplier } from 'src/app/features/supplier/store/supplier.actions';
 import { environment } from '../../../../environments/environment';
 import { EtruriaHandleError } from '../../services/etruria-handle-error';
 import { MenuModel } from './../../component/sidebar/model/menuModel';
@@ -75,7 +76,7 @@ export class Loginffects {
          switchMap(([action, id]) => {
             return this.http.get(environment.apiUrl + 'login/LogOut?id=' + id)
                .pipe(
-                  switchMap(() => [logoutComplete()]),
+                  switchMap(() => [logoutComplete(), clearSupplier()]),
                   tap(() => this.router.navigate(['Login'])),
                   catchError(err => of(loginFailed({ userModel: null, isLogged: false, showError: true, menuModel: null, error: err })))
                )

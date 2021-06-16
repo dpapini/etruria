@@ -1,20 +1,22 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
+import { debounceTime } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { AgGridBenchmarkBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-benchmark-btn-cell-render copy';
-import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
-import { SupplierSearch } from './../../core/component/supplier/model/supplier';
-import { getSuppliers } from './store/supplier.actions';
-import { getSupplier, getSupplierList } from './store/supplier.selectors';
+import { SupplierModel, SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
+import { getSuppliers, setSupplier } from './store/supplier.actions';
+import { getSupplierList } from './store/supplier.selectors';
 
 @Component({
   selector: 'app-supplier',
   templateUrl: './supplier.component.html',
   styles: [``]
 })
-export class SupplierComponent implements OnInit {
+export class SupplierComponent implements OnInit, OnDestroy {
+
   columnDefs: any = [];
   gridApi;
   gridColumnApi;
@@ -22,6 +24,8 @@ export class SupplierComponent implements OnInit {
   subscription: Subscription[] = [];
   rowData$: Observable<SupplierModel[]> = this.store.pipe(select(getSupplierList))
   supplier$: Observable<SupplierModel>;
+  // filter$: Observable<string> = this.store.pipe(select(getFilter));
+  // filterSupplier: FormControl = new FormControl();
 
   constructor(private router: Router, public route: ActivatedRoute, private store: Store<AppState>) {
     this.columnDefs = [
@@ -69,19 +73,37 @@ export class SupplierComponent implements OnInit {
         this.gridApi.hideOverlay();
       },
     };
-
   }
 
+  ngOnDestroy(): void {
+    this.subscription.forEach(s => s.unsubscribe());
+  }
+  ngOnChanges() {
+    console.log('ngOnChanges')
+  }
+  ngAfterContentInit() {
+    console.log('ngAfterContentInit')
+  }
+  ngAfterViewInit() {
+    console.log('ngAfterViewInit')
+  }
   ngOnInit(): void {
+    if (this.route.children.length > 0) { return };
     const supplierSearch: SupplierSearch = {};
     this.store.dispatch(getSuppliers({ supplierSearch }));
   }
 
   getSelectedRowsByButton(e) {
+    const supplierSearch: SupplierSearch = {
+      pId: e.rowData.Id,
+      pSubId: e.rowData.SubId,
+    }
+    this.store.dispatch(setSupplier({ supplierSearch }))
     this.router.navigate(['Benchmark', e.rowData.Id + '.' + e.rowData.SubId], { relativeTo: this.route });
   }
 
   onFilterChanged(e: Event) {
     this.gridOptions.api.setQuickFilter((e.target as HTMLInputElement).value);
   }
+
 }

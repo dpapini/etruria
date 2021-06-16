@@ -1,10 +1,13 @@
+import { PurchasedModalComponent } from './../modal/purchased-modal/purchased-modal.component';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { select, Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { getSupplier } from '../store/supplier.selectors';
+import { clearDataSupplier } from '../store/supplier.actions';
 
 @Component({
   selector: 'app-supplier-benchmark',
@@ -25,6 +28,7 @@ export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
   );
 
   constructor(private route: ActivatedRoute, private router: Router,
+    private modalService: NgbModal,
     private store: Store<AppState>) { }
 
   ngOnDestroy(): void {
@@ -36,5 +40,10 @@ export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
   listSupplierClick(e: Event) {
     e.preventDefault();
     this.router.navigate(['.'], { relativeTo: this.route.parent });
+    this.store.dispatch(clearDataSupplier())
+  }
+  listChartLineClick(e: Event) {
+    e.preventDefault();
+    const m = this.modalService.open(PurchasedModalComponent, { backdropClass: 'light-blue-backdrop' }).result.then((result) => { }, (reason) => { });
   }
 }

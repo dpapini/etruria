@@ -1,4 +1,4 @@
-<div class="card">
+<!-- <div class="card">
    <div class="card-header">
       <h6>Indice listino lordo</h6>
    </div>
@@ -6,4 +6,22 @@
       <app-counterup [source]="Yb$|async"></app-counterup>
       <app-counterup [source]="Cy$|async"></app-counterup>
    </div>
+</div> -->
+<div class="card ">
+  <div class="card-header d-flex justify-content-between">
+    <h6>Indice listino lordo</h6>
+  </div>
+  <div class="card-body d-flex">
+    <div class="row col-12">
+      <div class="col-9">
+        <ag-grid-angular style="width: 100%;height: 100%;" class="ag-theme-alpine" [gridOptions]="gridOptions"
+          [suppressDragLeaveHidesColumns]="true" [rowData]="rowData$|async">
+        </ag-grid-angular>
+      </div>
+      <span class="col-3">
+        <app-counterup [source]="idxTotal$|async"></app-counterup>
+      </span>
+    </div>
+  </div>
+
 </div>

@@ -192,3 +192,59 @@ input[readonly].labelinput{
     border: 0;
     border-bottom: solid 1px lightgrey;
 }
+
+.doughnut .percentage {
+    position: absolute;
+    font-weight: 100;
+    // left:30%;
+    // top:16%;
+        top: 35%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    @include media-breakpoint-only(xs){ 
+        font-size: 3rem;
+    }
+    @include media-breakpoint-only(sm){ 
+        font-size: 3rem;
+    }
+    @include media-breakpoint-only(md){ 
+        font-size: 4rem;
+            // left:30%;
+    }
+    @include media-breakpoint-only(lg){ 
+        font-size: 3rem;
+    }
+    @include media-breakpoint-only(xl){ 
+                font-size: 4rem;
+    }
+}
+
+.doughnut .value {
+    position: absolute;
+    font-weight: 100;
+    line-height: 1.2;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    @include media-breakpoint-only(xs){ 
+        font-size: 1rem;
+        top: 50%;
+    }
+    @include media-breakpoint-only(sm){ 
+        font-size: 1rem;
+        top: 50%;
+    }
+    @include media-breakpoint-only(md){ 
+        font-size: 1.5rem;
+        top: 53%;
+    }
+    @include media-breakpoint-only(lg){ 
+        font-size: 1.5rem;
+        top: 53%;
+    }
+    @include media-breakpoint-only(xl){ 
+        font-size: 2rem;
+    }
+}

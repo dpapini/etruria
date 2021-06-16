@@ -32,7 +32,7 @@ export const reducers: ActionReducerMap<AppState> = {
 };
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
-  return localStorageSync({ keys: ['EtruriaLoginState'], rehydrate: true, removeOnUndefined: true })(reducer);
+  return localStorageSync({ keys: ['EtruriaLoginState', 'EtruriaSuppliers'], rehydrate: true, removeOnUndefined: true })(reducer);
 }
 
 const metaReducers: Array<MetaReducer<any, any>> = [localStorageSyncReducer];

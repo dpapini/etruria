@@ -17,6 +17,7 @@ export interface UserModel {
     State: StateModel;
     Tag: string;
     IdContact: number;
+    IdBuyer: number;
     Contact: ContactModel;
     TsLogged: Date;
 }

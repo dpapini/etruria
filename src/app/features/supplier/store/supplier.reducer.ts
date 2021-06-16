@@ -1,24 +1,54 @@
 import { Action, createReducer, on } from '@ngrx/store';
+import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
-import { getSuppliersSuccess } from './supplier.actions';
+import { SupplierFirstAgreementModel } from 'src/app/core/component/supplier/model/supplierAgreement';
+import { clearDataSupplier, clearSupplier, getSupplierFirstAgreementSuccess, getSupplierSecondAgreementSuccess, getSuppliersSuccess, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
 
 export interface SuppliersState {
-   suppliersModel: SupplierModel[];
+  supplierListino: ListSupplierIndexDetailModel[],
+  supplierSecondAgreementModel: SupplierFirstAgreementModel[],
+  supplierFirstAgreementModel: SupplierFirstAgreementModel[],
+  suppliersModel: SupplierModel[];
+  supplierActive: SupplierModel;
+  // filter: string;
 }
 
 const initializeSupplierState: SuppliersState = {
-   suppliersModel: null,
+  supplierListino: [],
+  supplierSecondAgreementModel: [],
+  supplierFirstAgreementModel: [],
+  suppliersModel: [],
+  supplierActive: null,
+  // filter: '',
 }
 
 const suppliersReducerInternal = createReducer(
-   initializeSupplierState,
+  initializeSupplierState,
 
-   on(getSuppliersSuccess, (state, action) => {
-      return { ...state, suppliersModel: [...action.suppliersModel] };
-   }),
+  on(getSuppliersSuccess, (state, action) => {
+    return { ...state, suppliersModel: [...action.suppliersModel] };
+  }),
+  on(setSupplierSuccess, (state, action) => {
+    return { ...state, suppliersModel: [...state.suppliersModel], supplierActive: action.supplierModel };
+  }),
+  on(clearSupplier, (state, action) => {
+    return { ...state, suppliersModel: [], supplierFirstAgreementModel: [], supplierSecondAgreementModel: [], supplierActive: null };
+  }),
+  on(clearDataSupplier, (state, action) => {
+    return { ...state, supplierFirstAgreementModel: [], supplierActive: null, supplierListino: [] };
+  }),
+  on(getSupplierFirstAgreementSuccess, (state, action) => {
+    return { ...state, supplierFirstAgreementModel: [...action.supplieFirstAgreementModel] };
+  }),
+  on(getSupplierSecondAgreementSuccess, (state, action) => {
+    return { ...state, supplierSecondAgreementModel: [...action.supplieSecondAgreementModel] };
+  }),
+  on(setSupplierListinoSuccess, (state, action) => {
+    return { ...state, supplierListino: [...action.supplierListino] };
+  }),
 );
 
 export function SuppliersReducer(state: SuppliersState | undefined, action: Action) {
-   return suppliersReducerInternal(state, action);
+  return suppliersReducerInternal(state, action);
 }
 
