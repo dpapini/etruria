@@ -35,7 +35,7 @@ const suppliersReducerInternal = createReducer(
     return { ...state, suppliersModel: [], supplierFirstAgreementModel: [], supplierSecondAgreementModel: [], supplierActive: null };
   }),
   on(clearDataSupplier, (state, action) => {
-    return { ...state, supplierFirstAgreementModel: [], supplierActive: null, supplierListino: [] };
+    return { ...state, supplierFirstAgreementModel: [], supplierSecondAgreementModel: [], supplierActive: null, supplierListino: [] };
   }),
   on(getSupplierFirstAgreementSuccess, (state, action) => {
     return { ...state, supplierFirstAgreementModel: [...action.supplieFirstAgreementModel] };

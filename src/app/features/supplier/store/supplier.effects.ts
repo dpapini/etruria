@@ -123,35 +123,19 @@ export class SuppliersEffects {
       switchMap((action) => {
         const cy = new Date().getFullYear();
         const by = new Date().getFullYear() - 1;
-        console.log(action.purchases)
         const pcCY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: cy }).
           pipe(first(), shareReplay(1));
         const pcBY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
           pipe(first(), shareReplay(1));
-        const fxCY$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchases.filter(p => p.Year === cy), pYear: cy }).
+        const fxCY$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchases.filter(p => p.Year === by), pYear: cy }).
           pipe(first(), shareReplay(1));
         const fxYB$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchases.filter(p => p.Year === by), pYear: by }).
           pipe(first(), shareReplay(1));
 
         return forkJoin([pcCY$, pcBY$, fxCY$, fxYB$]).pipe(
           map(response => {
-            console.log(response[3])
+            console.log('2', response)
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
-            console.log(t)
-            // const t1 = t.reduce((r, o) => (r[o.Year, o.TyLine] ? (r[o.Year, o.TyLine].Pc += o.Pc) : (r[o.Year, o.TyLine] = { ...o }), r), {})
-            // console.log(t1)
-            // let sfam1: SupplierFirstAgreementModel[] = []
-            // Object.keys(t1).forEach(k => {
-            //   const value: SupplierFirstAgreementModel = t1[k];
-
-            //   sfam1.push({
-            //     TyLine: value.TyLine,
-            //     Cy: cy,
-            //     Yb: by,
-            //     //     pCY =
-            //   } as SupplierFirstAgreementModel)
-            // });
-            // console.log('sfam1', sfam1);
 
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {
               console.log('qui', tl, t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by)?.Pc)
