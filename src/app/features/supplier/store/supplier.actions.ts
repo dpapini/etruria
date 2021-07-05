@@ -1,7 +1,8 @@
+import { RequestModel, RequestSearchModel } from './../../../core/component/request/request';
+import { SupplierPurchasedModel } from 'src/app/core/component/supplier/model/supplierPurchased';
 import { createAction, props } from '@ngrx/store';
 import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { SupplierModel, SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
-import { SupplierPurchasedModel } from 'src/app/core/component/supplier/model/supplierPurchased';
 import { ListSupplierSearch } from './../../../core/component/supplier/model/listSupplier';
 import { SupplierFirstAgreementModel } from './../../../core/component/supplier/model/supplierAgreement';
 
@@ -21,7 +22,13 @@ export enum SupplierActionTypes {
   GET_SECOND_AGREEMENT_FAILURE = '[Supplier] Set Second Agreement Suppliers Failure',
   SET_LISTINO = '[Supplier] Get Listino',
   SET_LISTINO_SUCCESS = '[Supplier] Get Listino Success',
-  SET_LISTINO_FAILURE = '[Supplier] Get Listino Failure'
+  SET_LISTINO_FAILURE = '[Supplier] Get Listino Failure',
+  ADD_REQUEST_ETRURIA = '[Supplier] Add Request BenchMarck ',
+  ADD_REQUEST_ETRURIA_SUCCESS = '[Supplier] Add Request BenchMarck Success',
+  ADD_REQUEST_ETRURIA_FAILURE = '[Supplier] Add Request BenchMarck Failure',
+  GET_REQUEST_ETRURIA = '[Supplier] Get Request BenchMarck ',
+  GET_REQUEST_ETRURIA_SUCCESS = '[Supplier] Get Request BenchMarck Success',
+  GET_REQUEST_ETRURIA_FAILURE = '[Supplier] Get Request BenchMarck Failure',
 }
 
 export const getSuppliers = createAction(SupplierActionTypes.GET_SUPPLIERS,
@@ -61,9 +68,21 @@ export const setSupplierListinoSuccess = createAction(SupplierActionTypes.SET_LI
 export const setSupplierListinoFailure = createAction(SupplierActionTypes.SET_LISTINO_FAILURE);
 
 export const getSupplierSecondAgreement = createAction(SupplierActionTypes.GET_SECOND_AGREEMENT,
-  props<{ supplierSearch: SupplierSearch, purchases: SupplierPurchasedModel[] }>()
+  props<{ supplierSearch: SupplierSearch, purchasesCY: SupplierPurchasedModel[], purchasesBY: SupplierPurchasedModel[] }>()
 );
 export const getSupplierSecondAgreementSuccess = createAction(SupplierActionTypes.GET_SECOND_AGREEMENT_SUCCESS,
   props<{ supplieSecondAgreementModel: SupplierFirstAgreementModel[] }>()
 );
 export const getSupplierSecondAgreementFailure = createAction(SupplierActionTypes.GET_SECOND_AGREEMENT_FAILURE);
+
+export const addEtruriaRequest = createAction(SupplierActionTypes.ADD_REQUEST_ETRURIA,
+  props<{ etruriaRequest: RequestModel }>()
+);
+export const addEtruriaRequestSuccess = createAction(SupplierActionTypes.ADD_REQUEST_ETRURIA_SUCCESS);
+export const addEtruriaRequestFailure = createAction(SupplierActionTypes.ADD_REQUEST_ETRURIA_FAILURE);
+
+export const getEtruriaRequest = createAction(SupplierActionTypes.GET_REQUEST_ETRURIA,
+  props<{ etruriaRequestSearch: RequestSearchModel }>()
+);
+export const getEtruriaRequestSuccess = createAction(SupplierActionTypes.GET_REQUEST_ETRURIA_SUCCESS);
+export const getEtruriaRequestFailure = createAction(SupplierActionTypes.GET_REQUEST_ETRURIA_FAILURE);

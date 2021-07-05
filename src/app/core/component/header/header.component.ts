@@ -3,8 +3,10 @@ import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { getEtruriaRequest } from 'src/app/features/supplier/store/supplier.actions';
 import { logout } from '../../login/store/login.actions';
 import { getUserId, getUserModel } from '../../login/store/login.selectors';
+import { RequestModel, RequestSearchModel, TYPEREQUEST } from '../request/request';
 import { AppState } from './../../../app.module';
 import { UserModel } from './../user/model/userModel';
 
@@ -24,7 +26,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void { }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    const etruriaRequestSearch: RequestSearchModel = { pTyRequest: TYPEREQUEST.BENCHMARKXLSX }
+    this.store.dispatch(getEtruriaRequest({ etruriaRequestSearch }));
+  }
 
   toggler(e: Event) {
     e.preventDefault();

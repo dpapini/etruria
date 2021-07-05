@@ -40,6 +40,7 @@ export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
   listSupplierClick(e: Event) {
     e.preventDefault();
     this.router.navigate(['.'], { relativeTo: this.route.parent });
+    console.log('listSupplierClick prima di cleardata')
     this.store.dispatch(clearDataSupplier())
   }
   listChartLineClick(e: Event) {

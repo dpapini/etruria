@@ -33,6 +33,43 @@ export const getPurchasedValue = createSelector(
   }
 )
 
+export const getListLine = createSelector(
+  getSupplierState,
+  (s) => {
+    return [...new Set(s.EtruriaSuppliers.supplierFirstAgreementModel.map(item => item.TyLine))].map(tyLine => {
+      return {
+        TyLine: tyLine,
+        Label: s.EtruriaSuppliers.supplierFirstAgreementModel.find(s => s.TyLine === tyLine).Label
+      }
+    });
+  }
+)
+
+export const getListLineAllPurchased = (year: number) => createSelector(
+  getSupplierState,
+  (s) => {
+    console.log('getListLineAllPurchased', s.EtruriaSuppliers.supplierFirstAgreementModel)
+    return [...new Set(s.EtruriaSuppliers?.supplierFirstAgreementModel?.map(item => item.TyLine))].map(tyLine => {
+
+      const t = (s.EtruriaSuppliers?.supplierActive?.Purchased?.filter(p => p.Year === year)?.reduce((r, o) =>
+        (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {}));
+      console.log('t', t)
+      if (t) {
+        const p = Object.values<SupplierPurchasedModel>(t)
+        return {
+          Year: year,
+          TyLine: tyLine,
+          Label: s.EtruriaSuppliers.supplierFirstAgreementModel.find(s => s.TyLine === tyLine).Label,
+          Purchased: p[0].Purchased,
+        } as SupplierPurchasedModel
+      } else null;
+    }
+
+    );
+  }
+)
+
+
 export const getPurchasedValueByYearLine = (year: number, line: string) => createSelector(
   getSupplierState,
   (s) => {
@@ -59,7 +96,7 @@ export const getPurchasedValueByYear = (year: number) => createSelector(
 export const getFirstAgreement = createSelector(
   getSupplierState,
   (s) => {
-    return s ? s.EtruriaSuppliers.supplierFirstAgreementModel : null;
+    return s ? [...s.EtruriaSuppliers.supplierFirstAgreementModel].sort((a, b) => { return a.TyLine < b.TyLine ? -1 : 1; }) : null;
   }
 )
 export const getFirstAgreementByLine = (tyLine: string) => createSelector(
@@ -71,7 +108,8 @@ export const getFirstAgreementByLine = (tyLine: string) => createSelector(
 
 export const getSecondAgreement = createSelector(
   getSupplierState,
-  (s) => {
+  getFirstAgreement,
+  (s, f) => {
     return s ? [...s.EtruriaSuppliers.supplierSecondAgreementModel].sort((a, b) => { return a.TyLine < b.TyLine ? -1 : 1; }) : null;
   }
 )
@@ -89,3 +127,4 @@ export const getListinoSupplierByLine = (tyLine: string) => createSelector(
     return s ? s.EtruriaSuppliers.supplierListino.filter(l => l.TyLine === tyLine) : null;
   }
 )
+

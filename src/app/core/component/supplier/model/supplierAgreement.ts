@@ -4,7 +4,7 @@ export class SupplierAgreementModel {
   IdSupplier: number;
   SubIdSupplier: number;
   TyLine: string;
-  Label: number;
+  Label: string;
   Pc: number;
   Year: number;
   TipologiaDiscount: TipologiaAgreement
@@ -34,7 +34,7 @@ export enum TipologiaAgreement {
 
 export interface SupplierFirstAgreementModel {
   TyLine: string;
-  Label: number;
+  Label: string;
   Cy: number;
   Yb: number;
   hCY: number;

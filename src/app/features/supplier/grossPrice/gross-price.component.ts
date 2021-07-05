@@ -26,7 +26,7 @@ export class GrossPriceComponent implements OnInit {
   gridColumnApi;
   gridOptions;
 
-  private response$ = this.loaded$.pipe(map(() => { return { Id: this.id, SubId: this.subId } }));
+  // private response$ = this.loaded$.pipe(map(() => { return { Id: this.id, SubId: this.subId } }));
 
   public idxTotal$ = this.rowData$.pipe(map((rows: ListSupplierIndexDetailModel[]) => {
     let imCy = 0;

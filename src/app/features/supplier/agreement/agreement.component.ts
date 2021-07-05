@@ -1,16 +1,14 @@
 import { Component, Input, OnInit, Pipe, PipeTransform, SimpleChanges } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { BehaviorSubject, Observable, of, Subscription, forkJoin } from 'rxjs';
-import { filter, first, map } from 'rxjs/operators';
+import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
+import { filter, first, map, skipWhile, take } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
-import { SupplierPurchasedModel } from 'src/app/core/component/supplier/model/supplierPurchased';
 import { SupplierService } from 'src/app/core/component/supplier/service/supplier.service';
 import { getSupplierFirstAgreement, getSupplierSecondAgreement } from '../store/supplier.actions';
 import { SupplierFirstAgreementModel } from './../../../core/component/supplier/model/supplierAgreement';
-import { getFirstAgreement, getFirstAgreementByLine, getListinoSupplier, getListinoSupplierByLine, getPurchasedValueByYear, getPurchasedValueByYearLine, getSecondAgreement } from './../store/supplier.selectors';
-
+import { getFirstAgreement, getFirstAgreementByLine, getListinoSupplier, getListinoSupplierByLine, getListLineAllPurchased, getPurchasedValueByYearLine, getSecondAgreement } from './../store/supplier.selectors';
 
 @Pipe({
   name: 'myfilter',
@@ -49,10 +47,6 @@ export class AgreementComponent implements OnInit {
   constructor(private store: Store<AppState>, private supplierService: SupplierService) {
   }
 
-  private response$ = this.loaded$.pipe(map(() => {
-    return { Id: this.id, SubId: this.subId }
-  }));
-
   ngOnInit(): void {
   }
 
@@ -60,10 +54,19 @@ export class AgreementComponent implements OnInit {
     const { id, subId } = changes;
     if (!(id && subId)) return;
     const supplierSearch: SupplierSearch = { pId: id.currentValue, pSubId: subId.currentValue }
-    this.store.dispatch(getSupplierFirstAgreement({ supplierSearch }))
-    this.store.select(getPurchasedValueByYear(new Date().getFullYear() - 1)).pipe(filter(p => p !== null), map(p => p), first()).subscribe((purchases: SupplierPurchasedModel[]) => {
-      this.store.dispatch(getSupplierSecondAgreement({ supplierSearch, purchases }))
-    })
+    this.store.dispatch(getSupplierFirstAgreement({ supplierSearch }));
+
+
+    const pCY$ = this.store.pipe(select(getListLineAllPurchased(new Date().getFullYear())), skipWhile(p => p.length === 0), take(1));
+    const pBY$ = this.store.pipe(select(getListLineAllPurchased(new Date().getFullYear() - 1)), skipWhile(p => p.length === 0), take(1));
+    this.subscription.push(
+      forkJoin([pCY$, pBY$]).subscribe(([pCy, pBy]) => {
+        console.log('purchase', pCy, pBy)
+        this.store.dispatch(getSupplierSecondAgreement({ supplierSearch, purchasesCY: pCy, purchasesBY: pBy }))
+      }
+      )
+    );
+
 
     this.loaded$.next(true);
   }
@@ -81,36 +84,31 @@ export class AgreementComponent implements OnInit {
   }
   getbenchMarkValue(item) {
     return this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine))).pipe(
+      filter(v => v != null && v != undefined),
       map(v => {
-        return (this.getBenchMark(item) * v / 100).toFixed(0);
+        const x = this.getBenchMark(item);
+        const t = (this.getBenchMark(item) * v / 100).toFixed(0);
+        return t;
       })
     );
   }
 
   public getBenchMark2(item) {
-    //costo contratto
-    // console.log('getBenchMark2', item)
     const contractCostYB = 100 * (1 - (item.hYB / 100)) * (1 - (item.pYB / 100))
     const contractCostCY = 100 * (1 - (item.hCY / 100)) * (1 - (item.pCY / 100))
-    // console.log('contractCostCY', contractCostCY)
     let costoContrattoCy2;
-    this.listino$.subscribe(list => {
+    return this.listino$.pipe(map(list => {
       const pc = list.filter(l => l.TyLine === item.TyLine)[0]?.PcList || 0;
-      // console.log('pc', pc)
       costoContrattoCy2 = contractCostCY * (1 + (pc / 100));
-      // console.log('costoContrattoCy2 1', costoContrattoCy2)
-      // costoContrattoCy2 = ((((100 + pc) - ((100 + pc) * (item.hCY | 0 / 100))) - ((100 + pc) - ((100 + pc) * (item.hCY | 0 / 100))) * (item.pCY / 100)) / 100) * 100
-      // console.log('costoContrattoCy2 1', costoContrattoCy2)
-    })
-    // console.log('costoContrattoCy2 2', costoContrattoCy2, contractCostYB)
-    return costoContrattoCy2 - contractCostYB;
+      return costoContrattoCy2 - contractCostYB;
+    }))
   }
   getbenchMarkValue2(item) {
-    return this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine))).pipe(
-      map(v => {
-        return (this.getBenchMark2(item) * v / 100).toFixed(0);
-      })
-    );
+    const pvbyl$ = this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine)), first(), filter(v => v != null && v != undefined));
+    const bench2$ = this.getBenchMark2(item).pipe(first());
+    return forkJoin([pvbyl$, bench2$]).pipe(
+      map(([pvbyl, bench2]) => (bench2 * pvbyl / 100).toFixed(0))
+    )
   }
   public getBenchMark3(item) {
     // console.log(item)
@@ -121,23 +119,26 @@ export class AgreementComponent implements OnInit {
 
     const fal$ = this.store.pipe(select(getFirstAgreementByLine(item.TyLine)), first());
     const lis$ = this.store.pipe(select(getListinoSupplierByLine(item.TyLine)), first());
-    forkJoin({ firstAgreemnet: fal$, listino: lis$ }).
-      subscribe(response => {
+
+    return forkJoin({ firstAgreemnet: fal$, listino: lis$ }).pipe(
+      map(response => {
         const pc = response.listino[0]?.PcList || 0;
         const itemFirst = response.firstAgreemnet[0];
         contractCostYB = 100 * (1 - (itemFirst?.hYB / 100)) * (1 - (itemFirst?.pYB / 100))
         costoContrattoYb3 = contractCostYB - item.pYB; //costo contratto 3
+
         const contractCostCY = 100 * (1 - (itemFirst?.hCY / 100)) * (1 - (itemFirst?.pCY / 100))
         costoContrattoCy2 = contractCostCY * (1 + (pc / 100));
         costoContrattoCy3 = costoContrattoCy2 - item.pCY;
-      });
-    return costoContrattoCy3 - costoContrattoYb3;
+        return costoContrattoCy3 - costoContrattoYb3;
+      }));
+
   }
   getbenchMarkValue3(item) {
-    return this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine))).pipe(
-      map(v => {
-        return (this.getBenchMark3(item) * v / 100).toFixed(0);
-      })
-    );
+    const pvbyl$ = this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine)), first());
+    const bench3$ = this.getBenchMark3(item).pipe(first());
+    return forkJoin([pvbyl$, bench3$]).pipe(
+      map(([pvbyl, bench3]) => (bench3 * pvbyl / 100).toFixed(0))
+    )
   }
 }

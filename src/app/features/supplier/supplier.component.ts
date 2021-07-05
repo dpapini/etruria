@@ -1,13 +1,12 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
 import { Observable, Subscription } from 'rxjs';
-import { debounceTime } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { AgGridBenchmarkBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-benchmark-btn-cell-render copy';
 import { SupplierModel, SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
-import { getSuppliers, setSupplier } from './store/supplier.actions';
+import { RequestModel, TYPEREQUEST } from './../../core/component/request/request';
+import { addEtruriaRequest, getSuppliers, setSupplier } from './store/supplier.actions';
 import { getSupplierList } from './store/supplier.selectors';
 
 @Component({
@@ -24,8 +23,6 @@ export class SupplierComponent implements OnInit, OnDestroy {
   subscription: Subscription[] = [];
   rowData$: Observable<SupplierModel[]> = this.store.pipe(select(getSupplierList))
   supplier$: Observable<SupplierModel>;
-  // filter$: Observable<string> = this.store.pipe(select(getFilter));
-  // filterSupplier: FormControl = new FormControl();
 
   constructor(private router: Router, public route: ActivatedRoute, private store: Store<AppState>) {
     this.columnDefs = [
@@ -104,6 +101,13 @@ export class SupplierComponent implements OnInit, OnDestroy {
 
   onFilterChanged(e: Event) {
     this.gridOptions.api.setQuickFilter((e.target as HTMLInputElement).value);
+  }
+
+  onClickBtnExcel(e: Event) {
+    e.preventDefault();
+    const etruriaRequest: RequestModel = new RequestModel();
+    etruriaRequest.CdRequest = TYPEREQUEST[TYPEREQUEST.BENCHMARKXLSX];
+    this.store.dispatch(addEtruriaRequest({ etruriaRequest }))
   }
 
 }

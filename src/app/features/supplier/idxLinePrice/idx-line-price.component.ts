@@ -1,7 +1,7 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { BehaviorSubject, forkJoin, iif, Subscription } from 'rxjs';
-import { map, shareReplay, switchMap } from 'rxjs/operators';
+import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { CounterupModel } from 'src/app/core/component/counterup/model/counterupModel';
 import { DetectionPriceModel, DetectionPriceTipologiaRicerca } from 'src/app/core/component/supplier/model/detectionPrice';
 import { SupplierService } from 'src/app/core/component/supplier/service/supplier.service';
@@ -17,6 +17,7 @@ export class IdxLinePriceComponent implements OnInit {
   @Input() subId: number;
   loaded$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   idxLine$: BehaviorSubject<DetectionPriceModel> = new BehaviorSubject(new DetectionPriceModel());
+  idxTotal$: BehaviorSubject<DetectionPriceModel> = new BehaviorSubject(new DetectionPriceModel());
 
   subscription: Subscription[] = [];
   columnDefs: any = [];
@@ -27,16 +28,17 @@ export class IdxLinePriceComponent implements OnInit {
   private response$ = this.loaded$.pipe(map(() => { return { Id: this.id, SubId: this.subId } }));
 
   public rowData$ = this.response$.pipe(
-    switchMap((sm) => iif(() => sm != null && sm.Id > 0 && sm.SubId > 0,
+    filter(sm => sm != null && sm.Id > 0 && sm.SubId > 0),
+    switchMap((sm) =>
       this.supplierService.DetectionPriceBySupplier({ pIdSupplier: sm?.Id, pSubIdSupplier: sm?.SubId, pTyRicerca: DetectionPriceTipologiaRicerca.SECTOR })
-    )), shareReplay(1)
+    ), shareReplay(1)
   );
 
   public express$ = this.idxLine$.pipe(
     map((dpm: DetectionPriceModel) => {
       const cm: CounterupModel = new CounterupModel();
       cm.Title = `Express`;
-      cm.ValoreSx = dpm.Express?.toFixed(3);
+      cm.ValoreSx = dpm.Express?.toFixed(1);
       cm.Symbol = '%';
       cm.ColorProgressBar = 'bg-success';
       return cm;
@@ -47,9 +49,20 @@ export class IdxLinePriceComponent implements OnInit {
     map((dpm: DetectionPriceModel) => {
       const cm: CounterupModel = new CounterupModel();
       cm.Title = `Market`;
-      cm.ValoreSx = dpm.Market?.toFixed(3);
+      cm.ValoreSx = dpm.Market?.toFixed(1);
       cm.Symbol = '%';
       cm.ColorProgressBar = 'bg-danger';
+      return cm;
+    })
+  );
+
+  public total$ = this.idxTotal$.pipe(
+    map((dpm: DetectionPriceModel) => {
+      const cm: CounterupModel = new CounterupModel();
+      cm.Title = `Totale`;
+      cm.ValoreSx = dpm.Total?.toFixed(1);
+      cm.Symbol = '%';
+      cm.ColorProgressBar = 'bg-primary';
       return cm;
     })
   );
@@ -58,8 +71,8 @@ export class IdxLinePriceComponent implements OnInit {
     this.columnDefs = [
       { headerName: 'Area', field: 'LabelArea', },
       { headerName: 'Settore', field: 'LabelSector', },
-      { headerName: 'Express', field: 'Express', valueFormatter: params => params.data.Express.toFixed(3), minWidth: 100, maxWidth: 110 },
-      { headerName: 'Market', field: 'Market', valueFormatter: params => params.data.Market.toFixed(3), minWidth: 100, maxWidth: 110 },
+      { headerName: 'Express', field: 'Express', valueFormatter: params => params.data.Express.toFixed(1), minWidth: 100, maxWidth: 110 },
+      { headerName: 'Market', field: 'Market', valueFormatter: params => params.data.Market.toFixed(1), minWidth: 100, maxWidth: 110 },
     ];
     this.gridOptions = {
       columnDefs: this.columnDefs,
@@ -84,7 +97,9 @@ export class IdxLinePriceComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     this.loaded$.next(true);
     this.subscription.push(this.supplierService.DetectionPriceBylinea({ pIdSupplier: this.id, pSubIdSupplier: this.subId, pTyRicerca: DetectionPriceTipologiaRicerca.LINE }).subscribe(d => this.idxLine$.next(d)));
+    this.subscription.push(this.supplierService.DetectionPriceByTotal({ pIdSupplier: this.id, pSubIdSupplier: this.subId, pTyRicerca: DetectionPriceTipologiaRicerca.TOTAL }).subscribe(d => this.idxTotal$.next(d)));
   }
+
   ngOnDestroy(): void {
     this.subscription.forEach(s => s.unsubscribe());
     this.loaded$.next(null);

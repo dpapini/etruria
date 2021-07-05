@@ -1,7 +1,7 @@
 import { map, shareReplay } from 'rxjs/operators';
 import { SupplierService } from 'src/app/core/component/supplier/service/supplier.service';
-import { Observable } from 'rxjs';
-import { Component, OnInit } from '@angular/core';
+import { Observable, Subscription } from 'rxjs';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap';
 import { LinePriceModel } from 'src/app/core/component/supplier/model/linePrice';
@@ -11,8 +11,8 @@ import { LinePriceModel } from 'src/app/core/component/supplier/model/linePrice'
   templateUrl: './line-price-modal.component.html',
   styles: [``]
 })
-export class LinePriceModalComponent implements OnInit {
-
+export class LinePriceModalComponent implements OnInit, OnDestroy {
+  subscriptions: Subscription[] = [];
   linePrice$: Observable<LinePriceModel[]> = this.supplierService.LinePriceCollection().pipe(shareReplay(1));
   frmLinePrice: FormGroup;
 
@@ -24,19 +24,22 @@ export class LinePriceModalComponent implements OnInit {
       LinePriceCollection: this.fb.array([])
     });
   }
+  ngOnDestroy(): void {
+    this.subscriptions.forEach(s => s.unsubscribe());
+  }
 
   ngOnInit(): void {
-    this.linePrice$.subscribe(
-      lp => lp.map(value => {
-        const f = this.frmLinePrice.controls.LinePriceCollection as FormArray;
-        f.push(this.createFiltroRow(value));
-      })
-    )
+    this.subscriptions.push(
+      this.linePrice$.subscribe(
+        lp => lp.map(value => {
+          const f = this.frmLinePrice.controls.LinePriceCollection as FormArray;
+          f.push(this.createFiltroRow(value));
+        })
+      )
+    );
   }
 
-  onClickResetLinePrice(e: Event) {
-
-  }
+  onClickResetLinePrice(e: Event) { }
   createFiltroRow(lp?: LinePriceModel): FormGroup {
     return this.fb.group({
       Id: [lp?.Id],

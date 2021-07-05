@@ -1,18 +1,20 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { Store } from '@ngrx/store';
-import { forkJoin, of } from 'rxjs';
-import { catchError, first, map, shareReplay, switchMap, withLatestFrom } from 'rxjs/operators';
+import { select, Store } from '@ngrx/store';
+import { forkJoin, of, timer } from 'rxjs';
+import { catchError, first, map, mapTo, shareReplay, switchMap, withLatestFrom } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
 import { SupplierPurchasedModel } from 'src/app/core/component/supplier/model/supplierPurchased';
 import { SupplierService } from 'src/app/core/component/supplier/service/supplier.service';
 import { environment } from '../../../../environments/environment';
-import { SupplierFirstAgreementModel, TipologiaAgreement, SupplierAgreementModel } from './../../../core/component/supplier/model/supplierAgreement';
-import { getIdBuyer } from './../../../core/login/store/login.selectors';
-import { getSupplierFirstAgreement, getSupplierFirstAgreementSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementFailure, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess, getSupplierSecondAgreementSuccess } from './supplier.actions';
+import { RequestModel, RequestSearchModel } from './../../../core/component/request/request';
+import { SupplierFirstAgreementModel, TipologiaAgreement } from './../../../core/component/supplier/model/supplierAgreement';
+import { getIdBuyer, getIdUser } from './../../../core/login/store/login.selectors';
+import { toastFailure, toastSuccess } from './../../../core/toaster/store/toaster.actsions';
+import { addEtruriaRequest, addEtruriaRequestFailure, addEtruriaRequestSuccess, getSupplierFirstAgreement, getSupplierFirstAgreementSuccess, getEtruriaRequest, getEtruriaRequestFailure, getEtruriaRequestSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementSuccess, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -45,7 +47,7 @@ export class SuppliersEffects {
         });
         return this.http.get(environment.apiUrl + 'supplier/SupplierCollection', { params: param }).pipe(
           map((suppliersModel: SupplierModel[]) => getSuppliersSuccess({ suppliersModel })),
-          catchError(error => of(getSuppliersFailure))
+          catchError(error => of(getSuppliersFailure()))
         )
       })
     )
@@ -68,12 +70,10 @@ export class SuppliersEffects {
             supplierModel.Id = action.supplierSearch.pId;
             supplierModel.SubId = action.supplierSearch.pSubId;
             supplierModel.Purchased = supplierPurchased
-            // console.log('1', supplierPurchased)
-            // console.log('1', supplierModel.Purchased)
             return setSupplierSuccess({ supplierModel })
           }
           ),
-          catchError(error => of(getSuppliersFailure))
+          catchError(error => of(getSuppliersFailure()))
         )
       })
     )
@@ -119,26 +119,26 @@ export class SuppliersEffects {
 
   getSupplierSecondAgreement$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(getSupplierSecondAgreement),
-      switchMap((action) => {
+      ofType(getSupplierSecondAgreement)
+      , switchMap((action) => {
+        console.log(action)
         const cy = new Date().getFullYear();
         const by = new Date().getFullYear() - 1;
         const pcCY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: cy }).
           pipe(first(), shareReplay(1));
         const pcBY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
           pipe(first(), shareReplay(1));
-        const fxCY$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchases.filter(p => p.Year === by), pYear: cy }).
+        const fxCY$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchasesCY.filter(p => p.Year === cy), pYear: cy }).
           pipe(first(), shareReplay(1));
-        const fxYB$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchases.filter(p => p.Year === by), pYear: by }).
+        const fxYB$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchasesBY.filter(p => p.Year === by), pYear: by }).
           pipe(first(), shareReplay(1));
 
         return forkJoin([pcCY$, pcBY$, fxCY$, fxYB$]).pipe(
           map(response => {
-            console.log('2', response)
+            // console.log('2', response)
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
 
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {
-              console.log('qui', tl, t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by)?.Pc)
               return {
                 TyLine: tl,
                 Label: t.find(s => s.TyLine === tl).Label,
@@ -148,8 +148,6 @@ export class SuppliersEffects {
                 pYB: t.filter(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by).reduce((sum, sam) => sum + sam.Pc, 0) || null
               } as SupplierFirstAgreementModel
             })
-
-            console.log(sfam)
             return getSupplierSecondAgreementSuccess({ supplieSecondAgreementModel: sfam });
           })
         );
@@ -170,14 +168,74 @@ export class SuppliersEffects {
 
         return this.http.get(environment.apiUrl + 'supplier/IndicePercentualeListinoLordoDettaglio', { params: param })
           .pipe(
-            map((lsim: ListSupplierIndexDetailModel[]) => {
-              return setSupplierListinoSuccess({ supplierListino: lsim })
-            }
-            ),
-            catchError(() => of(setSupplierListinoFailure)
+            map((lsim: ListSupplierIndexDetailModel[]) => setSupplierListinoSuccess({ supplierListino: lsim })),
+            catchError(() => of(setSupplierListinoFailure())
             ))
       })
-    ));
+    )
+  );
+
+  addEtruriaRequest$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addEtruriaRequest),
+      withLatestFrom(this.store.pipe(select(getIdUser))),
+      switchMap(([action, idUser]) => {
+        const er: RequestModel = { ...action.etruriaRequest };
+        er.IdUser = idUser;
+        return this.http.post(environment.apiUrl + 'request/AddRequest', er, httpOptions).pipe(
+          map(() => {
+            this.store.dispatch(toastSuccess({ title: null, message: "Richiesta inserita correttamente." }))
+            return addEtruriaRequestSuccess()
+          }
+          ),
+          catchError((error) => {
+            this.store.dispatch(toastFailure(
+              {
+                title: null,
+                message: `Il salvataggio ha generato un errore.<br>
+                     Se l'errore persiste contattare l'amministatore.<br>
+                     <b>[${error.message}<br>${error.error.ExceptionMessage}<br>${error.error?.StackTrace}]</b>`
+              }))
+            return of(addEtruriaRequestFailure())
+          })
+        )
+      })
+    )
+  );
+
+  getEtruriaRequest = createEffect(() =>
+    this.actions$.pipe(
+      ofType(getEtruriaRequest),
+      withLatestFrom(
+        this.store.pipe(select(getIdUser))
+      ),
+      switchMap(([action, idUser]) => {
+        const etruriaRequestSearch: RequestSearchModel = { ...action.etruriaRequestSearch };
+        etruriaRequestSearch.pIdUser = idUser;
+
+        const a = { ...action, etruriaRequestSearch: etruriaRequestSearch }
+
+        return timer(0, 10000000).pipe(mapTo(a));
+      }
+      ),
+      switchMap(action => {
+        console.log(action);
+        const param = new HttpParams({
+          fromObject: {
+            pIdUser: action.etruriaRequestSearch.pIdUser.toString().trim(),
+            pTyRequest: action.etruriaRequestSearch.pTyRequest.toString()
+          }
+        });
+        return this.http.get(environment.apiUrl + 'request/GetRequestCompleted', { params: param })
+          .pipe(
+            map((rc: RequestModel[]) => getEtruriaRequestSuccess()),
+            catchError(() => of(getEtruriaRequestFailure())
+            )
+          )
+      }
+      )
+    )
+  );
 
 }
 

@@ -6,7 +6,10 @@ import { updateDoughnutChartConfig } from './rounded-doughnut-chart.config';
 @Component({
   selector: 'app-rounded-doughnut-chart',
   templateUrl: './rounded-doughnut-chart.component.html',
-  styles: [``],
+  styles: [`
+  .pc-positive{color:green}
+  .pc-negative{color:red}
+  `],
 })
 export class RoundedDoughnutChartComponent {
   @ViewChild("roundedDoughnutChart", { static: true }) roundedDoughnutChart: ElementRef<HTMLCanvasElement>;

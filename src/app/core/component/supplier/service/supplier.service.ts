@@ -55,38 +55,22 @@ export class SupplierService {
       );
   }
 
-  // ListSupplierIndex(lss: ListSupplierSearch) {
-  //   if (!lss.pId && !lss.pSubId) return;
-  //   const param = new HttpParams({
-  //     fromObject: {
-  //       pId: (lss.pId ? lss.pId.toString().trim() : ''),
-  //       pSubId: (lss.pSubId ? lss.pSubId.toString().trim() : ''),
-  //     }
-  //   });
+  DetectionPriceByTotal(dps: DetectionPriceSearch) {
+    const param = new HttpParams({
+      fromObject: {
+        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
+        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
+        pTyRicerca: (dps.pTyRicerca !== null ? dps.pTyRicerca.toString().trim() : ''),
+        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
+      }
+    });
 
-  //   return this.http.get(environment.apiUrl + 'supplier/IndicePercentualeListinoLordo', { params: param })
-  //     .pipe(
-  //       map((lsim: ListSupplierIndexModel) => lsim),
-  //       catchError(error => of(error))
-  //     );
-  // }
-
-  // ListSupplierIndexDetail(lss: ListSupplierSearch): Observable<ListSupplierIndexDetailModel[]> | Observable<any> {
-  //   if (!lss.pId && !lss.pSubId) return;
-  //   const param = new HttpParams({
-  //     fromObject: {
-  //       pId: (lss.pId ? lss.pId.toString().trim() : ''),
-  //       pSubId: (lss.pSubId ? lss.pSubId.toString().trim() : ''),
-  //       pYear: (lss.pYear ? lss.pYear.toString().trim() : ''),
-  //     }
-  //   });
-
-  //   return this.http.get(environment.apiUrl + 'supplier/IndicePercentualeListinoLordoDettaglio', { params: param })
-  //     .pipe(
-  //       map((lsim: ListSupplierIndexDetailModel[]) => lsim),
-  //       catchError(error => of(error))
-  //     );
-  // }
+    return this.http.get(environment.apiUrl + 'supplier/DetectionPriceTotal', { params: param })
+      .pipe(
+        map((dpm: DetectionPriceModel) => dpm),
+        catchError(error => of(error))
+      );
+  }
 
   LinePriceCollection() {
     return this.http.get(environment.apiUrl + 'supplier/LinePriceCollection')

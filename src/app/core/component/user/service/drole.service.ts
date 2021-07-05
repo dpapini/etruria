@@ -16,7 +16,7 @@ export class DRoleService {
   constructor(private http: HttpClient,
     private store: Store<AppState>) { }
 
-  DRoleCollection(drs: DRoleSearch): Observable<DRoleModel[]> {
+  DRoleCollection(drs: DRoleSearch): Observable<DRoleModel[] | any> {
     const param = new HttpParams(
       {
         fromObject: {
@@ -27,7 +27,7 @@ export class DRoleService {
     );
     return this.http.get(environment.apiUrl + 'drole/DRoleCollection', { params: param }).pipe(
       map((drm: DRoleModel[]) => drm),
-      catchError(error => EtruriaHandleError)
+      catchError(async (error) => EtruriaHandleError)
     )
 
   }
