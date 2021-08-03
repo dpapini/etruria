@@ -1,14 +1,10 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
-import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
-import { getEtruriaRequest } from 'src/app/features/supplier/store/supplier.actions';
-import { logout } from '../../login/store/login.actions';
-import { getUserId, getUserModel } from '../../login/store/login.selectors';
-import { RequestModel, RequestSearchModel, TYPEREQUEST } from '../request/request';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { UserModel } from 'src/app/core/component/user/model/userModel';
+import { RequestSearchModel, TYPEREQUEST } from '../request/request';
+import { logout } from '../store/login/login.actions';
 import { AppState } from './../../../app.module';
-import { UserModel } from './../user/model/userModel';
 
 @Component({
   selector: 'app-header',
@@ -18,17 +14,19 @@ import { UserModel } from './../user/model/userModel';
 
 export class HeaderComponent implements OnInit, OnDestroy {
   collapsed = true;
+  @Input() user: UserModel;
+  @Input() userId: string;
   @Output() humbergerClick: EventEmitter<any> = new EventEmitter();
-  user$: Observable<UserModel> = this.store.pipe(select(getUserModel));
-  userId$: Observable<string> = this.store.pipe(select(getUserId));
 
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>
+    , private router: Router
+  ) { }
 
   ngOnDestroy(): void { }
 
   ngOnInit(): void {
+    // controllo se ci sono richieste fatte dalla user di estrazioni massive
     const etruriaRequestSearch: RequestSearchModel = { pTyRequest: TYPEREQUEST.BENCHMARKXLSX }
-    this.store.dispatch(getEtruriaRequest({ etruriaRequestSearch }));
   }
 
   toggler(e: Event) {
@@ -40,6 +38,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   viewProfile(e: Event) {
     e.preventDefault();
+    this.router.navigate(['/Home/User/Profile']);
   }
 
   signOut(e: Event) {

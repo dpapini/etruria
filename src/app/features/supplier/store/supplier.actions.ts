@@ -56,7 +56,7 @@ export const clearDataSupplier = createAction(SupplierActionTypes.CLEAR_DATA_SUP
 export const getSupplierFirstAgreement = createAction(SupplierActionTypes.GET_FIRST_AGREEMENT,
   props<{ supplierSearch: SupplierSearch }>()
 );
-export const getSupplierFirstAgreementSuccess = createAction(SupplierActionTypes.GET_FIRST_AGREEMENT_SUCCESS,
+export const setSupplierFirstAgreementSuccess = createAction(SupplierActionTypes.GET_FIRST_AGREEMENT_SUCCESS,
   props<{ supplieFirstAgreementModel: SupplierFirstAgreementModel[] }>()
 );
 export const setSupplierListino = createAction(SupplierActionTypes.SET_LISTINO,

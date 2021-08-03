@@ -1,15 +1,8 @@
-export class SupplierPurchasedModel {
+export interface SupplierPurchasedModel {
   Year: number;
   TyLine: string;
   Label: string;
   Purchased: number;
-
-  constructor() {
-    this.Year = null;
-    this.TyLine = null;
-    this.Label = null;
-    this.Purchased = null;
-  }
 }
 
 export interface SupplierPurchasedSearch {
@@ -17,3 +10,5 @@ export interface SupplierPurchasedSearch {
   pSubId?: number;
   pYear?: number;
 }
+
+

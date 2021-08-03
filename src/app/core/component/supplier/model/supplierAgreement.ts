@@ -1,6 +1,6 @@
 import { SupplierPurchasedModel } from "./supplierPurchased";
 
-export class SupplierAgreementModel {
+export interface SupplierAgreementModel {
   IdSupplier: number;
   SubIdSupplier: number;
   TyLine: string;
@@ -8,16 +8,9 @@ export class SupplierAgreementModel {
   Pc: number;
   Year: number;
   TipologiaDiscount: TipologiaAgreement
-
-  constructor() {
-    this.IdSupplier = null;
-    this.SubIdSupplier = null;
-    this.TyLine = null;
-    this.Label = null;
-    this.Pc = null
-    this.Year = null;
-    this.TipologiaDiscount = null;
-  }
+  DsStateDeal: string;
+  DsTypeDeal: string;
+  DsBuyer: string;
 }
 
 export interface SupplierAgreementSearch {
@@ -41,4 +34,6 @@ export interface SupplierFirstAgreementModel {
   hYB: number;
   pCY: number;
   pYB: number;
+  stateDeal: string;
+  typeDeal: string
 }

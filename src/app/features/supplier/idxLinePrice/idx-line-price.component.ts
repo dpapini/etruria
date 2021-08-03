@@ -1,6 +1,6 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
-import { BehaviorSubject, forkJoin, iif, Subscription } from 'rxjs';
+import { BehaviorSubject, forkJoin, Subscription } from 'rxjs';
 import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
 import { CounterupModel } from 'src/app/core/component/counterup/model/counterupModel';
 import { DetectionPriceModel, DetectionPriceTipologiaRicerca } from 'src/app/core/component/supplier/model/detectionPrice';
@@ -16,8 +16,8 @@ export class IdxLinePriceComponent implements OnInit {
   @Input() id: number;
   @Input() subId: number;
   loaded$: BehaviorSubject<boolean> = new BehaviorSubject(false);
-  idxLine$: BehaviorSubject<DetectionPriceModel> = new BehaviorSubject(new DetectionPriceModel());
-  idxTotal$: BehaviorSubject<DetectionPriceModel> = new BehaviorSubject(new DetectionPriceModel());
+  idxLine$: BehaviorSubject<DetectionPriceModel> = new BehaviorSubject({} as DetectionPriceModel);
+  idxTotal$: BehaviorSubject<DetectionPriceModel> = new BehaviorSubject({} as DetectionPriceModel);
 
   subscription: Subscription[] = [];
   columnDefs: any = [];
@@ -36,34 +36,34 @@ export class IdxLinePriceComponent implements OnInit {
 
   public express$ = this.idxLine$.pipe(
     map((dpm: DetectionPriceModel) => {
-      const cm: CounterupModel = new CounterupModel();
-      cm.Title = `Express`;
-      cm.ValoreSx = dpm.Express?.toFixed(1);
-      cm.Symbol = '%';
-      cm.ColorProgressBar = 'bg-success';
-      return cm;
+      return {
+        Title: `Express`,
+        ValoreSx: dpm.Express?.toFixed(1),
+        Symbol: '%',
+        ColorProgressBar: 'bg-success',
+      } as CounterupModel
     })
   );
 
   public market$ = this.idxLine$.pipe(
     map((dpm: DetectionPriceModel) => {
-      const cm: CounterupModel = new CounterupModel();
-      cm.Title = `Market`;
-      cm.ValoreSx = dpm.Market?.toFixed(1);
-      cm.Symbol = '%';
-      cm.ColorProgressBar = 'bg-danger';
-      return cm;
+      return {
+        Title: `Market`,
+        ValoreSx: dpm.Market?.toFixed(1),
+        Symbol: '%',
+        ColorProgressBar: 'bg-danger',
+      } as CounterupModel
     })
   );
 
   public total$ = this.idxTotal$.pipe(
     map((dpm: DetectionPriceModel) => {
-      const cm: CounterupModel = new CounterupModel();
-      cm.Title = `Totale`;
-      cm.ValoreSx = dpm.Total?.toFixed(1);
-      cm.Symbol = '%';
-      cm.ColorProgressBar = 'bg-primary';
-      return cm;
+      return {
+        Title: `Totale`,
+        ValoreSx: dpm.Total?.toFixed(1),
+        Symbol: '%',
+        ColorProgressBar: 'bg-primary',
+      } as CounterupModel
     })
   );
 

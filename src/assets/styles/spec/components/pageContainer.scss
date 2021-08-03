@@ -33,7 +33,8 @@
 .main-content {
   margin-top: -$header-height;
   padding: $header-height+10px 5px 10px;
-  min-height: calc(100vh - 61px);
+  min-height: calc(100vh - 5px);
+
 
   @include to($breakpoint-md) {
     padding: $header-height 0px 0px;

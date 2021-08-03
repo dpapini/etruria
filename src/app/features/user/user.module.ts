@@ -1,49 +1,38 @@
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
-import { UikitModule } from './../../shared/uikit/uikit.module';
-import { AgGridComponentModule } from './../../core/component/aggrid/ag-grid-component.module';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-import { UserRoutingModule } from './user-routing.module';
-import { UserComponent } from './user.component';
-import { UserDetailComponent } from './detail/user-detail.component';
+import { NgModule } from '@angular/core';
+import { ReactiveFormsModule } from '@angular/forms';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgSelectModule } from '@ng-select/ng-select';
 import { AgGridModule } from 'ag-grid-angular';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
-import { NgSelectModule } from '@ng-select/ng-select';
+import { AgGridComponentModule } from './../../core/component/aggrid/ag-grid-component.module';
+import { ControlpanelModule } from './../../shared/controlpanel/controlpanel.module';
+import { UikitModule } from './../../shared/uikit/uikit.module';
+import { ContactModule } from './../contact/contact.module';
+import { ContactDetailComponent } from './../contact/detail/contact-detail.component';
+import { UserDetailComponent } from './detail/user-detail.component';
 import { UserModalComponent } from './modal/user-modal.component';
-import { UsersReducer, UsersState } from './store/user.reducer';
-import { ActionReducerMap, StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { UsersEffects } from './store/user.effects';
-
-export interface UserState {
-  EtruriaUsers: UsersState;
-}
-
-const reducers: ActionReducerMap<UserState> = {
-  EtruriaUsers: UsersReducer,
-};
+import { UserProfileComponent } from './profile/user-profile.component';
+import { UserRoutingModule } from './user-routing.module';
+import { UserComponent } from './user.component';
 
 @NgModule({
-  declarations: [UserComponent, UserDetailComponent, UserModalComponent],
+  declarations: [UserComponent, UserDetailComponent, UserModalComponent, UserProfileComponent],
   imports: [
     CommonModule,
     UserRoutingModule,
-    FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     AgGridComponentModule,
     NgSelectModule,
     UikitModule,
+    ControlpanelModule,
     NgbModule,
     AgGridModule,
+    ContactModule,
     AgGridModule.withComponents([AgGridSelectBtnCellRenderer]),
-    StoreModule.forFeature('EtruriaUsers', reducers),
-    EffectsModule.forFeature([UsersEffects])
-
   ],
-  entryComponents: [UserModalComponent]
+  entryComponents: [UserModalComponent, ContactDetailComponent]
 })
 export class UserModule { }

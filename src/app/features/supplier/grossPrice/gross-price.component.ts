@@ -36,12 +36,12 @@ export class GrossPriceComponent implements OnInit {
       imGrow += rows[index].ImGrowList;
     }
 
-    const cm: CounterupModel = new CounterupModel();
-    cm.Title = `Listino Y/YB`;
-    cm.ValoreSx = (imGrow / imCy * 100).toFixed(3);
-    cm.Symbol = '%';
-    cm.ColorProgressBar = +cm.ValoreSx > 0 ? 'bg-danger' : 'bg-success';
-    return cm;
+    return {
+      Title: `Listino Y/YB`,
+      ValoreSx: (imGrow / imCy * 100).toFixed(3),
+      Symbol: '%',
+      ColorProgressBar: +(imGrow / imCy * 100) > 0 ? 'bg-danger' : 'bg-success',
+    } as CounterupModel
   }
   ));
 

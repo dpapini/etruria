@@ -1,60 +1,59 @@
 <div class="modal-header">
-   <h4 class="modal-title">Nuovo Utente</h4>
-   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('ko')">
-      <span aria-hidden="true">&times;</span>
-   </button>
+  <h4 class="modal-title">Nuovo Utente</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('ko')">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
 <div class="modal-body" [formGroup]="frmUserAdd">
-   <div class="form-row">
-      <div class="col-12">
-         <dp-input-text placeholder="UserId" label="UserId" formControlName="UserId">
-         </dp-input-text>
-      </div>
-   </div>
-   <div class="form-row" formGroupName="DRole">
-      <div class="col-12 form-group">
-         <label for="Id"
-            [ngClass]="frmUserAdd.get('DRole.Id').value===null || frmUserAdd.get('DRole.Id').value?.length===0?'invisible':'visible'">
-            Ruolo</label>
-         <ng-select #selectDRole [items]="droleCollection$|async" bindLabel="Label" bindValue="Id"
-            class="ng-select-small" dropdownPosition="auto" labelForId="IdArticoloStato" placeholder="Ruolo"
-            [loading]="!(droleCollection$|async)" [openOnEnter]=false appendTo="body" [virtualScroll]="true" required
-            (change)="onChangeDrole($event)" [ngClass]=" {'is-invalid': frmUserAdd.get('DRole.Id').invalid && (frmUserAdd.get('DRole.Id').dirty ||
+  <div class="form-row">
+    <div class="col-12">
+      <dp-input-text placeholder="UserId" label="UserId" formControlName="UserId">
+      </dp-input-text>
+    </div>
+  </div>
+  <div class="form-row" formGroupName="DRole">
+    <div class="col-12 form-group">
+      <label for="Id"
+        [ngClass]="frmUserAdd.get('DRole.Id').value===null || frmUserAdd.get('DRole.Id').value?.length===0?'invisible':'visible'">
+        Ruolo</label>
+      <ng-select #selectDRole [items]="droleCollection$|async" bindLabel="Label" bindValue="Id" class="ng-select-small"
+        dropdownPosition="auto" labelForId="IdArticoloStato" placeholder="Ruolo" [loading]="!(droleCollection$|async)"
+        [openOnEnter]=false appendTo="body" [virtualScroll]="true" required (change)="onChangeDrole($event)" [ngClass]=" {'is-invalid': frmUserAdd.get('DRole.Id').invalid && (frmUserAdd.get('DRole.Id').dirty ||
                frmUserAdd.get('DRole.Id').touched)}" formControlName="Id">
-            <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
-               <div>
-                  <span>{{item.Label}}</span>
-               </div>
-            </ng-template>
-            <ng-template ng-loadingspinner-tmp>
-               <div class="lds-ellipsis">
-                  <div></div>
-                  <div></div>
-                  <div></div>
-                  <div></div>
-               </div>
-            </ng-template>
-         </ng-select>
-      </div>
-   </div>
-   <div class="form-row">
-      <div class="col-12">
-         <dp-input-password placeholder="Password" label="Password" formControlName="Psw">
-         </dp-input-password>
-      </div>
-   </div>
-   <div class="form-row">
-      <div class="col-12">
-         <dp-input-password placeholder="Confirm password" label="Confirm" formControlName="PswNewConfirm">
-         </dp-input-password>
-         <small class="text-danger" *ngIf="frmUserAdd.get('PswNewConfirm').hasError('DifferentPassword')">
-            Password diversa
-         </small>
-      </div>
-   </div>
+        <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+          <div>
+            <span>{{item.Label}}</span>
+          </div>
+        </ng-template>
+        <ng-template ng-loadingspinner-tmp>
+          <div class="lds-ellipsis">
+            <div></div>
+            <div></div>
+            <div></div>
+            <div></div>
+          </div>
+        </ng-template>
+      </ng-select>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12">
+      <dp-input-password placeholder="Password" label="Password" formControlName="Psw">
+      </dp-input-password>
+    </div>
+  </div>
+  <div class="form-row">
+    <div class="col-12">
+      <dp-input-password placeholder="Confirm password" label="Confirm" formControlName="PswNewConfirm">
+      </dp-input-password>
+      <small class="text-danger" *ngIf="frmUserAdd.get('PswNewConfirm').hasError('DifferentPassword')">
+        Password diversa
+      </small>
+    </div>
+  </div>
 </div>
 <div class="modal-footer">
-   <button type="button" class="btn btn-outline-secondary" (click)="onClickResetUserAdd($event)">Annulla</button>
-   <button type="button" class="btn btn-outline-primary" [disabled]="frmUserAdd.invalid"
-      (click)="activeModal.close(frmUserAdd.getRawValue())">Salva</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="onClickResetUserAdd($event)">Annulla</button>
+  <button type="button" class="btn btn-outline-primary" [disabled]="frmUserAdd.invalid"
+    (click)="activeModal.close(frmUserAdd.getRawValue())">Salva</button>
 </div>

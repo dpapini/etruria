@@ -1,0 +1,20 @@
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-12" style="padding-bottom: 5px;">
+      <div class="card">
+        <div class="card-header">
+          <h5> Contatti
+            <button class="btn btn-lg btn-add btn-warning rounded-circle mb-1 mr-1" type="button" title="Aggiungi"
+              *ngIf="route.children.length ===0" (click)="onClickContactAdd($event)">
+              <fa-icon [icon]="['fas', 'plus']"></fa-icon>
+            </button>
+          </h5>
+        </div>
+        <div class="card-body" *ngIf="route.children.length ===0">
+          <app-contact-grid></app-contact-grid>
+        </div>
+        <router-outlet></router-outlet>
+      </div>
+    </div>
+  </div>
+</div>

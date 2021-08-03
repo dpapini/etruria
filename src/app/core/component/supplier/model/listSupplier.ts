@@ -1,4 +1,4 @@
-export class ListSupplierModel {
+export interface ListSupplierModel {
   IdSupplier: number;
   SubIdSupplier: number;
   IdField: number;
@@ -6,12 +6,12 @@ export class ListSupplierModel {
   Im: number;
 }
 
-export class ListSupplierIndexModel {
+export interface ListSupplierIndexModel {
   IdxCyYb: number;
   IdxYbYb1: number;
 }
 
-export class ListSupplierIndexDetailModel {
+export interface ListSupplierIndexDetailModel {
   IdSupplier: number;
   SubIdSupplier: number;
   TyLine: string;

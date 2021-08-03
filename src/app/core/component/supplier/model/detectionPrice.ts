@@ -1,4 +1,4 @@
-export class DetectionPriceModel {
+export interface DetectionPriceModel {
   IdSupplier: number;
   SubIdSupplier: number;
   CdArea: number;
@@ -8,18 +8,6 @@ export class DetectionPriceModel {
   Express: number;
   Market: number;
   Total: number;
-
-  constructor() {
-    this.IdSupplier = null;
-    this.SubIdSupplier = null;
-    this.CdArea = null;
-    this.LabelArea = null;
-    this.CdSector = null;
-    this.LabelSector = null;
-    this.Express = null;
-    this.Market = null;
-    this.Total = null;
-  }
 }
 
 export interface DetectionPriceSearch {

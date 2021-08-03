@@ -1,12 +1,13 @@
 <div [ngClass]="{'is-collapsed': collapsedSidebar}">
-    <app-sidebar (sidebarToggleClick)="sidebarToggleClick($event)"></app-sidebar>
-    <div class="page-container">
-        <app-header (humbergerClick)="humbergerClick($event)"></app-header>
-        <main class="main-content bgc-grey-100">
-            <div id="mainContent">
-                <router-outlet></router-outlet>
-            </div>
-        </main>
-        <app-footer></app-footer>
-    </div>
+  <app-sidebar (sidebarToggleClick)="sidebarToggleClick($event)" [menu]="menu$|async"></app-sidebar>
+  <div class="page-container">
+    <app-header (humbergerClick)="humbergerClick($event)" [userId]="userId$|async" [user]="user$|async"></app-header>
+    <main class="main-content bgc-grey-100">
+      <div id="mainContent">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
+    <!-- <app-footer></app-footer> -->
+    <app-chat [userId]="userId$|async" [user]="user$|async" [userList]="userList$|async"></app-chat>
+  </div>
 </div>

@@ -1,5 +1,5 @@
 import { PurchasedModalComponent } from './../modal/purchased-modal/purchased-modal.component';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { select, Store } from '@ngrx/store';
@@ -16,6 +16,10 @@ import { clearDataSupplier } from '../store/supplier.actions';
 })
 export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
   subscription: Subscription[] = [];
+  showEditCY = false;
+  showEditBY = false;
+  @ViewChild('currentYear', { read: ElementRef }) currentYear: ElementRef
+  @ViewChild('beforeYear', { read: ElementRef }) beforeYear: ElementRef
 
   private route$ = this.route.params.pipe(map(p => p));
 
@@ -37,10 +41,28 @@ export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void { }
 
+  onFocusNumber(e) {
+    const target = e.currentTarget;
+    target.type = "text";
+    target.setSelectionRange(0, target.value.length);
+    target.type = "number";
+  }
+
+  onClickLabelCurrentYear(e: any) {
+    this.showEditCY = !this.showEditCY;
+    setTimeout(() => { this.currentYear.nativeElement.focus(); })
+  }
+  onClickLabelBeforeYear(e: any) {
+    this.showEditBY = !this.showEditBY;
+    setTimeout(() => { this.beforeYear.nativeElement.focus(); })
+  }
+  onclickBtnRedo(e: Event) {
+    console.log('onclickBtnRedo');
+  }
+
   listSupplierClick(e: Event) {
     e.preventDefault();
     this.router.navigate(['.'], { relativeTo: this.route.parent });
-    console.log('listSupplierClick prima di cleardata')
     this.store.dispatch(clearDataSupplier())
   }
   listChartLineClick(e: Event) {

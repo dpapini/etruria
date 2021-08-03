@@ -1,8 +1,6 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
-import { select, Store } from '@ngrx/store';
-import { Observable } from 'rxjs';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { Store } from '@ngrx/store';
 import { AppState } from 'src/app/app.module';
-import { getMenu } from '../../login/store/login.selectors';
 import { MenuModel } from './model/menuModel';
 
 @Component({
@@ -12,8 +10,8 @@ import { MenuModel } from './model/menuModel';
 })
 
 export class SidebarComponent implements OnInit {
+  @Input() menu: MenuModel;
   @Output() sidebarToggleClick: EventEmitter<any> = new EventEmitter();
-  menu$: Observable<MenuModel> = this.store.pipe(select(getMenu));
 
   d: MenuModel;
   public isCollapsed: boolean[] = [];
@@ -21,11 +19,12 @@ export class SidebarComponent implements OnInit {
   constructor(private store: Store<AppState>) { }
 
   ngOnInit(): void {
-    this.d = new MenuModel();
-    this.d.Id = 0;
-    this.d.Label = 'DashBoard';
-    this.d.IcoName = 'home';
-    this.d.Path = '/Home/Dashboard';
+    this.d = {
+      Id: 0,
+      Label: 'DashBoard',
+      IcoName: 'home',
+      Path: '/Home/Dashboard',
+    }
   }
 
   toggle(id: number) {

@@ -42,6 +42,9 @@ export class SupplierComponent implements OnInit, OnDestroy {
       {
         headerName: 'Ragione sociale', field: 'BusinessName',
       },
+      {
+        headerName: 'Buyer', field: 'BuyerId',
+      },
 
       {
         cellRendererFramework: AgGridBenchmarkBtnCellRenderer,
@@ -76,13 +79,13 @@ export class SupplierComponent implements OnInit, OnDestroy {
     this.subscription.forEach(s => s.unsubscribe());
   }
   ngOnChanges() {
-    console.log('ngOnChanges')
+    // console.log('ngOnChanges')
   }
   ngAfterContentInit() {
-    console.log('ngAfterContentInit')
+    // console.log('ngAfterContentInit')
   }
   ngAfterViewInit() {
-    console.log('ngAfterViewInit')
+    // console.log('ngAfterViewInit')
   }
   ngOnInit(): void {
     if (this.route.children.length > 0) { return };

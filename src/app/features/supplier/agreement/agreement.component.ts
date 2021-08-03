@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, Pipe, PipeTransform, SimpleChanges } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input, OnInit, Pipe, PipeTransform, SimpleChanges } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
 import { filter, first, map, skipWhile, take } from 'rxjs/operators';
@@ -30,19 +30,19 @@ export class MyFilterPipe implements PipeTransform {
   selector: 'app-agreement',
   templateUrl: './agreement.component.html',
   styles: [``],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AgreementComponent implements OnInit {
   @Input() id: number = 0;
   @Input() subId: number = 0;
-  loaded$: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   wizzardCollection = ['I BenchMark', 'II BenchMark', 'III BenchMark'];
   wizzardClassText = 'nav nav-pills justify-content-end nav-sm';
   wizardStep: number = 0;
-  subscription: Subscription[] = [];
-  data$: Observable<SupplierFirstAgreementModel[]> = this.store.pipe(select(getFirstAgreement))
-  listino$: Observable<ListSupplierIndexDetailModel[]> = this.store.pipe(select(getListinoSupplier));
-  data2$: Observable<SupplierFirstAgreementModel[]> = this.store.pipe(select(getSecondAgreement))
+  subscription = new Subscription();
+  data$ = this.store.pipe(select(getFirstAgreement))
+  listino$ = this.store.pipe(select(getListinoSupplier));
+  data2$ = this.store.pipe(select(getSecondAgreement))
 
   constructor(private store: Store<AppState>, private supplierService: SupplierService) {
   }
@@ -53,27 +53,19 @@ export class AgreementComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     const { id, subId } = changes;
     if (!(id && subId)) return;
-    const supplierSearch: SupplierSearch = { pId: id.currentValue, pSubId: subId.currentValue }
+    const supplierSearch = { pId: id.currentValue, pSubId: subId.currentValue }
     this.store.dispatch(getSupplierFirstAgreement({ supplierSearch }));
-
 
     const pCY$ = this.store.pipe(select(getListLineAllPurchased(new Date().getFullYear())), skipWhile(p => p.length === 0), take(1));
     const pBY$ = this.store.pipe(select(getListLineAllPurchased(new Date().getFullYear() - 1)), skipWhile(p => p.length === 0), take(1));
-    this.subscription.push(
-      forkJoin([pCY$, pBY$]).subscribe(([pCy, pBy]) => {
-        console.log('purchase', pCy, pBy)
-        this.store.dispatch(getSupplierSecondAgreement({ supplierSearch, purchasesCY: pCy, purchasesBY: pBy }))
-      }
-      )
-    );
-
-
-    this.loaded$.next(true);
+    forkJoin([pCY$, pBY$]).subscribe(([pCy, pBy]) => {
+      this.store.dispatch(getSupplierSecondAgreement({ supplierSearch, purchasesCY: pCy, purchasesBY: pBy }))
+    }
+    )
   }
 
   ngOnDestroy(): void {
-    this.subscription.forEach(s => s.unsubscribe());
-    this.loaded$.next(null);
+    this.subscription.unsubscribe();
   }
   public getBenchMark(item) {
     //costo del contratto
@@ -104,8 +96,8 @@ export class AgreementComponent implements OnInit {
     }))
   }
   getbenchMarkValue2(item) {
-    const pvbyl$ = this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine)), first(), filter(v => v != null && v != undefined));
-    const bench2$ = this.getBenchMark2(item).pipe(first());
+    const pvbyl$ = this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine)), take(1), filter(v => v != null && v != undefined));
+    const bench2$ = this.getBenchMark2(item).pipe(take(1));
     return forkJoin([pvbyl$, bench2$]).pipe(
       map(([pvbyl, bench2]) => (bench2 * pvbyl / 100).toFixed(0))
     )
@@ -117,8 +109,8 @@ export class AgreementComponent implements OnInit {
     let costoContrattoYb3;
     let costoContrattoCy3;
 
-    const fal$ = this.store.pipe(select(getFirstAgreementByLine(item.TyLine)), first());
-    const lis$ = this.store.pipe(select(getListinoSupplierByLine(item.TyLine)), first());
+    const fal$ = this.store.pipe(select(getFirstAgreementByLine(item.TyLine)), take(1));
+    const lis$ = this.store.pipe(select(getListinoSupplierByLine(item.TyLine)), take(1));
 
     return forkJoin({ firstAgreemnet: fal$, listino: lis$ }).pipe(
       map(response => {
@@ -130,13 +122,14 @@ export class AgreementComponent implements OnInit {
         const contractCostCY = 100 * (1 - (itemFirst?.hCY / 100)) * (1 - (itemFirst?.pCY / 100))
         costoContrattoCy2 = contractCostCY * (1 + (pc / 100));
         costoContrattoCy3 = costoContrattoCy2 - item.pCY;
+
         return costoContrattoCy3 - costoContrattoYb3;
       }));
 
   }
   getbenchMarkValue3(item) {
-    const pvbyl$ = this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine)), first());
-    const bench3$ = this.getBenchMark3(item).pipe(first());
+    const pvbyl$ = this.store.pipe(select(getPurchasedValueByYearLine(new Date().getFullYear() - 1, item.TyLine)), take(1));
+    const bench3$ = this.getBenchMark3(item).pipe(take(1));
     return forkJoin([pvbyl$, bench3$]).pipe(
       map(([pvbyl, bench3]) => (bench3 * pvbyl / 100).toFixed(0))
     )

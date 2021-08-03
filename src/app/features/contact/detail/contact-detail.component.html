@@ -1,0 +1,465 @@
+<ng-container [ngSwitch]="showOnlyComponent">
+  <ng-container *ngSwitchCase="true" [ngTemplateOutlet]="contattoComponent"> </ng-container>
+  <ng-container *ngSwitchDefault [ngTemplateOutlet]="contattoPage"> </ng-container>
+</ng-container>
+
+<ng-template #contattoPage>
+  <div class='container-fluid'>
+    <div class="row">
+      <div class="col-12" style='padding-bottom: 5px;'>
+        <div class="card-body pr-0 pl-0">
+          <ng-container [ngTemplateOutlet]="contattoComponent"></ng-container>
+          <router-outlet></router-outlet>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #contattoComponent>
+  <div [formGroup]="frmContact" (ngSubmit)="$event.preventDefault()" class="mt-1" #frmContactCollapse
+    [ngbCollapse]="frmContactCollapsed" autocomplete="off">
+    <div class="d-flex flex-md-row-reverse">
+      <nav ngbNav #nav="ngbNav" class="nav-pills p-0" orientation="vertical">
+        <ng-container ngbNavItem>
+          <!--Informazioni di base-->
+          <a ngbNavLink title="Informazioni di base">
+            <fa-icon [icon]="['fas','cog']"></fa-icon>
+          </a>
+          <ng-template ngbNavContent>
+            <!-- <div class="card-body pr-0 pl-0"> -->
+            <div class="form-row">
+              <div class="col-5 col-sm-6 col-md-6 col-lg-6 col-xl-1 form-group">
+                <dp-input-number placeholder="Id" label="Id" formControlName="Id" invalidIfDirtyOrTouched="true"
+                  readonly="true">
+                </dp-input-number>
+              </div>
+              <div class="col-7 col-sm-6 col-md-6 col-lg-6 col-xl-3 form-group">
+                <label for="TyContact"
+                  [ngClass]="frmContact.controls.TyContact.value===null || frmContact.controls.TyContact.value?.length===0?'invisible':'visible'">
+                  Tipologia</label>
+                <ng-select #selectTyContatto [items]="dContact$|async" bindLabel="Label" bindValue="Id"
+                  class="ng-select-small auto-grow" dropdownPosition="auto" labelForId="TyContact"
+                  placeholder="Tipologia" [openOnEnter]=false appendTo="body" [virtualScroll]="true"
+                  [loading]="!(dContact$|async)" formControlName="TyContact">
+                  <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                    <div>
+                      <span>{{item.Label}}</span>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-loadingspinner-tmp>
+                    <div class="lds-ellipsis">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <ng-container [ngSwitch]="frmContact.controls.TyContact.value">
+                <ng-container *ngSwitchCase="1" [ngTemplateOutlet]="fCognomeNome"> </ng-container>
+                <ng-container *ngSwitchDefault [ngTemplateOutlet]="fRagioneSociale"> </ng-container>
+              </ng-container>
+            </div>
+            <div class="form-row">
+              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 form-group">
+                <label for="CdFiscale"
+                  [ngClass]="frmContact.controls.CdFiscale.value===null ||  frmContact.controls.CdFiscale.value?.length===0?'invisible':'visible'">
+                  Cd. Fiscale</label>
+                <input type="text" class="form-control form-control-sm" placeholder="Cd. Fiscale" #CdFiscale
+                  formControlName="CdFiscale" (input)="CdFiscale.value = CdFiscale.value.toUpperCase()"
+                  [ngClass]="{'is-invalid': frmContact.controls.CdFiscale.invalid}">
+              </div>
+              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 ">
+                <dp-input-text placeholder="Partita Iva" label="PartitaIva" formControlName="PartitaIva"
+                  invalidIfDirtyOrTouched="true">
+                </dp-input-text>
+              </div>
+              <div class="col-12 col-sm-4 col-md-4 col-lg-4 col-xl-4 form-group">
+                <label for="DtBirth"
+                  [ngClass]="frmContact.controls.DtBirth.value===null || frmContact.controls.DtBirth.value?.length===0?'invisible':'visible'">
+                  {{frmContact.get('TyContact').value!==null && frmContact.get('TyContact').value===1?
+                  'Nascita' : 'Costituzione'}}</label>
+                <div class="input-group input-group-sm">
+                  <input class="form-control form-control-sm" name="dp" ngbDatepicker
+                    [placeholder]="frmContact.get('TyContact').value!==null && frmContact.get('TyContact').value===1?'Nascita':' Costituzione'"
+                    #dtBirth="ngbDatepicker" formControlName="DtBirth"
+                    [ngClass]="{'is-invalid': frmContact.controls.DtBirth.invalid && (frmContact.controls.DtBirth.dirty || frmContact.controls.DtBirth.touched)}"
+                    showWeekdays="true" showWeekNumbers="true">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calendar" (click)="dtBirth.toggle()" type="button">
+                      <fa-icon [icon]="['far','calendar-alt']"></fa-icon>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col form-group">
+                <label for="TyIso"
+                  [ngClass]="frmContact.controls.TyIso.value===null || frmContact.controls.TyIso.value?.length===0?'invisible':'visible'">
+                  Nazionalità</label>
+                <ng-select #selectTyIso [items]="dIso$|async" bindLabel="Label" bindValue="Id" class="ng-select-small"
+                  dropdownPosition="auto" labelForId="TyIso" placeholder="Nazionalità" [openOnEnter]=false
+                  appendTo="body" [virtualScroll]="true" formControlName="TyIso" required
+                  (change)="frmContact.get('DIso.Code').patchValue($event.Codice)" [loading]="!(dIso$|async)"
+                  (clear)="frmContact.get('DIso.Code').reset()">
+                  <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                    <div>
+                      <span>{{item.Label}}</span>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-loadingspinner-tmp>
+                    <div class="lds-ellipsis">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+              <div class="col-3 col-sm-2 col-md-2 col-lg-2 col-xl-1 form-group" formGroupName="DIso">
+                <dp-input-text placeholder="Iso" label="Iso" formControlName="Code" readonly="true">
+                </dp-input-text>
+              </div>
+              <div class="col form-group">
+                <label for="IdAdministrativeArea"
+                  [ngClass]="frmContact.controls.IdAdministrativeArea.value===null || frmContact.controls.IdAdministrativeArea.value?.length===0?'invisible':'visible'">
+                  Comune</label>
+                <ng-select #selectIdAdministrativeArea [items]="administrativeArea$|async"
+                  bindLabel="DsAdministrativeArea" bindValue="Id" class="ng-select-small" dropdownPosition="auto"
+                  labelForId="IdAdministrativeArea" placeholder="Comune" [openOnEnter]=false appendTo="body"
+                  [virtualScroll]="true" [loading]="!(administrativeArea$|async)" formControlName="IdAdministrativeArea"
+                  (change)=" onChangeAdministrativeArea($event)"
+                  (clear)="frmContact.controls.AdministrativeArea.reset()">
+                  <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                    <div>
+                      <span>{{item.DsAdministrativeArea}}</span>
+                    </div>
+                  </ng-template>
+                  <ng-template ng-loadingspinner-tmp>
+                    <div class="lds-ellipsis">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  </ng-template>
+                </ng-select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col" formGroupName="AdministrativeArea">
+                <dp-input-text placeholder="Cap" label="Cap" formControlName="Cap"
+                  [disabled]="frmContact.get('AdministrativeArea.Cap').value?.indexOf('x')>0">
+                </dp-input-text>
+              </div>
+              <div class="col" formGroupName="AdministrativeArea">
+                <dp-input-text placeholder="Pv" label="Pv" formControlName="District" readonly="true">
+                </dp-input-text>
+              </div>
+              <div class="col" formGroupName="AdministrativeArea">
+                <dp-input-text placeholder="Istat" label="Istat" formControlName="CdIstat" readonly="true">
+                </dp-input-text>
+              </div>
+              <span formGroupName="AdministrativeArea" class="col form-group">
+                <div formGroupName="DRegion">
+                  <dp-input-text placeholder="Regione" label="Regione" formControlName="Label" readonly="true">
+                  </dp-input-text>
+                </div>
+              </span>
+            </div>
+
+            <!-- </div> -->
+          </ng-template>
+        </ng-container>
+        <ng-container ngbNavItem>
+          <!--Recapiti-->
+          <a ngbNavLink title="Recapiti">
+            <fa-icon [icon]="['fas','at']"></fa-icon>
+          </a>
+          <ng-template ngbNavContent>
+            <div class="card-body pr-0 pl-0">
+              <a href="#" type="button" (click)="mailToggle($event)" class="text-secondary">
+                <div class="form-inline">
+                  <ng-container [ngSwitch]="mailCollapsed">
+                    <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
+                    </fa-icon>
+                    <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+                    </fa-icon>
+                  </ng-container>
+                  <h5 class="card-title" [attr.aria-expanded]="!mailCollapsed">Mail</h5>
+                </div>
+              </a>
+              <div #mailCollapse [ngbCollapse]="mailCollapsed">
+                <div formArrayName="MailCollection">
+                  <div [formGroupName]="i" *ngFor="let mail of MailCollection.controls; let i=index">
+                    <div class="form-row">
+                      <input type="hidden" formControlName="IdContact">
+                      <div class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
+                        <ng-select #selectDMail [items]="dMail$|async" bindLabel="Label" bindValue="Id"
+                          class="ng-select-small" dropdownPosition="auto" placeholder="Tipologia" [openOnEnter]=false
+                          appendTo="body" [virtualScroll]="true" [loading]="!(dMail$|async)" formControlName="TyMail">
+                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                            <div>
+                              <span>{{item.Label}}</span>
+                            </div>
+                          </ng-template>
+                          <ng-template ng-loadingspinner-tmp>
+                            <div class="lds-ellipsis">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                          </ng-template>
+                        </ng-select>
+                      </div>
+                      <div class="col-12 col-sm-4 col-md-7 col-lg-7 col-xl-7 form-group">
+                        <div class="input-group input-group-sm">
+                          <input type="email" class="form-control form-control-sm" #email
+                            [ngClass]="{'is-invalid': getMailFormGroup(i).controls.Email?.invalid}" setLowerCase
+                            formControlName="Email">
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button">
+                              <a href="{{'mailto:'+getMailFormGroup(i).controls.Email?.value}}">
+                                <fa-icon [icon]="['far','envelope']"></fa-icon>
+                              </a>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="col col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group">
+                        <div class="form-check mb-3 pt-1">
+                          <label class="form-check-label">
+                            <input class="form-check-input" type="checkbox" formControlName="FlPec"> Pec
+                          </label>
+                        </div>
+                      </div>
+
+                      <div class="form-group col-1">
+                        <a type="button" href="#" (click)="removeMail($event, i)">
+                          <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;" title="Rimuovi">
+                          </fa-icon>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
+                  <a type="button" href="#" class="d-flex" (click)="addMail($event)"> + Add
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body pr-0 pl-0">
+              <a href="#" type="button" (click)="phoneToggle($event)" class="text-secondary">
+                <div class="form-inline">
+                  <ng-container [ngSwitch]="phoneCollapsed">
+                    <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
+                    </fa-icon>
+                    <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+                    </fa-icon>
+                  </ng-container>
+                  <h5 class="card-title" [attr.aria-expanded]="!phoneCollapsed">Telefono</h5>
+                </div>
+              </a>
+              <div #phoneCollapse [ngbCollapse]="phoneCollapsed">
+                <div formArrayName="PhoneCollection">
+                  <div [formGroupName]="i" *ngFor="let phone of PhoneCollection.controls; let i=index">
+                    <div class="form-row">
+                      <input type="hidden" formControlName="IdContact">
+                      <span formGroupName="DPhone"><input type="hidden" formControlName="Regex"></span>
+                      <div class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
+                        <ng-select #selectDPhone [items]="dPhone$|async" bindLabel="Label" class="ng-select-small"
+                          bindValue="Id" dropdownPosition="auto" placeholder="Tipologia" [openOnEnter]=false
+                          appendTo="body" [virtualScroll]="true" [loading]="!(dPhone$|async)"
+                          (change)="onChangeTyPhone($event, i)" (clear)="onClearTyPhone($event, i)"
+                          formControlName="TyPhone">
+                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                            <div>
+                              <span>{{item.Label}}</span>
+                            </div>
+                          </ng-template>
+                          <ng-template ng-loadingspinner-tmp>
+                            <div class="lds-ellipsis">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                          </ng-template>
+                        </ng-select>
+                      </div>
+                      <div class="col-10 col-sm-10 col-md-9 col-lg-9 col-xl-9 form-group">
+                        <div class="input-group input-group-sm">
+                          <input type="tel" class="form-control form-control-sm" mask=" 000 0000000" prefix="+39"
+                            placeholder="Nr. Telefono" formControlName="NrPhone">
+                          <div *ngIf="getPhoneFormGroup(i).controls.NrPhone?.errors" class="text-danger"> formato
+                            campo non valido </div>
+                          <div class="input-group-append">
+                            <button class="btn btn-outline-secondary" type="button">
+                              <a href="{{'tel:'+getPhoneFormGroup(i).controls.NrPhone?.value}}">
+                                <fa-icon [icon]="['fas','phone']"></fa-icon>
+                              </a>
+                            </button>
+                            <button class="btn btn-outline-secondary" type="button">
+                              <a
+                                href="{{'https://api.whatsapp.com/send?phone='+getPhoneFormGroup(i).controls.NrPhone?.value}}">
+                                <fa-icon [icon]="faWhatsapp" style="color: green;"></fa-icon>
+                              </a>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="form-group col-1">
+                        <a type="button" href="#" (click)="this.PhoneCollection.removeAt(i)">
+                          <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;" title="Rimuovi">
+                          </fa-icon>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+                <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
+                  <a type="button" href="#" class="d-flex" (click)="addPhone($event)">
+                    +
+                    Add </a>
+                </div>
+              </div>
+            </div>
+
+            <div class="card-body pr-0 pl-0">
+              <a href="#" type="button" (click)="addressToggle($event)" class="text-secondary">
+                <div class="form-inline">
+                  <ng-container [ngSwitch]="addressCollapsed">
+                    <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
+                    </fa-icon>
+                    <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+                    </fa-icon>
+                  </ng-container>
+                  <h5 class="card-title" [attr.aria-expanded]="!addressCollapsed">Indirizzo</h5>
+                </div>
+              </a>
+              <div #indirizzoCollapse [ngbCollapse]="addressCollapsed">
+                <div formArrayName="AddressCollection">
+                  <div [formGroupName]="i" *ngFor="let address of AddressCollection.controls; let i=index">
+                    <div class="form-row">
+                      <input type="hidden" formControlName="IdContact">
+                      <div class="col-6 col-sm-1 col-md-3 col-lg-2 col-xl-2 form-group">
+                        <ng-select #selectDEtichettaIndirizzo [items]="dLabelAddress$|async" class="ng-select-small"
+                          bindLabel="Label" bindValue="Id" dropdownPosition="auto" placeholder="Tipologia"
+                          [openOnEnter]=false appendTo="body" [virtualScroll]="true" [loading]="!(dLabelAddress$|async)"
+                          formControlName="TyLabel">
+                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                            <div>
+                              <span>{{item.Label}}</span>
+                            </div>
+                          </ng-template>
+                          <ng-template ng-loadingspinner-tmp>
+                            <div class="lds-ellipsis">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                          </ng-template>
+                        </ng-select>
+                      </div>
+                      <div class="col-12 col-sm-7 col-md-8 col-lg-9 col-xl-9 form-group">
+                        <input type="text" class="form-control form-control-sm" placeholder="Indirizzo"
+                          formControlName="DsAddress">
+                      </div>
+                    </div>
+                    <div class="form-row">
+                      <div class="col-6 col-sm-3 col-md-4 col-lg-3 col-xl-3 form-group">
+                        <ng-select #selectIdAdministrativeAreaAddress [items]="administrativeArea$|async"
+                          bindLabel="DsAdministrativeArea" class="ng-select-small" bindValue="Id"
+                          dropdownPosition="auto" placeholder="Comune" [openOnEnter]=false appendTo="body"
+                          [virtualScroll]="true" [loading]="!(administrativeArea$|async)"
+                          formControlName="IdAdministrativeArea" (change)=" onChangeAdministrativeAreaAddress($event,i)"
+                          (clear)="onClearAdministrativeAreaAddress($event, i)">
+                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                            <div>
+                              <span>{{item.DsAdministrativeArea}}</span>
+                            </div>
+                          </ng-template>
+                          <ng-template ng-loadingspinner-tmp>
+                            <div class="lds-ellipsis">
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                              <div></div>
+                            </div>
+                          </ng-template>
+                        </ng-select>
+                      </div>
+                      <div class="col-6 col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group"
+                        formGroupName="AdministrativeArea">
+                        <input type="text" class="form-control form-control-sm" placeholder="Cap" formControlName="Cap">
+                      </div>
+                      <div class="col-4 col-sm-1 col-md-1 col-lg-2 col-xl-2 form-group"
+                        formGroupName="AdministrativeArea">
+                        <input type="text" class="form-control form-control-sm" placeholder="Provincia" readonly
+                          formControlName="District">
+                      </div>
+                      <div class="col-4 col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group"
+                        formGroupName="AdministrativeArea">
+                        <input type="text" class="form-control form-control-sm" placeholder="Istat" readonly
+                          formControlName="CdIstat">
+                      </div>
+                      <span formGroupName="AdministrativeArea"
+                        class="col-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
+                        <div formGroupName="DRegion">
+                          <input type="text" class="form-control form-control-sm" placeholder="Regione" readonly
+                            formControlName="Label">
+                        </div>
+                      </span>
+                      <div class="form-group col-1">
+                        <a type="button" href="#" (click)="removeAddress($event, i)">
+                          <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;" title="Rimuovi">
+                          </fa-icon>
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
+                  <a type="button" href="#" class="d-flex" (click)="addAddress($event)">
+                    + Add </a>
+                </div>
+              </div>
+            </div>
+          </ng-template>
+        </ng-container>
+      </nav>
+      <div [ngbNavOutlet]="nav" class="mr-2 col"></div>
+    </div>
+    <app-controlpanel [showBtnDelete]="showBtnDelete" [frmInvalid]="!this.frmContact.valid" *ngIf="showControlPanel"
+      (btnSalvaClick)="btnSalvaOnClick($event)" (btnAnnullaClick)="btnAnnullaOnClick($event)"
+      (btnEliminaClick)="btnEliminaOnClick($event)">
+    </app-controlpanel>
+
+    <ng-template #fRagioneSociale>
+      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 pl-1 form-group">
+        <dp-input-text placeholder="RagioneSociale" label="Ragione Sociale" formControlName="BusinessName"
+          required="true" invalidIfDirtyOrTouched="false"></dp-input-text>
+      </div>
+    </ng-template>
+    <ng-template #fCognomeNome>
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 form-group">
+        <dp-input-text placeholder="Cognome" label="Cognome" formControlName="SurName" required="true"
+          invalidIfDirtyOrTouched="false"></dp-input-text>
+      </div>
+      <div class="col-6 col-sm-6 col-md-6 col-lg-6 col-xl-4 form-group">
+        <dp-input-text placeholder="Nome" label="Nome" formControlName="Name" required="true"
+          invalidIfDirtyOrTouched="false"></dp-input-text>
+      </div>
+    </ng-template>
+  </div>
+
+</ng-template>

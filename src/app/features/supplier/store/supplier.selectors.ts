@@ -32,6 +32,13 @@ export const getPurchasedValue = createSelector(
       (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {})).map(p => p.Purchased)
   }
 )
+export const getPurchasedValueAtDate = createSelector(
+  getSupplierState,
+  (s, y) => {
+    const r = [];
+    return s.EtruriaSuppliers.supplierActive?.PurchasedAtDate || null
+  }
+)
 
 export const getListLine = createSelector(
   getSupplierState,
@@ -48,12 +55,12 @@ export const getListLine = createSelector(
 export const getListLineAllPurchased = (year: number) => createSelector(
   getSupplierState,
   (s) => {
-    console.log('getListLineAllPurchased', s.EtruriaSuppliers.supplierFirstAgreementModel)
+    // console.log('getListLineAllPurchased', s.EtruriaSuppliers.supplierFirstAgreementModel)
     return [...new Set(s.EtruriaSuppliers?.supplierFirstAgreementModel?.map(item => item.TyLine))].map(tyLine => {
 
       const t = (s.EtruriaSuppliers?.supplierActive?.Purchased?.filter(p => p.Year === year)?.reduce((r, o) =>
         (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {}));
-      console.log('t', t)
+      // console.log('t', t)
       if (t) {
         const p = Object.values<SupplierPurchasedModel>(t)
         return {

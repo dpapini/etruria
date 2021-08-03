@@ -2,19 +2,20 @@ import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { select, Store } from '@ngrx/store';
-import { forkJoin, of, timer } from 'rxjs';
-import { catchError, first, map, mapTo, shareReplay, switchMap, withLatestFrom } from 'rxjs/operators';
+import { forkJoin, of, Subject, timer } from 'rxjs';
+import { catchError, first, map, mapTo, shareReplay, switchMap, takeUntil, tap, withLatestFrom } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
+import { getIdBuyer, getIdUser } from 'src/app/core/component/store/login/login.selectors';
 import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
+import { SupplierInvoiceModel } from 'src/app/core/component/supplier/model/supplierInvoice';
 import { SupplierPurchasedModel } from 'src/app/core/component/supplier/model/supplierPurchased';
 import { SupplierService } from 'src/app/core/component/supplier/service/supplier.service';
 import { environment } from '../../../../environments/environment';
-import { RequestModel, RequestSearchModel } from './../../../core/component/request/request';
+import { RequestModel, RequestSearchModel, TYPEREQUEST } from './../../../core/component/request/request';
 import { SupplierFirstAgreementModel, TipologiaAgreement } from './../../../core/component/supplier/model/supplierAgreement';
-import { getIdBuyer, getIdUser } from './../../../core/login/store/login.selectors';
-import { toastFailure, toastSuccess } from './../../../core/toaster/store/toaster.actsions';
-import { addEtruriaRequest, addEtruriaRequestFailure, addEtruriaRequestSuccess, getSupplierFirstAgreement, getSupplierFirstAgreementSuccess, getEtruriaRequest, getEtruriaRequestFailure, getEtruriaRequestSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementSuccess, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
+import { toastFailure, toastSuccess } from '../../../core/component/store/toaster/toaster.actsions';
+import { addEtruriaRequest, addEtruriaRequestFailure, addEtruriaRequestSuccess, getSupplierFirstAgreement, setSupplierFirstAgreementSuccess, getEtruriaRequest, getEtruriaRequestFailure, getEtruriaRequestSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementSuccess, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -24,10 +25,16 @@ const httpOptions = {
 
 @Injectable()
 export class SuppliersEffects {
+  private keepLive$ = new Subject();
+
   constructor(private actions$: Actions,
     private supplierService: SupplierService,
     private store: Store<AppState>,
     private http: HttpClient) {
+    this.keepLive$.next(true);
+    setTimeout(() => {
+      this.keepLive$.next(false);
+    }, 60000);
   }
 
   getSuppliers$ = createEffect(() =>
@@ -64,17 +71,38 @@ export class SuppliersEffects {
             pYear: (action.supplierSearch.pYear ? action.supplierSearch.pYear.toString().trim() : ''),
           }
         });
-        return this.http.get(environment.apiUrl + 'supplier/Purchased', { params: param }).pipe(
-          map((supplierPurchased: SupplierPurchasedModel[]) => {
-            const supplierModel = new SupplierModel();
-            supplierModel.Id = action.supplierSearch.pId;
-            supplierModel.SubId = action.supplierSearch.pSubId;
-            supplierModel.Purchased = supplierPurchased
+        const purchasedeByline$ = this.http.get(environment.apiUrl + 'supplier/Purchased', { params: param }).pipe(first(),
+          map((supplierPurchased: SupplierPurchasedModel[]) => supplierPurchased),
+          catchError(error => of(error)));
+
+        const dt = new Date();
+        const dtStart = new Date(dt.getFullYear() - 1, 0, 1);
+        const dtEnd = new Date(dt.getFullYear() - 1, dt.getMonth(), dt.getDate());
+        const param1 = new HttpParams({
+          fromObject: {
+            pIdSupplier: (action.supplierSearch.pId ? action.supplierSearch.pId.toString().trim() : ''),
+            pSubIdSupplier: (action.supplierSearch.pSubId ? action.supplierSearch.pSubId.toString().trim() : ''),
+            pDtStart: dtStart.toISOString(),
+            pDtEnd: dtEnd.toISOString()
+          }
+        });
+        const purchasedAtDate$ = this.http.get(environment.apiUrl + 'supplier/PurchasedAtDate', { params: param1 }).pipe(first(),
+          map((supplierInvoice: SupplierInvoiceModel) => supplierInvoice),
+          catchError(error => of(error)))
+
+        return forkJoin([purchasedeByline$, purchasedAtDate$]).pipe(
+          map(([purchasedeByline, purchasedAtDate]:
+            [SupplierPurchasedModel[], SupplierInvoiceModel]) => {
+            // console.log('supplierModel', purchasedeByline, purchasedAtDate)
+            const supplierModel: SupplierModel = {
+              Id: action.supplierSearch.pId,
+              SubId: action.supplierSearch.pSubId,
+              Purchased: purchasedeByline,
+              PurchasedAtDate: purchasedAtDate,
+            }
             return setSupplierSuccess({ supplierModel })
           }
-          ),
-          catchError(error => of(getSuppliersFailure()))
-        )
+          ));
       })
     )
   );
@@ -98,6 +126,7 @@ export class SuppliersEffects {
             const cy = new Date().getFullYear();
             const yb = new Date().getFullYear() - 1;
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
+            // console.log(t);
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {
               return {
                 TyLine: tl,
@@ -108,9 +137,11 @@ export class SuppliersEffects {
                 hYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === yb)?.Pc || null,
                 pCY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.Pc || null,
                 pYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === yb)?.Pc || null,
+                stateDeal: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.DsStateDeal || null,
+                typeDeal: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.DsTypeDeal || null,
               } as SupplierFirstAgreementModel
             })
-            return getSupplierFirstAgreementSuccess({ supplieFirstAgreementModel: sfam })
+            return setSupplierFirstAgreementSuccess({ supplieFirstAgreementModel: sfam })
 
           })
         );
@@ -121,16 +152,15 @@ export class SuppliersEffects {
     this.actions$.pipe(
       ofType(getSupplierSecondAgreement)
       , switchMap((action) => {
-        console.log(action)
         const cy = new Date().getFullYear();
         const by = new Date().getFullYear() - 1;
         const pcCY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: cy }).
           pipe(first(), shareReplay(1));
         const pcBY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
           pipe(first(), shareReplay(1));
-        const fxCY$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchasesCY.filter(p => p.Year === cy), pYear: cy }).
+        const fxCY$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchasesCY?.filter(p => p.Year === cy), pYear: cy }).
           pipe(first(), shareReplay(1));
-        const fxYB$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchasesBY.filter(p => p.Year === by), pYear: by }).
+        const fxYB$ = this.supplierService.PremiaAgreementCollectionFixSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pPurchases: action.purchasesBY?.filter(p => p.Year === by), pYear: by }).
           pipe(first(), shareReplay(1));
 
         return forkJoin([pcCY$, pcBY$, fxCY$, fxYB$]).pipe(
@@ -183,6 +213,11 @@ export class SuppliersEffects {
         const er: RequestModel = { ...action.etruriaRequest };
         er.IdUser = idUser;
         return this.http.post(environment.apiUrl + 'request/AddRequest', er, httpOptions).pipe(
+          tap(() => {
+            const etruriaRequestSearch: RequestSearchModel = { pTyRequest: TYPEREQUEST.BENCHMARKXLSX }
+            this.keepLive$.next(true);
+            this.store.dispatch(getEtruriaRequest({ etruriaRequestSearch }));
+          }),
           map(() => {
             this.store.dispatch(toastSuccess({ title: null, message: "Richiesta inserita correttamente." }))
             return addEtruriaRequestSuccess()
@@ -215,7 +250,7 @@ export class SuppliersEffects {
 
         const a = { ...action, etruriaRequestSearch: etruriaRequestSearch }
 
-        return timer(0, 10000000).pipe(mapTo(a));
+        return timer(0, 5000).pipe(mapTo(a), takeUntil(this.keepLive$));
       }
       ),
       switchMap(action => {
@@ -228,7 +263,11 @@ export class SuppliersEffects {
         });
         return this.http.get(environment.apiUrl + 'request/GetRequestCompleted', { params: param })
           .pipe(
-            map((rc: RequestModel[]) => getEtruriaRequestSuccess()),
+            map((rc: RequestModel[]) => {
+              console.log(rc, rc.length)
+              if (rc && rc.length === 0) this.keepLive$.next(false);
+              return getEtruriaRequestSuccess()
+            }),
             catchError(() => of(getEtruriaRequestFailure())
             )
           )

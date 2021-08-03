@@ -3,8 +3,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 import { AppState } from 'src/app/app.module';
-import { login } from './store/login.actions';
-import { getShowError } from './store/login.selectors';
+import { login } from '../component/store/login/login.actions';
+import { getShowError } from '../component/store/login/login.selectors';
+
 
 @Component({
   selector: 'app-login',

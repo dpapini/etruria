@@ -1,4 +1,3 @@
-import { ToastEffects } from './core/toaster/store/toaster.effects';
 import { registerLocaleData } from '@angular/common';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import localeIt from '@angular/common/locales/it';
@@ -7,7 +6,7 @@ import { BrowserModule } from '@angular/platform-browser';
 import { FaIconLibrary } from '@fortawesome/angular-fontawesome';
 import { far } from '@fortawesome/free-regular-svg-icons';
 import { fas } from '@fortawesome/free-solid-svg-icons';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgbDateAdapter, NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EffectsModule } from '@ngrx/effects';
 import { ActionReducer, ActionReducerMap, MetaReducer, StoreModule } from '@ngrx/store';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
@@ -15,20 +14,26 @@ import { localStorageSync } from 'ngrx-store-localstorage';
 import { ToastNoAnimationModule } from 'ngx-toastr';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
+import { CustomDataAdapter } from './core/component/custom-data-adapter';
+import { Loginffects } from './core/component/store/login/login.effetcs';
+import { LoginReducer, LoginState } from './core/component/store/login/login.reducer';
+import { ToastEffects } from './core/component/store/toaster/toaster.effects';
+import { ToastReducer, ToastState } from './core/component/store/toaster/toaster.reducer';
+import { UsersEffects } from './core/component/store/user/user.effects';
+import { UsersReducer, UsersState } from './core/component/store/user/user.reducer';
 import { LoaderComponent } from './core/loader/loader.component';
 import { LoaderInterceptor } from './core/loader/loader.interceptor';
 import { LoaderService } from './core/loader/loader.service';
-import { Loginffects } from './core/login/store/login.effetcs';
-import { LoginReducer, LoginState } from './core/login/store/login.reducer';
-import { ToastReducer, ToastState } from './core/toaster/store/toaster.reducer';
 
 export interface AppState {
   EtruriaLoginState: LoginState;
   EtruriaToastState: ToastState,
+  EtruriaUserState: UsersState,
 }
 export const reducers: ActionReducerMap<AppState> = {
   EtruriaLoginState: LoginReducer,
   EtruriaToastState: ToastReducer,
+  EtruriaUserState: UsersReducer,
 };
 
 export function localStorageSyncReducer(reducer: ActionReducer<any>): ActionReducer<any> {
@@ -54,12 +59,13 @@ registerLocaleData(localeIt, 'it-IT');
       preventDuplicates: true, extendedTimeOut: 1000, positionClass: 'toast-bottom-full-width'
     }),
     StoreModule.forRoot(reducers, { metaReducers }),
-    StoreDevtoolsModule.instrument({ maxAge: 20 }),
-    EffectsModule.forRoot([Loginffects, ToastEffects]),
+    StoreDevtoolsModule.instrument({ maxAge: 25 }),
+    EffectsModule.forRoot([Loginffects, ToastEffects, UsersEffects]),
 
   ],
   providers: [
     LoaderService,
+    { provide: NgbDateAdapter, useClass: CustomDataAdapter },
     { provide: HTTP_INTERCEPTORS, useClass: LoaderInterceptor, multi: true },
     { provide: LOCALE_ID, useValue: 'it-IT' },
   ],

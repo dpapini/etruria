@@ -1,20 +1,15 @@
-import { EtruriaHandleError } from './../../../services/etruria-handle-error';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { catchError, map } from 'rxjs/operators';
-import { AppState } from 'src/app/app.module';
+import { Observable } from 'rxjs';
 import { environment } from '../../../../../environments/environment';
 import { DRoleModel, DRoleSearch } from '../model/droleModel';
-import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DRoleService {
 
-  constructor(private http: HttpClient,
-    private store: Store<AppState>) { }
+  constructor(private http: HttpClient) { }
 
   DRoleCollection(drs: DRoleSearch): Observable<DRoleModel[] | any> {
     const param = new HttpParams(
@@ -25,10 +20,6 @@ export class DRoleService {
         }
       }
     );
-    return this.http.get(environment.apiUrl + 'drole/DRoleCollection', { params: param }).pipe(
-      map((drm: DRoleModel[]) => drm),
-      catchError(async (error) => EtruriaHandleError)
-    )
-
+    return this.http.get<DRoleModel[]>(environment.apiUrl + 'drole/DRoleCollection', { params: param });
   }
 }

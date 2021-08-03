@@ -5,6 +5,8 @@
 export const environment = {
   production: false,
   apiUrl: 'http://10.0.127.12/etruriaservice/etruriapi/',
+  chatUrl: 'http://10.0.127.12:9048/chathub',
+  signalRUrl: 'http://10.0.127.12:9048/etruriapi/',
 };
 
 /*

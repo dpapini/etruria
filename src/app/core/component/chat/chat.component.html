@@ -1,0 +1,72 @@
+<span #chatpanel class="chat-container">
+  <div tabindex="-1" class="chat-panel" [ngClass]="{'msg-overlay-list-bubble--is-minimized' : frmChatCollapsed}">
+    <header class="chat-panel-header d-flex">
+      <div class="chat-panel-header-badge"></div>
+
+      <section class="msg-overlay-bubble-header__details flex-row align-items-center ml1 justify-content-between">
+        <div class="presence-entity presence-entity--size-1">
+          <img src="./../../../assets/blank.png" loading="lazy" alt="David Papini"
+            class="presence-entity__image   EntityPhoto-circle-1 lazy-image ember-view">
+          <div class="presence-entity__indicator
+                presence-entity__indicator--size-1 presence-indicator
+                presence-indicator--size-1" [ngClass]="isOnline?'presence-indicator--is-online':'hidden'">
+            <span class="visually-hidden">OnLine:{{isOnline}}</span>
+          </div>
+        </div>
+        <button class="msg-overlay-bubble-header__button truncate ml2" type="button"
+          (click)="frmChatCollapsed = !frmChatCollapsed">
+          <h4 class="truncate t-14 t-bold t-black">
+            <span aria-hidden="true">
+              Messaggistica
+            </span>
+            <span class="visually-hidden">
+              Sei nell’overlay messaggistica. Premi Invio per ridurlo.
+            </span>
+          </h4>
+        </button>
+        <button type="button" (click)="frmChatCollapsed = !frmChatCollapsed"
+          class="msg-overlay-bubble-header__control msg-overlay-bubble-header__control--new-convo-btn
+          artdeco-button artdeco-button--circle artdeco-button--muted artdeco-button--1 artdeco-button--tertiary ember-view">
+          <ng-container [ngSwitch]="frmChatCollapsed">
+            <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-up']" class="pr-2 mb-auto">
+            </fa-icon>
+            <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+            </fa-icon>
+          </ng-container>
+        </button>
+      </section>
+    </header>
+
+    <div *ngFor="let item of usersChat">
+      <div *ngIf="item.Userid !== userId">
+        <div class="msg-conversations-container__conversations-list msg-overlay-list-bubble__conversations-list">
+          <div class="msg-conversation-listitem__link msg-overlay-list-bubble__convo-item" tabindex="0" role="button">
+            <div class="msg-conversation-card msg-overlay-list-bubble__convo-card d-flex">
+              <div class="msg-selectable-entity msg-selectable-entity--3">
+                <div class="presence-entity presence-entity--size-3 msg-selectable-entity__entity">
+                  <img src="./../../../assets/blank.png" loading="lazy" [alt]="item.Contact.BusinessName||item.Userid"
+                    class="presence-entity__image   EntityPhoto-circle-3 lazy-image ember-view">
+                  <div [ngClass]="item.StateConnect?'presence-indicator--is-online':'hidden'"
+                    class="presence-entity__indicator presence-entity__indicator--size-3 presence-indicator presence-indicator--size-3">
+                    <span class="visually-hidden">OnLine:{{item.StateConnect}}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="msg-overlay-list-bubble__convo-card-content overflow-hidden pl2">
+                <div class="msg-overlay-list-bubble__convo-card-content-wrapper fl">
+                  <div class="msg-conversation-card__row">
+                    <h4
+                      class="msg-conversation-listitem__participant-names msg-conversation-card__participant-names truncate t-14 t-black  t-normal">
+                      {{item.Contact.BusinessName||item.Userid}}
+                    </h4>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</span>

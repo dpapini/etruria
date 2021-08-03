@@ -1,7 +1,6 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { Observable } from 'rxjs';
 import { DetectionPriceModel, DetectionPriceSearch } from '../model/detectionPrice';
 import { LinePriceModel } from '../model/linePrice';
 import { SupplierAgreementModel, SupplierAgreementSearch } from '../model/supplierAgreement';
@@ -31,11 +30,7 @@ export class SupplierService {
       }
     });
 
-    return this.http.get(environment.apiUrl + 'supplier/DetectionPriceBySupplier', { params: param })
-      .pipe(
-        map((dpm: DetectionPriceModel[]) => dpm),
-        catchError(error => of(error))
-      );
+    return this.http.get<DetectionPriceModel[]>(environment.apiUrl + 'supplier/DetectionPriceBySupplier', { params: param });
   }
 
   DetectionPriceBylinea(dps: DetectionPriceSearch) {
@@ -48,11 +43,7 @@ export class SupplierService {
       }
     });
 
-    return this.http.get(environment.apiUrl + 'supplier/DetectionPriceBylinea', { params: param })
-      .pipe(
-        map((dpm: DetectionPriceModel) => dpm),
-        catchError(error => of(error))
-      );
+    return this.http.get<DetectionPriceModel>(environment.apiUrl + 'supplier/DetectionPriceBylinea', { params: param });
   }
 
   DetectionPriceByTotal(dps: DetectionPriceSearch) {
@@ -65,19 +56,11 @@ export class SupplierService {
       }
     });
 
-    return this.http.get(environment.apiUrl + 'supplier/DetectionPriceTotal', { params: param })
-      .pipe(
-        map((dpm: DetectionPriceModel) => dpm),
-        catchError(error => of(error))
-      );
+    return this.http.get<DetectionPriceModel>(environment.apiUrl + 'supplier/DetectionPriceTotal', { params: param });
   }
 
   LinePriceCollection() {
-    return this.http.get(environment.apiUrl + 'supplier/LinePriceCollection')
-      .pipe(
-        map((lp: LinePriceModel[]) => lp),
-        catchError(error => of(error))
-      );
+    return this.http.get<LinePriceModel[]>(environment.apiUrl + 'supplier/LinePriceCollection');
   }
 
   HeaderAgreementCollection(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
@@ -88,10 +71,7 @@ export class SupplierService {
         pYear: (as.pYear ? as.pYear.toString().trim() : ''),
       }
     });
-    return this.http.get(environment.apiUrl + 'supplier/PercentualeTestata', { params: param }).pipe(
-      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
-      catchError(error => of(error))
-    )
+    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualeTestata', { params: param });
   }
 
   PremiaAgreementCollection(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
@@ -102,10 +82,7 @@ export class SupplierService {
         pYear: (as.pYear ? as.pYear.toString().trim() : ''),
       }
     });
-    return this.http.get(environment.apiUrl + 'supplier/PercentualePremia', { params: param }).pipe(
-      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
-      catchError(error => of(error))
-    )
+    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualePremia', { params: param });
   }
 
   PremiaAgreementCollectionPcSecondLivel(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
@@ -116,17 +93,11 @@ export class SupplierService {
         pYear: (as.pYear ? as.pYear.toString().trim() : ''),
       }
     });
-    return this.http.get(environment.apiUrl + 'supplier/PercentualePremiaSecondLivel', { params: param }).pipe(
-      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
-      catchError(error => of(error))
-    )
+    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualePremiaSecondLivel', { params: param });
   }
 
   PremiaAgreementCollectionFixSecondLivel(sas: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
-    return this.http.post(environment.apiUrl + 'supplier/FissoPremiaSecondLivel', sas, httpOptions).pipe(
-      map((supplierAgreementModel: SupplierAgreementModel[]) => supplierAgreementModel),
-      catchError(error => of(error))
-    )
+    return this.http.post<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/FissoPremiaSecondLivel', sas, httpOptions);
   }
 }
 

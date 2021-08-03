@@ -1,17 +1,13 @@
+import { SupplierInvoiceModel } from './supplierInvoice';
 import { SupplierPurchasedModel } from "./supplierPurchased";
 
-export class SupplierModel {
+export interface SupplierModel {
   Id: number;
   SubId: number;
-  BusinessName: string;
+  BusinessName?: string;
   Purchased: SupplierPurchasedModel[];
-
-  constructor() {
-    this.Id = null;
-    this.SubId = null;
-    this.BusinessName = null;
-    this.Purchased = new Array<SupplierPurchasedModel>();
-  }
+  PurchasedAtDate: SupplierInvoiceModel;
+  BuyerId?: string;
 }
 
 export interface SupplierSearch {

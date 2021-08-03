@@ -1,0 +1,14 @@
+<div class="card-footer d-flex justify-content-between">
+  <div>
+    <label class="input-group-sm" style="font-size: 12px; font-weight: 300;" *ngIf="tsValidita">Ultima varizione:
+      {{tsValidita}}</label> &nbsp;
+    <label class="input-group-sm" style="font-size: 12px; font-weight: 300;" *ngIf="userId">UserId: {{userId}}</label>
+  </div>
+  <div>
+    <button type="submit" class="btn btn-secondary btn-sm mr-1" (click)="btnAnnullaOnClick($event)">Annulla</button>
+    <button [disabled]="disabledDelete" type="submit" class="btn btn-danger btn-sm mr-1"
+      (click)="btnEliminaOnClick($event)" *ngIf="showBtnDelete">Elimina</button>
+    <button [disabled]="disabledSave" type="submit" class="btn btn-primary btn-sm"
+      (click)="btnSalvaOnClick($event)">Salva</button>
+  </div>
+</div>

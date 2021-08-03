@@ -1,0 +1,318 @@
+    .chat-container{
+      height: 0;
+      position: fixed;
+      z-index: 1000;
+      bottom: 0;
+      right: 0;
+      overflow: visible;
+      display: flex;
+      flex-direction: row-reverse;
+      flex-wrap: nowrap;
+      align-items: flex-end;
+
+    .artdeco-button--circle.artdeco-button--1, .peek-carousel-controls__button {
+      height: 3.2rem;
+      width: 3.2rem;
+      min-width: auto;
+    }
+    .artdeco-button--muted.artdeco-button--tertiary, .artdeco-button--muted.artdeco-button--tertiary:visited,
+    .artdeco-button--muted.artdeco-button--tertiary:visited:hover, .artdeco-button--tertiary.peek-carousel-controls__button,
+    .artdeco-button--tertiary.peek-carousel-controls__button:visited, .artdeco-button--tertiary.peek-carousel-controls__button:visited:hover {
+      background-color: transparent;
+      color: rgba(0,0,0,0.6)
+    }
+    .artdeco-button--circle, .peek-carousel-controls__button {
+        border-radius: 50%!important;
+        padding: 0!important;
+    }
+    .artdeco-button, .peek-carousel-controls__button {
+        transition-timing-function: cubic-bezier(.4,0,.2,1);
+        transition-duration: 167ms;
+        align-items: center;
+        border: none;
+    }
+    .artdeco-button--1, .peek-carousel-controls__button {
+        font-size: 1.4rem;
+        min-height: 2.4rem;
+        padding: .2rem .8rem;
+        line-height: 2rem;
+    }
+    h4{
+      font-size:1.2rem !important;
+    }
+    .msg-overlay-list-bubble--is-minimized {
+        transform: translateY(100%) translateY(-48px) !important;
+        border:1 solid black
+    }
+
+    .chat-panel{
+      display: flex;
+      flex-direction: column;
+      height: calc(100vh - 200px);
+      flex: 0 0 288px;
+      width: 288px;
+      min-width: 0;
+      background: #fff;
+      box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.08) ,0px 4px 4px rgba(0,0,0,0.03);
+      transform: translateY(0);
+      animation: fade-in 167ms cubic-bezier(.4,0,1,1);
+    }
+    .chat-panel-header{
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0 8px 0 0;
+      min-height: 48px;
+      position: relative;
+      border-radius: 0.8rem 0.8rem 0 0;
+      background-clip: padding-box;
+      background-color: #fff;
+    }
+    .chat-panel-header-badge{
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 0.8rem 0.8rem 0 0
+    }
+    .presence-entity--size-1 {
+      width: 32px;
+      height: 32px;
+    }
+    .presence-entity {
+        display: flex;
+        position: relative;
+    }
+    .presence-entity__image {
+        background-size: cover;
+    }
+    .EntityPhoto-circle-1 {
+        width: 32px;
+        height: 32px;
+        box-sizing: border-box;
+        background-clip: content-box;
+        border: 3px solid transparent;
+        border-radius: 49.9%;
+    }
+    .presence-entity__indicator--size-1, .theme--mercado .presence-entity__indicator--size-2, .theme--mercado .presence-entity__indicator--size-3 {
+        bottom: 0;
+        right: 0;
+    }
+    .presence-indicator--is-online {
+        background: #067642 !important;
+    }
+    .presence-indicator--size-0, .presence-indicator--size-1, .presence-indicator--size-2 {
+        width: 8px;
+        height: 8px;
+    }
+    .msg-overlay-list-bubble__convo-card-content-wrapper {
+        width: 100%;
+        flex-grow: 2;
+    }
+    .fl {
+        float: left!important;
+    }
+
+    .presence-indicator {
+        border-radius: 50%;
+        background: #fff;
+        flex-shrink: 0;
+        transition: background 167ms ease-in-out;
+        box-sizing: border-box;
+        animation: fade-in 167ms ease-in;
+    }
+    .presence-entity__indicator--size-0, .presence-entity__indicator--size-1 {
+        bottom: 2px;
+        right: 3px;
+    }
+    .presence-entity__indicator {
+        position: absolute;
+        box-shadow: 0 0 0 2px #057642;
+        background-color:#057642;
+    }
+    .visually-hidden {
+      position: absolute !important;
+      display: block!important;
+      border: 0!important;
+      clip: rect(0 0 0 0)!important;
+      height: 1px!important;
+      margin: -1px!important;
+      overflow: hidden!important;
+      padding: 0!important;
+      position: absolute!important;
+      white-space: nowrap!important;
+      width: 1px!important;
+    }
+    .msg-overlay-bubble-header__details {
+        display: flex;
+        color: rgba(0,0,0,.9);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-right: 4px;
+        padding: 4px;
+        position: relative;
+        flex-grow: 1;
+        height: 100%;
+        cursor: pointer;
+    }
+    .msg-overlay-bubble-header__button {
+      max-width: 230px;
+      background: none;
+      border: none;
+      padding: 0;
+    }
+
+    .truncate {
+        white-space: nowrap!important;
+        overflow: hidden!important;
+        text-overflow: ellipsis!important;
+    }
+    .hidden {
+        display: none!important;
+    }
+    .ml2 {
+        margin-left: 8px!important;
+    }
+    .t-14 {
+        font-size: 1.4rem;
+        line-height: 1.42857;
+    }
+    .t-bold {
+        font-weight: 600;
+    }
+    .t-black {
+        color: rgba(0,0,0,.9);
+    }
+    .msg-overlay-bubble-header__controls {
+      transition-timing-function: cubic-bezier(.4,0,.2,1);
+      transition-duration: 167ms;
+      margin-left: auto;
+      flex-shrink: 0;
+      opacity: 1;
+      position: relative;
+    }
+    .artdeco-dropdown {
+        box-sizing: border-box;
+        cursor: pointer;
+        display: block;
+        margin: 0;
+        padding: 0;
+        position: relative;
+    }
+
+    .msg-selectable-entity .msg-selectable-entity__entity {
+        transition: visibility .1s ease-in-out;
+        position: absolute;
+    }
+    .presence-entity--size-3 {
+        width: 48px;
+        height: 48px;
+    }
+    .presence-entity {
+        display: flex;
+        position: relative;
+    }
+    .msg-overlay-list-bubble__conversations-list {
+        background-color: transparent;
+        flex: 1;
+    }
+    .msg-overlay-list-bubble__convo-item, .msg-overlay-list-bubble__profile-item {
+        height: 66px;
+    }
+    .msg-overlay-list-bubble__convo-card {
+        display: flex;
+        width: 100%;
+        padding-left: 8px;
+        height: inherit;
+    }
+    .msg-conversation-card {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+        left: 0;
+    }
+    .msg-selectable-entity {
+        min-width: 48px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .msg-conversation-listitem__link .msg-overlay-list-bubble__convo-card-content {
+        height: auto;
+        padding: 8px 12px 8px 8px;
+        display: flex;
+        flex-grow: 1;
+        vertical-align: top;
+        border-bottom: 1px solid rgba(0,0,0,0.08);
+        justify-content: space-between;
+        overflow: hidden;
+    }
+    .overflow-hidden {
+        overflow: hidden!important;
+    }
+    .pl2 {
+        padding-left: 8px!important;
+    }
+    .msg-conversation-card__row {
+        display: flex;
+    }
+    .msg-conversation-card__participant-names {
+        flex: 1;
+        width: 0;
+    }
+    .t-normal {
+        font-weight: 400;
+    }
+    .presence-indicator--is-reachable.presence-indicator--size-3, .presence-indicator--is-reachable.presence-indicator--size-4 {
+        border-width: 3px;
+    }
+    .theme--mercado .presence-entity__indicator--size-1, .theme--mercado .presence-entity__indicator--size-2, .theme--mercado .presence-entity__indicator--size-3 {
+        bottom: 0;
+        right: 0;
+    }
+    .presence-indicator--is-reachable {
+        border: 2px solid #057642;
+    }
+    .presence-indicator--size-3, .presence-indicator--size-4 {
+        width: 12px;
+        height: 12px;
+    }
+    .presence-indicator {
+        border-radius: 50%;
+        background: #fff;
+        flex-shrink: 0;
+        transition: background 167ms ease-in-out;
+        box-sizing: border-box;
+        animation: fade-in 167ms ease-in;
+    }
+    .presence-entity__indicator--size-3, .presence-entity__indicator--size-5, .presence-entity__indicator--size-6, .presence-entity__indicator--size-7 {
+        bottom: 2px;
+        right: 2px;
+    }
+    .presence-entity__indicator {
+        position: absolute;
+        box-shadow: 0 0 0 2px #fff;
+    }
+
+    .presence-entity__image {
+      background-size: cover;
+    }
+    [class*=artdeco-entity-lockup__image--type-circle] img, [class*=artdeco-entity-pile__image--circle], [class*=EntityPhoto-circle] {
+        border-radius: 50%!important;
+    }
+    [class*=artdeco-entity-lockup__image--type-circle] img, [class*=artdeco-entity-lockup__image--type-square] img, [class*=artdeco-entity-pile__image--circle], [class*=artdeco-entity-pile__image--square], [class*=EntityPhoto-circle], [class*=EntityPhoto-square] {
+        background-color: #fff;
+        color: #fff;
+        border: none;
+        box-shadow: none;
+    }
+    .EntityPhoto-circle-3, .EntityPhoto-circle-3-ghost-person {
+        width: 48px;
+        height: 48px;
+        box-sizing: border-box;
+        background-clip: content-box;
+        border: 2px solid transparent;
+        border-radius: 49.9%;
+    }
+}

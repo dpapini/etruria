@@ -20,6 +20,10 @@ const routes: Routes = [
         loadChildren: () => import('src/app/features/supplier/supplier.module').then(m => m.SupplierModule)
       },
       {
+        path: 'Contact',
+        loadChildren: () => import('src/app/features/contact/contact.module').then(m => m.ContactModule)
+      },
+      {
         path: '', pathMatch: 'full',
         loadChildren: () => import('src/app/features/dashboard/dashboard.module').then(m => m.DashboardModule)
       },

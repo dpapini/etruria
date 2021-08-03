@@ -1,15 +1,15 @@
 import { DMailModel } from './dmailModel';
-export class MailModel {
-   Id: number;
-   TyMail: number;
-   DMail: DMailModel;
-   EMail: string;
-   FlPec: boolean;
-   IdContatto: number;
+export interface MailModel {
+  Id: number;
+  TyMail: number;
+  DMail: DMailModel;
+  EMail: string;
+  FlPec: boolean;
+  IdContact: number;
 }
 
 export interface MailSearch {
-   pId: number;
-   pIdContatto: number;
-   pEmail: string;
+  pId?: number;
+  pIdContact?: number;
+  pEmail?: string;
 }

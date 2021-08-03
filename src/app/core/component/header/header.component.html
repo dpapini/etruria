@@ -1,34 +1,33 @@
 <nav class="navbar navbar-expand-md navbar-light">
-    <div class="navbar-inner">
-        <button class="navbar-toggler" type="button" aria-controls="navbarContent" (click)="toggler($event)">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="d-flex justify-content-between">
-            <div class="navbar-collapse">
-                <ul class="navbar-nav">
-                    <li class="nav-item" ngbDropdown display="dynamic" placement="bottom-right">
-                        <a class="nav-link" style="cursor: pointer" ngbDropdownToggle id="navbarDropdown3"
-                            role="button">
-                            {{userId$|async}}
-                        </a>
-                        <div ngbDropdownMenu aria-labelledby="navbarDropdown3" class="dropdown-menu">
-                            <a ngbDropdownItem href="#" (click)="viewProfile($event)">
-                                <div><span>Profile</span></div>
-                                <div>
-                                    <fa-icon [icon]="['fas','user']"></fa-icon>
-                                </div>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a ngbDropdownItem href="#" (click)="signOut($event)">
-                                <div><span>SignOut</span></div>
-                                <div>
-                                    <fa-icon [icon]="['fas','power-off']"></fa-icon>
-                                </div>
-                            </a>
-                        </div>
-                    </li>
-                </ul>
+  <div class="navbar-inner">
+    <button class="navbar-toggler" type="button" aria-controls="navbarContent" (click)="toggler($event)">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="d-flex justify-content-between">
+      <div class="navbar-collapse">
+        <ul class="navbar-nav">
+          <li class="nav-item" ngbDropdown display="dynamic" placement="bottom-right">
+            <a class="nav-link" style="cursor: pointer" ngbDropdownToggle id="navbarDropdown3" role="button">
+              {{userId}}
+            </a>
+            <div ngbDropdownMenu aria-labelledby="navbarDropdown3" class="dropdown-menu">
+              <a ngbDropdownItem href="#" (click)="viewProfile($event)">
+                <div><span>Profile</span></div>
+                <div>
+                  <fa-icon [icon]="['fas','user']"></fa-icon>
+                </div>
+              </a>
+              <div class="dropdown-divider"></div>
+              <a ngbDropdownItem href="#" (click)="signOut($event)">
+                <div><span>SignOut</span></div>
+                <div>
+                  <fa-icon [icon]="['fas','power-off']"></fa-icon>
+                </div>
+              </a>
             </div>
-        </div>
+          </li>
+        </ul>
+      </div>
     </div>
+  </div>
 </nav>

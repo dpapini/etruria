@@ -2,7 +2,7 @@ import { Action, createReducer, on } from '@ngrx/store';
 import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
 import { SupplierFirstAgreementModel } from 'src/app/core/component/supplier/model/supplierAgreement';
-import { clearDataSupplier, clearSupplier, getSupplierFirstAgreementSuccess, getSupplierSecondAgreementSuccess, getSuppliersSuccess, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
+import { clearDataSupplier, clearSupplier, setSupplierFirstAgreementSuccess, getSupplierSecondAgreementSuccess, getSuppliersSuccess, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
 
 export interface SuppliersState {
   supplierListino: ListSupplierIndexDetailModel[],
@@ -37,7 +37,7 @@ const suppliersReducerInternal = createReducer(
   on(clearDataSupplier, (state, action) => {
     return { ...state, supplierFirstAgreementModel: [], supplierSecondAgreementModel: [], supplierActive: null, supplierListino: [] };
   }),
-  on(getSupplierFirstAgreementSuccess, (state, action) => {
+  on(setSupplierFirstAgreementSuccess, (state, action) => {
     return { ...state, supplierFirstAgreementModel: [...action.supplieFirstAgreementModel] };
   }),
   on(getSupplierSecondAgreementSuccess, (state, action) => {

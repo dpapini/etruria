@@ -1,1 +1,69 @@
-<p>user-detail works!</p>
+<div class="card-body">
+  <div class="form-row" [formGroup]="frmUserDetail" (ngSubmit)="$event.preventDefault()">
+    <input type="hidden" formControlName="Id">
+    <!--INIZIO COLONNA SINISTRA-->
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+      <div class="d-flex align-items-center">
+        <div class="symbol  mr-5 align-self-start align-self-center">
+          <div class="symbol-label image-input image-input-outline image-input-empty"
+            style="background-image: url(./../../../../assets/blank.png);">
+            <label data-action="change" data-toggle="tooltip" title="" data-original-title="Change avatar"
+              class="btn btn-xs btn-icon btn-circle btn-white btn-hover-text-primary btn-shadow">
+              <fa-icon [icon]="['fas', 'pen']" class="icon-sm text-muted"></fa-icon>
+              <input type="file" name="profile_avatar" accept=".png, .jpg, .jpeg">
+              <input type="hidden" name="profile_avatar_remove" formcontrolname="pic"
+                value="./assets/media/users/300_25.jpg" class="ng-untouched ng-pristine ng-valid">
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <div class="profile-usertitle-name">{{userModel?.Userid}}</div>
+          <div class="profile-usertitle-job">{{frmUserDetail.get('Role.Label')?.value}}</div>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-6">
+          <dp-input-password placeholder="Password" label="Password" formControlName="Psw">
+          </dp-input-password>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-6">
+          <dp-input-password placeholder="Password" label="Password" formControlName="PswNew">
+          </dp-input-password>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="col-6">
+          <dp-input-password placeholder="Confirm password" label="Confirm" formControlName="PswNewConfirm">
+          </dp-input-password>
+          <small class="text-danger" *ngIf="frmUserDetail.get('PswNewConfirm').hasError('DifferentPassword')">
+            {{frmUserDetail.get('PswNewConfirm').errors.DifferentPassword.value}}
+          </small>
+        </div>
+      </div>
+      <!-- <div class=" d-flex justify-content-end">
+        <button type="submit" class="btn btn-secondary btn-sm mr-1" (click)="btnAnnullaOnClick($event)">Annulla</button>
+        <button [disabled]="!this.frmUserDetail.valid" type="submit" class="btn btn-primary btn-sm"
+          (click)="btnSalvaOnClick($event)">Salva</button>
+      </div> -->
+    </div>
+    <!-- FINE COLONNA SINISTRA -->
+    <!--INIZIO COLONNA DESTRA-->
+    <div class="col-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+      <ng-container [ngSwitch]="frmUserDetail.controls.IdContact?.value||-1">
+        <ng-container *ngSwitchCase="-1">
+          <app-contact-grid (gridClicked)="gridClicked($event)"></app-contact-grid>
+        </ng-container>
+        <ng-container *ngSwitchDefault>
+          <app-contact-detail [showControlPanel]="false" [showOnlyComponent]="true" formControlName="Contact">
+          </app-contact-detail>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+</div>
+<app-controlpanel [showBtnDelete]="false" [frmInvalid]="!this.frmUserDetail.valid"
+  (btnSalvaClick)="btnSalvaOnClick($event)" (btnAnnullaClick)="btnAnnullaOnClick($event)">
+</app-controlpanel>

@@ -8,13 +8,14 @@ import { finalize, delay } from 'rxjs/operators';
 
 export class LoaderInterceptor implements HttpInterceptor {
 
-    constructor(private loaderService: LoaderService) { }
+  constructor(private loaderService: LoaderService) { }
 
-    intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-        this.loaderService.show();
-        return next.handle(req).pipe(
-            delay(0),
-            finalize(() => this.loaderService.hide())
-        );
-    }
+  intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+
+    this.loaderService.show();
+    return next.handle(req).pipe(
+      delay(0),
+      finalize(() => this.loaderService.hide())
+    );
+  }
 }

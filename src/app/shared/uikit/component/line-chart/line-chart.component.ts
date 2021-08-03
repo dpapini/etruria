@@ -11,6 +11,7 @@ export class LineChartComponent implements AfterViewInit {
   @ViewChild("lineChart", { static: true }) lineChart: ElementRef<HTMLCanvasElement>;
 
   @Input() data: number[]
+  @Input() data2: number[]
   @Input() labels: string[]
 
   myChart: Chart;
@@ -21,9 +22,9 @@ export class LineChartComponent implements AfterViewInit {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    const { data } = changes;
+    const { data, data2, labels } = changes;
 
-    const config = updateLineChartConfig(this.labels, data.currentValue)
+    const config = updateLineChartConfig(labels.currentValue, data.currentValue, data2.currentValue)
 
     if (!data) return;
     if (data.firstChange) {

@@ -8,8 +8,8 @@ import { AppState } from 'src/app/app.module';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
 import { UserModel, UserSearch, UserTipologiaRicerca } from 'src/app/core/component/user/model/userModel';
 import { UserModalComponent } from './modal/user-modal.component';
-import { addUser, getUsers } from './store/user.actions';
-import { getUserList } from './store/user.selectors';
+import { addUser, getUsers } from '../../core/component/store/user/user.actions';
+import { getUserList } from 'src/app/core/component/store/user/user.selectors';
 
 
 @Component({

@@ -1,5 +1,4 @@
-import { Observable } from 'rxjs';
-import { Component, OnInit, Input, ViewEncapsulation, Output, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, ViewEncapsulation } from '@angular/core';
 import { CounterupModel } from './model/counterupModel';
 
 @Component({
@@ -9,7 +8,7 @@ import { CounterupModel } from './model/counterupModel';
   encapsulation: ViewEncapsulation.None,
 })
 export class CounterupComponent implements OnInit {
-  @Input() source: CounterupModel = new CounterupModel();
+  @Input() source: CounterupModel = {}
   @Output() OnClickCorner: EventEmitter<any> = new EventEmitter();
 
   constructor() { }
