@@ -1,11 +1,12 @@
-<span #chatpanel class="chat-container">
+<span class="chat chat-container">
+  <!-- {{userConnect$|async|json}} -->
   <div tabindex="-1" class="chat-panel" [ngClass]="{'msg-overlay-list-bubble--is-minimized' : frmChatCollapsed}">
     <header class="chat-panel-header d-flex">
       <div class="chat-panel-header-badge"></div>
 
       <section class="msg-overlay-bubble-header__details flex-row align-items-center ml1 justify-content-between">
         <div class="presence-entity presence-entity--size-1">
-          <img src="./../../../assets/blank.png" loading="lazy" alt="David Papini"
+          <img src="./../../../assets/blank.png" loading="lazy" [alt]="user?.Contact.BusinessName"
             class="presence-entity__image   EntityPhoto-circle-1 lazy-image ember-view">
           <div class="presence-entity__indicator
                 presence-entity__indicator--size-1 presence-indicator
@@ -18,9 +19,6 @@
           <h4 class="truncate t-14 t-bold t-black">
             <span aria-hidden="true">
               Messaggistica
-            </span>
-            <span class="visually-hidden">
-              Sei nell’overlay messaggistica. Premi Invio per ridurlo.
             </span>
           </h4>
         </button>
@@ -36,10 +34,10 @@
         </button>
       </section>
     </header>
-
-    <div *ngFor="let item of usersChat">
+    <div *ngFor="let item of usersChat$|async">
       <div *ngIf="item.Userid !== userId">
-        <div class="msg-conversations-container__conversations-list msg-overlay-list-bubble__conversations-list">
+        <div class="msg-conversations-container__conversations-list msg-overlay-list-bubble__conversations-list"
+          (click)="loadChatDiscussion(item)">
           <div class="msg-conversation-listitem__link msg-overlay-list-bubble__convo-item" tabindex="0" role="button">
             <div class="msg-conversation-card msg-overlay-list-bubble__convo-card d-flex">
               <div class="msg-selectable-entity msg-selectable-entity--3">
@@ -69,4 +67,5 @@
       </div>
     </div>
   </div>
+  <div #chatDiscussions></div>
 </span>

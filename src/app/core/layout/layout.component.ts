@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { Store } from '@ngrx/store';
+import { select, Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import { take } from 'rxjs/operators';
 import { getIdUser, getMenu, getUserId, getUserModel } from '../component/store/login/login.selectors';
 import { getUsers } from '../component/store/user/user.actions';
 import { getUserList } from '../component/store/user/user.selectors';
@@ -16,7 +17,7 @@ import { UserModel, UserSearch, UserTipologiaRicerca } from '../component/user/m
 export class LayoutComponent implements OnInit {
   collapsedSidebar = false;
   user$: Observable<UserModel> = this.store.select(getUserModel);
-  userId$: Observable<string> = this.store.select(getUserId);
+  userId$: Observable<string> = this.store.pipe(select(getUserId), take(1));
   userList$ = this.store.select(getUserList);
   idUser$ = this.store.select(getIdUser);
   menu$ = this.store.select(getMenu);

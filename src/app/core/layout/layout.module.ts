@@ -8,6 +8,7 @@ import { HeaderComponent } from '../component/header/header.component';
 import { SidebarComponent } from '../component/sidebar/sidebar.component';
 import { LayoutRoutingModule } from './layout-routing.module';
 import { LayoutComponent } from './layout.component';
+import { ChatDiscussionComponent } from '../component/chat/discussion/chat-discussion.component';
 
 
 
@@ -18,6 +19,7 @@ import { LayoutComponent } from './layout.component';
     FooterComponent,
     SidebarComponent,
     ChatComponent,
+    ChatDiscussionComponent,
   ],
   imports: [
     CommonModule,

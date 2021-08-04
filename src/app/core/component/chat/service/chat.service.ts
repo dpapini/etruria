@@ -1,8 +1,8 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Injectable, OnDestroy } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Store } from '@ngrx/store';
-import { from, Subject } from 'rxjs';
+import { BehaviorSubject, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { MessageChatModel, UserChatModel } from '../model/messageChatModel';
@@ -16,12 +16,18 @@ const httpOptions = {
 @Injectable({
   providedIn: 'root'
 })
-export class ChatService {
+export class ChatService implements OnDestroy {
   private hubConnection: HubConnection
   public messagges: MessageChatModel[] = [];
-  public users$ = new Subject<UserChatModel[]>();
+  public users$: BehaviorSubject<UserChatModel[] | null> = new BehaviorSubject(null);
 
-  constructor(private http: HttpClient, private store: Store) { }
+  constructor(private http: HttpClient, private store: Store) {
+    this.users$.subscribe(u => console.log('pd', u))
+  }
+
+  ngOnDestroy(): void {
+    this.users$.next(null);
+  }
 
   private chatHubConnection = (userId) => new HubConnectionBuilder()
     .withUrl(environment.chatUrl, { accessTokenFactory: () => userId })
@@ -57,11 +63,9 @@ export class ChatService {
     })
     this.hubConnection.on("UsersConnected", (ucm) => {
       this.users$.next(ucm)
-      console.log(ucm)
     })
     this.hubConnection.on("UserDisconnected", (ucm) => {
       this.users$.next(ucm)
-      console.log(ucm)
     })
   }
 

@@ -20,7 +20,6 @@ const httpOptions = {
 @Injectable()
 export class UsersEffects {
   constructor(private actions$: Actions,
-    private store: Store<AppState>,
     private http: HttpClient) {
   }
 
