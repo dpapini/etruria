@@ -21,6 +21,7 @@ export interface UserModel {
   Contact?: ContactModel;
   TsLogged?: Date;
   StateConnect?: boolean;
+  Photo: string;
 }
 
 export interface UserSearch {

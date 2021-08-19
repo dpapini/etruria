@@ -12,7 +12,7 @@ import { AgGridModule } from 'ag-grid-angular';
 import { AgGridComponentModule } from 'src/app/core/component/aggrid/ag-grid-component.module';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
 import { UikitModule } from 'src/app/shared/uikit/uikit.module';
-import { ContactGridComponent } from './grid/contact-grid/contact-grid.component';
+import { ContactGridComponent } from './grid/contact-grid.component';
 
 
 @NgModule({

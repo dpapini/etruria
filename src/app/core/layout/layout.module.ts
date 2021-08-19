@@ -1,3 +1,4 @@
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ChatComponent } from './../component/chat/chat.component';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
@@ -26,6 +27,8 @@ import { ChatDiscussionComponent } from '../component/chat/discussion/chat-discu
     LayoutRoutingModule,
     NgbModule,
     FontAwesomeModule,
+    FormsModule,
+    ReactiveFormsModule,
   ],
   entryComponents: []
 })

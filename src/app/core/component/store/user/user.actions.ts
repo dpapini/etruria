@@ -8,10 +8,9 @@ export enum UserActionTypes {
   ADD_USER = '[User] Add User',
   ADD_USER_SUCCESS = '[User] Add User Success',
   ADD_USER_FAILURE = '[User] Add User Failure',
+  CLEAR = "[User] clear",
   EDIT_USER = '[User] Edit User',
   EDIT_USER_SUCCESS = '[User] Edit User Success',
-  CLEAR = "[User] clear",
-  CHANGE_PASSWORD = '[User] User Change Password',
 }
 
 export const getUsers = createAction(UserActionTypes.GET_USERS,
@@ -29,13 +28,9 @@ export const addUser = createAction(UserActionTypes.ADD_USER,
 );
 export const addUserSuccess = createAction(UserActionTypes.ADD_USER_SUCCESS);
 
+export const clearUsers = createAction(UserActionTypes.CLEAR);
+
 export const editUser = createAction(UserActionTypes.EDIT_USER,
   props<{ userModel: UserModel }>()
 );
 export const editUserSuccess = createAction(UserActionTypes.EDIT_USER_SUCCESS);
-
-export const clearUsers = createAction(UserActionTypes.CLEAR);
-
-export const changePassword = createAction(UserActionTypes.CHANGE_PASSWORD,
-  props<{ userModel: UserModel }>()
-);

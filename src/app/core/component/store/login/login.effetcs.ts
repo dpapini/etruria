@@ -10,9 +10,9 @@ import { AppState } from 'src/app/app.module';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { clearSupplier } from 'src/app/features/supplier/store/supplier.actions';
 import { environment } from 'src/environments/environment';
-import { login, loginFailed, loginRequest, loginSuccess, logout, logoutComplete } from './login.actions';
+import { addPhoto, addPhotoSuccess, changePassword, deletePhoto, deletePhotoSuccess, login, loginFailed, loginRequest, loginSuccess, logout, logoutComplete } from './login.actions';
 import { getIdUser } from './login.selectors';
-import { toastFailure } from 'src/app/core/component/store/toaster/toaster.actsions';
+import { toastFailure, toastSuccess } from 'src/app/core/component/store/toaster/toaster.actions';
 import { clearUsers } from 'src/app/core/component/store/user/user.actions';
 import { ChatService } from '../../chat/service/chat.service';
 
@@ -78,7 +78,7 @@ export class Loginffects {
                   title: null,
                   message: `Il logout ha generato un errore.<br>
                      Se l'errore persiste contattare l'amministatore.<br>
-                     <b>[${error.message}<br>${error.error.ExceptionMessage}<br>${error.error?.StackTrace}]</b>`
+                     <b>[${error.message}<br>${error.error?.ExceptionMessage}<br>${error.error?.StackTrace}]</b>`
                 }))
             })
           )
@@ -91,5 +91,71 @@ export class Loginffects {
     this.actions$.pipe(
       ofType(logoutComplete),
       tap(() => this.router.navigate(['Login']))
-    ), { dispatch: false })
+    ), { dispatch: false }
+  )
+
+  editPassword$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(changePassword),
+      switchMap(action => {
+        return this.http.post(environment.apiUrl + 'user/EditPassword', action, httpOptions).pipe(
+          switchMap(() =>
+            [toastSuccess({ title: null, message: `Salvataggio avvenuto correttamente` }), logout()]
+          ),
+          catchError((error) =>
+            of(toastFailure(
+              {
+                title: null,
+                message: `Il salvataggio ha generato un errore.<br>
+                     Se l'errore persiste contattare l'amministatore.<br>
+                     <b>[${error.message}<br>${error.error.ExceptionMessage}]</b>`
+              }
+            )
+            )
+          )
+        )
+      })
+    )
+  );
+
+  addPhoto$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addPhoto),
+      switchMap(action => {
+        const u = { Id: action.id, Photo: action.photo }
+        return this.http.post(environment.apiUrl + 'user/AddPhoto', u, httpOptions).pipe(
+          switchMap(() => [addPhotoSuccess({ photo: action.photo }), toastSuccess({ title: null, message: `Immagine del profilo aggiunta corretamente` })]),
+          catchError((error) => of(toastFailure(
+            {
+              title: null,
+              message: `Il salvataggio ha generato un errore.<br>
+                     Se l'errore persiste contattare l'amministatore.<br>
+                     <b>[${error.message}<br>${error.error.ExceptionMessage}]</b>`
+            }
+          ))
+          )
+        )
+      })
+    )
+  );
+
+  deletePhoto$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deletePhoto),
+      switchMap(action => {
+        return this.http.post(environment.apiUrl + 'user/DeletePhoto', action.id, httpOptions).pipe(
+          switchMap(() => [deletePhotoSuccess(), toastSuccess({ title: null, message: `Immagine del profilo eliminata corretamente` })]),
+          catchError((error) => of(toastFailure(
+            {
+              title: null,
+              message: `Il salvataggio ha generato un errore.<br>
+                     Se l'errore persiste contattare l'amministatore.<br>
+                     <b>[${error.message}<br>${error.error.ExceptionMessage}]</b>`
+            }
+          ))
+          )
+        )
+      })
+    )
+  );
 }

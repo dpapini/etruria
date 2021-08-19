@@ -6,8 +6,9 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { getUserModel } from 'src/app/core/component/store/login/login.selectors';
+import { toastFailure } from 'src/app/core/component/store/toaster/toaster.actions';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
-import { changePassword } from '../../../core/component/store/user/user.actions';
+import { addPhoto, changePassword, deletePhoto } from '../../../core/component/store/login/login.actions';
 
 function ConfirmPasswordValidator(control: AbstractControl): { [key: string]: any } {
   if (!control.parent) { return null; }
@@ -108,6 +109,7 @@ export class UserProfileComponent implements OnInit {
   frmUserProfileContact: FormGroup;
   userModel: UserModel;
   user$: Observable<UserModel> = this.store.pipe(select(getUserModel))
+  defaultPhoto = './../../../../assets/blank.png';
 
   private route$ = this.route.params.pipe(map(p => p));
 
@@ -128,9 +130,10 @@ export class UserProfileComponent implements OnInit {
   ) {
     this.frmUserProfile = this.fb.group({
       Id: [this.userModel?.Id],
-      Psw: [this.userModel?.Psw, Validators.required],
-      PswNew: [this.userModel?.PswNew, Validators.required],
-      PswNewConfirm: [this.userModel?.PswNewConfirm, [Validators.required, ConfirmPasswordValidator]],
+      Psw: [null, Validators.required],
+      PswNew: [null, Validators.required],
+      PswNewConfirm: [null, [Validators.required, ConfirmPasswordValidator]],
+      Photo: [null],
     })
     this.frmUserProfileContact = this.fb.group({
       Contact: [this.userModel?.Contact],
@@ -140,9 +143,9 @@ export class UserProfileComponent implements OnInit {
   ngOnInit(): void {
     this.user$.
       subscribe((u: UserModel) => {
-        console.log(u.Contact)
         this.userModel = u;
         this.frmUserProfile.patchValue(u);
+        if (!u.Photo) this.frmUserProfile.controls.Photo.patchValue(this.defaultPhoto);
         this.frmUserProfileContact.controls.Contact.patchValue(u.Contact);
       })
   }
@@ -156,5 +159,27 @@ export class UserProfileComponent implements OnInit {
   btnAnnullaOnClick(e: Event) {
     e.preventDefault();
     this.router.navigate(['/Home'], { relativeTo: this.route.parent });
+  }
+
+  addPhotoProfile(e: any) {
+    const f = e.target.files[0];
+    if (f) {
+      if (f.size > 1048576) {
+        this.store.dispatch(toastFailure({ title: null, message: 'Attenzione. Immagine maggiore di 1 MB' }))
+        return;
+      }
+
+      var reader = new FileReader();
+      reader.readAsDataURL(f); // read file as data url
+
+      reader.onload = (event) => { // called once readAsDataURL is completed
+        this.frmUserProfile.controls.Photo.patchValue(event.target.result);
+        this.store.dispatch(addPhoto({ id: this.frmUserProfile.controls.Id.value, photo: event.target.result.toString() }))
+      }
+    }
+  }
+  deletePhotoProfile() {
+    this.frmUserProfile.controls.Photo.patchValue(this.defaultPhoto);
+    this.store.dispatch(deletePhoto({ id: this.frmUserProfile.controls.Id.value }));
   }
 }

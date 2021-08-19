@@ -4,12 +4,12 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { faWhatsapp } from '@fortawesome/free-brands-svg-icons';
 import { Store } from '@ngrx/store';
 import { Subscription } from 'rxjs';
-import { filter, map, shareReplay, switchMap } from 'rxjs/operators';
+import { filter, shareReplay, switchMap } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
 import { ContactModel } from 'src/app/core/component/contact/model/contactModel';
 import { MailModel } from 'src/app/core/component/contact/model/mailModel';
 import { AdministrativeAreaService } from 'src/app/core/component/contact/service/adminstrativeArea.service';
-import { toastFailure, toastSuccess } from 'src/app/core/component/store/toaster/toaster.actsions';
+import { toastFailure, toastSuccess } from 'src/app/core/component/store/toaster/toaster.actions';
 import { AddressModel } from './../../../core/component/contact/model/addressModel';
 import { PhoneModel } from './../../../core/component/contact/model/phoneModel';
 import { ContactService } from './../../../core/component/contact/service/contact.service';
@@ -153,7 +153,7 @@ export class ContactDetailComponent implements OnInit, OnDestroy, ControlValueAc
   ) {
     this.frmContact = this.fb.group({
       TyContact: [null, Validators.required],
-      Id: [null, Validators.required],
+      Id: [null],
       SurName: [null, sureNameValidator],
       Name: [null, nameValidator],
       BusinessName: [null, businessNameValidator],
@@ -219,6 +219,7 @@ export class ContactDetailComponent implements OnInit, OnDestroy, ControlValueAc
       switchMap((p: Params) => {
         const id: number = +p.Id;
         this.showBtnDelete = true;
+        this.frmContact.controls.Id.setValidators([Validators.required])
         return this.contactService.ContactById(id).pipe(shareReplay(1));
       })).subscribe(c => {
         this.contactModel = c;
@@ -229,6 +230,9 @@ export class ContactDetailComponent implements OnInit, OnDestroy, ControlValueAc
 
   private valorizzaForm() {
     this.frmContact.patchValue(this.contactModel)
+    this.MailCollection.clear();
+    this.AddressCollection.clear();
+    this.PhoneCollection.clear();
 
     this.contactModel?.MailCollection?.forEach(e => this.MailCollection.push(this.createMailRow(e)));
     this.contactModel?.AddressCollection?.forEach(e => this.AddressCollection.push(this.createAddressRow(e)));

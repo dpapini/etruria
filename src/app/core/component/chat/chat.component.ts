@@ -1,5 +1,4 @@
-import { ChatDiscussionComponent } from './discussion/chat-discussion.component';
-import { ChangeDetectorRef, Component, HostListener, Input, OnChanges, OnInit, SimpleChanges, OnDestroy, ViewContainerRef, ComponentFactoryResolver, ViewChild } from '@angular/core';
+import { Component, ComponentFactoryResolver, HostListener, Input, OnChanges, OnDestroy, OnInit, SimpleChanges, ViewChild, ViewContainerRef } from '@angular/core';
 import { Observable, Subject, Subscription } from 'rxjs';
 import { filter, map } from 'rxjs/operators';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
@@ -14,7 +13,7 @@ import { ChatService } from './service/chat.service';
 })
 export class ChatComponent implements OnInit, OnChanges, OnDestroy {
   @ViewChild('chatDiscussions', { read: ViewContainerRef }) chatDiscussions: ViewContainerRef;
-  frmChatCollapsed = false;
+  frmChatCollapsed = true;
   @Input() user: UserModel;
   @Input() userId: string;
   @Input() userList: UserModel[];
@@ -23,11 +22,14 @@ export class ChatComponent implements OnInit, OnChanges, OnDestroy {
   userConnect$: Observable<UserChatModel[]>;
   usersChat$ = new Subject<UserModel[]>();
   isOnline = false;
+  usersChat: UserModel[] = [];
 
   constructor(private chatServive: ChatService
-    , private vcref: ViewContainerRef
     , private cfr: ComponentFactoryResolver) {
     this.userConnect$ = this.chatServive.users$.asObservable();
+    this.chatServive.message$.pipe(filter(data => data !== undefined && data !== null)).subscribe(data => {
+      this.loadChatDiscussion(data.UserSend);
+    })
   }
 
   ngOnDestroy(): void {
@@ -42,20 +44,17 @@ export class ChatComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     if (userList && userList.currentValue && userList.currentValue.length > 0 && userList.currentValue !== userList.previousValue) {
-      console.log('dentro', this.userConnect$)
       this.subscription.add(
         this.userConnect$
           .pipe(
             filter(uc => uc !== null),
             map(uc => {
-              console.log('uc', uc, userList.currentValue)
               return userList.currentValue.map(u => {
                 return { ...u, StateConnect: uc[u.Userid] !== undefined }
               })
             }
             ))
           .subscribe(u => {
-            console.log('u', u)
             this.isOnline = u.filter(u => u.Userid === this.userId)[0]?.StateConnect;
             this.usersChat$.next(u.sort((a, b) => a.Userid < b.Userid ? -1 : 1));
           }));
@@ -65,14 +64,22 @@ export class ChatComponent implements OnInit, OnChanges, OnDestroy {
   ngOnInit(): void { }
 
   loadChatDiscussion(u: UserModel) {
-    console.log('loadChatDiscussion', u)
-    this.vcref.clear();
+    if (this.usersChat.findIndex(us => us.Userid === u.Userid) >= 0) return;
     import('./discussion/chat-discussion.component').then(
       ({ ChatDiscussionComponent }) => {
-        let chatDiscussionComponent = this.vcref.createComponent(
+        let chatDiscussionComponent = this.chatDiscussions.createComponent(
           this.cfr.resolveComponentFactory(ChatDiscussionComponent)
         );
+        this.usersChat.push(u);
         chatDiscussionComponent.instance.user = u;
+        chatDiscussionComponent.instance.onClickClose.subscribe(() => {
+          this.chatDiscussions.detach(this.chatDiscussions.indexOf(chatDiscussionComponent.hostView)),
+            this.usersChat = [...this.usersChat.filter(u => u.Userid !== chatDiscussionComponent.instance.user.Userid)];
+        }
+        )
+        chatDiscussionComponent.instance.sendMessage.subscribe((data) =>
+          this.chatServive.sendMessageToApi2Id(data.message, this.user, data.userReceiver).subscribe()
+        )
       }
     )
   }

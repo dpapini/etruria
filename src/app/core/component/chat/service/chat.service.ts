@@ -1,7 +1,9 @@
+import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable, OnDestroy, Output } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { Store } from '@ngrx/store';
+import { EventEmitter } from 'node:stream';
 import { BehaviorSubject, from } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
@@ -13,6 +15,11 @@ const httpOptions = {
   })
 };
 
+export const chatHubConnection = (userId) => new HubConnectionBuilder()
+  .withUrl(environment.chatUrl, { accessTokenFactory: () => userId })
+  // .configureLogging(LogLevel.Trace)
+  .build();
+
 @Injectable({
   providedIn: 'root'
 })
@@ -20,20 +27,14 @@ export class ChatService implements OnDestroy {
   private hubConnection: HubConnection
   public messagges: MessageChatModel[] = [];
   public users$: BehaviorSubject<UserChatModel[] | null> = new BehaviorSubject(null);
+  public message$: BehaviorSubject<MessageChatModel | null> = new BehaviorSubject(null);
 
   constructor(private http: HttpClient, private store: Store) {
-    this.users$.subscribe(u => console.log('pd', u))
   }
 
   ngOnDestroy(): void {
     this.users$.next(null);
   }
-
-  private chatHubConnection = (userId) => new HubConnectionBuilder()
-    .withUrl(environment.chatUrl, { accessTokenFactory: () => userId })
-    // .configureLogging(LogLevel.Trace)
-    .build();
-
   public connect = (userId) => {
     this.startConnection(userId);
     this.addListeners();
@@ -43,7 +44,7 @@ export class ChatService implements OnDestroy {
   }
 
   private startConnection(userId: string) {
-    this.hubConnection = this.chatHubConnection(userId);
+    this.hubConnection = chatHubConnection(userId);
     this.hubConnection.start()
       .then(() => console.log('connection started'))
       .catch((err) => console.log('error while establishing signalr connection: ' + err))
@@ -54,11 +55,12 @@ export class ChatService implements OnDestroy {
       console.log("user received from API Controller", data)
     })
     this.hubConnection.on("messageReceivedFromApi", (data: MessageChatModel) => {
-      console.log("message received from API Controller")
       this.messagges.push(data);
     })
+    this.hubConnection.on("messageReceivedFromApi2Id", (data: MessageChatModel) => {
+      this.message$.next(data);
+    })
     this.hubConnection.on("messageReceivedFromHub", (data: MessageChatModel) => {
-      console.log("message received from Hub")
       this.messagges.push(data);
     })
     this.hubConnection.on("UsersConnected", (ucm) => {
@@ -71,8 +73,12 @@ export class ChatService implements OnDestroy {
 
 
   public sendMessageToApi(message: string) {
-    return this.http.post(environment.signalRUrl + 'chatcontroller/send', this.buildChatMessage(message))
+    return this.http.post(environment.signalRUrl + 'chat/send', this.buildChatMessage(message))
       .pipe(tap(_ => console.log("message sucessfully sent to api controller")));
+  }
+
+  public sendMessageToApi2Id(message: string, userSend: UserModel, userReceiver: UserModel) {
+    return this.http.post(environment.signalRUrl + 'chat/send2Id', this.buildChatMessage(message, userSend, userReceiver))
   }
 
   public sendMessageToHub(message: string) {
@@ -83,12 +89,13 @@ export class ChatService implements OnDestroy {
     return from(promise);
   }
 
-  private buildChatMessage(message: string): MessageChatModel {
-    console.log('buildChatMessage', this.hubConnection)
+  private buildChatMessage(message: string, userSend?: UserModel, userReceiver?: UserModel): MessageChatModel {
     return {
       ConnectionId: this.hubConnection.connectionId,
       Text: message,
       Ts: new Date(),
+      UserSend: userSend || null,
+      UserReceiver: userReceiver || null,
     };
   }
 }

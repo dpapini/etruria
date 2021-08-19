@@ -1,4 +1,4 @@
-import { toastSuccess, toastWarning, toastFailure } from './toaster.actsions';
+import { toastSuccess, toastWarning, toastFailure } from './toaster.actions';
 import { Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { ToastrService } from "ngx-toastr";

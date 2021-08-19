@@ -1,7 +1,6 @@
 
 import { Component, HostListener } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState } from './app.module';
 import { clearDataSupplier } from './features/supplier/store/supplier.actions';
 
 @Component({
@@ -11,11 +10,10 @@ import { clearDataSupplier } from './features/supplier/store/supplier.actions';
 })
 export class AppComponent {
   title = 'etruria';
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store) { }
 
   @HostListener('window:unload', ['$event'])
   beforeunloadHandler(event) {
-    console.log('unload prima di cleardata')
     this.store.dispatch(clearDataSupplier());
   }
 }

@@ -1,13 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnInit, Pipe, PipeTransform, SimpleChanges } from '@angular/core';
 import { select, Store } from '@ngrx/store';
-import { BehaviorSubject, forkJoin, Observable, Subscription } from 'rxjs';
-import { filter, first, map, skipWhile, take } from 'rxjs/operators';
+import { forkJoin, Subscription } from 'rxjs';
+import { filter, map, skipWhile, take } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
-import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
-import { SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
 import { SupplierService } from 'src/app/core/component/supplier/service/supplier.service';
 import { getSupplierFirstAgreement, getSupplierSecondAgreement } from '../store/supplier.actions';
-import { SupplierFirstAgreementModel } from './../../../core/component/supplier/model/supplierAgreement';
 import { getFirstAgreement, getFirstAgreementByLine, getListinoSupplier, getListinoSupplierByLine, getListLineAllPurchased, getPurchasedValueByYearLine, getSecondAgreement } from './../store/supplier.selectors';
 
 @Pipe({

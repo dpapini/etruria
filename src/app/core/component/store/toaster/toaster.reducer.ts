@@ -1,4 +1,4 @@
-import { toastSuccess, toastWarning, toastFailure } from './toaster.actsions';
+import { toastSuccess, toastWarning, toastFailure } from './toaster.actions';
 import { Action, createReducer, on } from '@ngrx/store';
 export interface ToastState {
    title: string;

@@ -14,7 +14,7 @@ import { SupplierService } from 'src/app/core/component/supplier/service/supplie
 import { environment } from '../../../../environments/environment';
 import { RequestModel, RequestSearchModel, TYPEREQUEST } from './../../../core/component/request/request';
 import { SupplierFirstAgreementModel, TipologiaAgreement } from './../../../core/component/supplier/model/supplierAgreement';
-import { toastFailure, toastSuccess } from '../../../core/component/store/toaster/toaster.actsions';
+import { toastFailure, toastSuccess } from '../../../core/component/store/toaster/toaster.actions';
 import { addEtruriaRequest, addEtruriaRequestFailure, addEtruriaRequestSuccess, getSupplierFirstAgreement, setSupplierFirstAgreementSuccess, getEtruriaRequest, getEtruriaRequestFailure, getEtruriaRequestSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementSuccess, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
 
 const httpOptions = {
@@ -165,7 +165,7 @@ export class SuppliersEffects {
 
         return forkJoin([pcCY$, pcBY$, fxCY$, fxYB$]).pipe(
           map(response => {
-            // console.log('2', response)
+            console.log('getSupplierSecondAgreement', response)
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
 
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {

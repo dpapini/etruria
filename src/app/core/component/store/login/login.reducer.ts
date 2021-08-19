@@ -1,7 +1,8 @@
+import { addPhotoSuccess } from './login.actions';
 import { Action, createReducer, on } from '@ngrx/store';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { MenuModel } from '../../sidebar/model/menuModel';
-import { loginFailed, loginSuccess, logoutComplete } from './login.actions';
+import { deletePhotoSuccess, loginFailed, loginSuccess, logoutComplete } from './login.actions';
 
 
 export interface LoginState {
@@ -29,7 +30,17 @@ const loginReducerInternal = createReducer(
   }),
   on(logoutComplete, (state, { }) => {
     return { undefined, userModel: null, isLogged: false, showError: false, menuModel: null, error: null };
-  })
+  }),
+  on(addPhotoSuccess, (state, action) => {
+    const u = { ...state.userModel };
+    u.Photo = action.photo;
+    return { ...state, userModel: u }
+  }),
+  on(deletePhotoSuccess, (state, action) => {
+    const u = { ...state.userModel };
+    u.Photo = null;
+    return { ...state, userModel: u }
+  }),
 );
 
 export function LoginReducer(state: LoginState | undefined, action: Action) {

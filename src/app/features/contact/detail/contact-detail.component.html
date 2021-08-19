@@ -103,7 +103,7 @@
                 <ng-select #selectTyIso [items]="dIso$|async" bindLabel="Label" bindValue="Id" class="ng-select-small"
                   dropdownPosition="auto" labelForId="TyIso" placeholder="Nazionalità" [openOnEnter]=false
                   appendTo="body" [virtualScroll]="true" formControlName="TyIso" required
-                  (change)="frmContact.get('DIso.Code').patchValue($event.Codice)" [loading]="!(dIso$|async)"
+                  (change)="frmContact.get('DIso.Code').patchValue($event.Code)" [loading]="!(dIso$|async)"
                   (clear)="frmContact.get('DIso.Code').reset()">
                   <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
                     <div>

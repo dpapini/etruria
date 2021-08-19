@@ -1,8 +1,10 @@
+import { UserModel } from 'src/app/core/component/user/model/userModel';
 export interface MessageChatModel {
   Text: string;
   ConnectionId: any;
   Ts: Date;
-  UserId?: string;
+  UserSend?: UserModel;
+  UserReceiver?: UserModel;
 }
 
 export interface UserChatModel {

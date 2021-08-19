@@ -4,7 +4,6 @@ import { Store } from '@ngrx/store';
 import { UserModel } from 'src/app/core/component/user/model/userModel';
 import { RequestSearchModel, TYPEREQUEST } from '../request/request';
 import { logout } from '../store/login/login.actions';
-import { AppState } from './../../../app.module';
 
 @Component({
   selector: 'app-header',
@@ -18,7 +17,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
   @Input() userId: string;
   @Output() humbergerClick: EventEmitter<any> = new EventEmitter();
 
-  constructor(private store: Store<AppState>
+  constructor(private store: Store
     , private router: Router
   ) { }
 

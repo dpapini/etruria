@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
 import { ContactModel, ContactTypeSearch } from 'src/app/core/component/contact/model/contactModel';
 import { ContactService } from 'src/app/core/component/contact/service/contact.service';
-import { UserDetailComponent } from './../../../user/detail/user-detail.component';
+import { UserDetailComponent } from '../../user/detail/user-detail.component';
 
 @Component({
   selector: 'app-contact-grid',

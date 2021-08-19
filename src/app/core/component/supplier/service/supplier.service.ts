@@ -97,6 +97,7 @@ export class SupplierService {
   }
 
   PremiaAgreementCollectionFixSecondLivel(sas: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
+    console.log('PremiaAgreementCollectionFixSecondLivel', sas)
     return this.http.post<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/FissoPremiaSecondLivel', sas, httpOptions);
   }
 }

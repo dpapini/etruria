@@ -1,4 +1,4 @@
-<div tabindex="-1" class="chat-discussion msg-overlay-conversation-bubble">
+<div tabindex="-1" class="chat-discussion msg-overlay-conversation-bubble ml4">
   <header tabindex="-1" class="msg-overlay-bubble-header msg-overlay-conversation-bubble--header flex-shrink-zero pl2">
     <div class="msg-overlay-bubble-header__badge-container"></div>
     <div class="presence-entity presence-entity--size-1">
@@ -6,46 +6,52 @@
         class="presence-entity__image   EntityPhoto-circle-1 lazy-image ember-view">
       <div class="presence-entity__indicator
 				presence-entity__indicator--size-1 presence-indicator   presence-indicator--size-1"
-        [ngClass]="user.StateConnect?'presence-indicator--is-online':'hidden'">
-        <span class="visually-hidden"> IsOnline: {{user.StateConnect}} </span>
+        [ngClass]="user?.StateConnect?'presence-indicator--is-online':'hidden'">
+        <span class="visually-hidden"> IsOnline: {{user?.StateConnect}} </span>
       </div>
     </div>
-    <section class="msg-overlay-bubble-header__details pv1 justify-center flex-column">
+    <section class="msg-overlay-bubble-header__details pv1 justify-content-between ">
       <div class="d-flex flex-column justify-center overflow-hidden">
         <h4 class="msg-overlay-bubble-header__title truncate t-14 t-bold t-black pr1" tabindex="-1">
           <span class="t-14 t-bold hoverable-link-text  t-black">
-            {{user.Contact.BusinessName|| user.Userid}}
+            {{user?.Contact?.BusinessName|| user.Userid}}
           </span>
         </h4>
       </div>
-      <button class="msg-overlay-bubble-header__control artdeco-button artdeco-button--circle artdeco-button--muted artdeco-button--1
-				artdeco-button--tertiary ember-view" data-control-name="overlay.close_conversation_window">
+      <button type="button" style="cursor:pointer" class="msg-overlay-bubble-header__control artdeco-button artdeco-button--circle artdeco-button--muted artdeco-button--1
+                                        				artdeco-button--tertiary ember-view" (click)="closeChatDiscussion($event)">
         <fa-icon [icon]="['fas','times']" class="pr-2 mb-auto"></fa-icon>
       </button>
+    </section>
+    <section>
+
     </section>
   </header>
 
   <div class="msg-overlay-conversation-bubble__content-wrapper relative d-flex flex-column">
     <div class="msg-s-message-list-container relative d-flex overflow-hidden mtA">
-      <div class="msg-s-message-listfull-width scrollable">
+      <div class="msg-s-message-list full-width scrollable" #divMessagges [scrollTop]="divMessagges.scrollHeight">
         <!-- lista dei messaggi -->
         <ul class="msg-s-message-list-content list-style-none full-width">
-
           <!-- inizio messaggio -->
-
+          <li *ngFor="let item of messages">
+            <!-- {{user.Userid}} {{item.UserSend.Userid}} -->
+            <div class="message-container" [ngClass]="user.Userid!==item.UserSend.Userid?'sended':'received'">
+              <p class="message-text">
+                {{item.Text}}
+              </p>
+            </div>
+          </li>
           <!-- fine messaggio -->
         </ul>
       </div>
-      <form class="msg-form">
+      <form class="msg-form" [formGroup]="frmChatMessage">
         <div class="msg-form__msg-content-container  msg-form__message-texteditor relative flex-grow-1 d-flex">
           <div class="msg-form__msg-content-container--scrollable scrollable relative">
             <div class="flex-grow-1">
-              <div class="msg-form__contenteditable t-14 t-black--light t-normal flex-grow-1 full-height notranslate"
-                contenteditable="true" role="textbox" aria-multiline="true" aria-label="Scrivi un messaggio…">
-                <p></p>
-              </div>
-              <div class="msg-form__placeholder t-14 t-black--light t-normal visible"
-                data-placeholder="Scrivi un messaggio…"></div>
+              <textarea type="text" placeholder="Scrivi un messaggio" (keydown.enter)="onKeyEnterMessage($event)"
+                formControlName="Message" #textAreaMessaggio
+                class="msg-form__contenteditable t-14 t-black--light t-normal flex-grow-1 full-height notranslate"></textarea>
             </div>
           </div>
         </div>

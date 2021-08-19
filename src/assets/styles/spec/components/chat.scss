@@ -11,7 +11,7 @@
     .ml2 {
       margin-left: 8px!important;
     }
-    .ml4 {
+    &.ml4, .ml4 {
       margin-left: 16px!important;
     }
     .truncate {
@@ -131,7 +131,7 @@
       position: fixed;
       z-index: 1000;
       bottom: 0;
-      right: 0;
+      right: 5px;
       overflow: visible;
       display: flex;
       flex-direction: row-reverse;
@@ -141,7 +141,7 @@
     .chat-panel{
       display: flex;
       flex-direction: column;
-      height: calc(100vh - 200px);
+      height: calc(100vh - 180px);
       flex: 0 0 288px;
       width: 288px;
       min-width: 0;
@@ -149,6 +149,7 @@
       box-shadow: 0px 0px 0px 1px rgba(0,0,0,0.08) ,0px 4px 4px rgba(0,0,0,0.03);
       transform: translateY(0);
       animation: fade-in 167ms cubic-bezier(.4,0,1,1);
+      overflow: auto;
     }
     .chat-panel-header{
       display: flex;
@@ -344,6 +345,99 @@
       width: 100%;
       height: 100%;
       border-radius: 0.8rem 0.8rem 0 0;
+    }
+    .msg-overlay-conversation-bubble__content-wrapper {
+      flex-grow: 1;
+      height: 0;
+    }
+    .relative {
+      position: relative!important;
+    }
+    .msg-s-message-list-container {
+      flex-direction: column;
+      overflow-y: hidden;
+      flex: 1 0 0px;
+    }
+    .mtA, .mvA {
+      margin-top: auto!important;
+    }
+    .msg-s-message-list-content {
+      min-height: auto;
+      padding: 16px 0 0;
+    }
+    .list-style-none {
+      list-style: none!important;
+    }
+    .full-width {
+      width: 100%!important;
+    }
+    .msg-form {
+        display: flex;
+        flex: 0 0 auto;
+        flex-direction: column;
+        max-height: 100%;
+        position: static;
+        transition-duration:132ms;
+        transition-timing-function: cubic-bezier(0.34, 0, 0.21, 1);
+        transition-property: all;
+        width: 100%;
+    }
+    .msg-form__message-texteditor {
+        flex: 1 0 auto;
+    }
+    .msg-s-message-list {
+      min-height: auto;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      justify-content: flex-start;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      border-top: 1px solid rgba(0,0,0,0.09);
+      border-bottom: 1px solid rgba(0,0,0,0.09);
+    }
+    .msg-form__msg-content-container {
+        display: flex;
+        flex: 1 1 auto;
+        flex-direction: column;
+        max-height: 100%;
+        overflow: hidden;
+        position: relative;
+    }
+    .flex-grow-1 {
+      flex-grow: 1!important;
+    }
+    .msg-form__msg-content-container--scrollable {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+      height: 100%;
+      max-height: 120px;
+      overflow: auto;
+    }
+
+    .t-black--light {
+      color: rgba(0,0,0,0.6);
+    }
+
+    .msg-form__msg-content-container::before, .msg-s-profile-card~.msg-form .msg-form__msg-content-container::before {
+      background: linear-gradient(to right,rgb(5,118,66) 50%,rgba(0,0,0,0.08) 50%);
+    }
+
+    .msg-form__msg-content-container .msg-form__contenteditable .msg-form__placeholder, .msg-form__msg-content-container .msg-form__contenteditable b, .msg-form__msg-content-container .msg-form__contenteditable em, .msg-form__msg-content-container .msg-form__contenteditable i, .msg-form__msg-content-container .msg-form__contenteditable p {
+        font-style: normal;
+        color: rgba(0,0,0,0.9);
+        line-height: 1.42857;
+        font-size: 1.4rem;
+        font-weight: 400;
+    }
+    .msg-form__msg-content-container .msg-form__contenteditable {
+      min-height: 60px;
+      overflow: auto;
+      padding: 12px 48px 0 12px;
+      border: 0px;
+      width: 100%;
+      resize: none;
     }
 }
 
