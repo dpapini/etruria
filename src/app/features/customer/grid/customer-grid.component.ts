@@ -9,7 +9,7 @@ import { CustomerService } from './../../../core/component/customer/service/cust
   selector: 'app-customer-grid',
   template: `
     <div class="d-flex filter-panel" *ngIf="showFilterPanel">
-      <app-customer-filter (onFilterClick)="showFilterPanel=$event"></app-customer-filter>
+      <app-customer-filter (onFilterClick)="onFilterClick($event)"></app-customer-filter>
     </div>
 
     <div class="row justify-content-end" style="margin:0 -5px 0 -5px">
@@ -48,8 +48,7 @@ export class CustomerGridComponent implements OnInit {
   gridOptions;
   subscription = new Subscription();
   showFilterPanel = false;
-
-  rowData$: Observable<CustomerModel[]>;
+  customerSearch: CustomerSearch = { OffSet: 0, NextRow: 0 };
 
   constructor(private router: Router, public route: ActivatedRoute,
     private customerService: CustomerService) {
@@ -59,15 +58,9 @@ export class CustomerGridComponent implements OnInit {
         minWidth: 80,
         maxWidth: 100
       },
-      {
-        headerName: 'Anagrafe', field: 'BusinessName'
-      },
-      {
-        headerName: 'Cf', field: 'CdFiscale',
-      },
-      {
-        headerName: 'Piva', field: 'PartivaIva',
-      },
+      { headerName: 'Anagrafe', field: 'BusinessName' },
+      { headerName: 'Cf', field: 'CdFiscale', },
+      { headerName: 'Piva', field: 'PartivaIva', },
       {
         cellRendererFramework: AgGridSelectBtnCellRenderer,
         maxWidth: 63,
@@ -79,18 +72,15 @@ export class CustomerGridComponent implements OnInit {
 
     this.gridOptions = {
       columnDefs: this.columnDefs,
-      defaultColDef: { sortable: true, resizable: true },
       enableCellTextSelection: true,
-      cacheBlockSize: 10,
-      maxBlocksInCache: 2,
       rowSelection: 'single',
       rowModelType: 'infinite',
       pagination: true,
       paginationPageSize: 10,
       domLayout: 'autoHeight',
+      cacheBlockSize: 100,
       onGridSizeChanged: () => {
         this.gridApi.sizeColumnsToFit();
-        this.gridApi.hideOverlay();
       },
       onRowDoubleClicked: () => {
         this.getSelectedRows();
@@ -109,27 +99,29 @@ export class CustomerGridComponent implements OnInit {
     this.gridApi = params.api;
     this.gridColumnApi = params.columnApi;
     this.gridApi.showLoadingOverlay();
-    let count = 0;
     let lastRow = -1;
 
     const datasource = {
       getRows: (params) => {
         this.subscription.add(
-          this.getRowData(params.startRow, this.gridOptions.cacheBlockSize)
+          this.getRowData(params.startRow, params.endRow)
             .subscribe(data => {
+              console.log(params.startRow, data.length)
               if (data && data.length > 0) {
-                count += data.length;
-              } else { lastRow = count + data.length; }
+                lastRow = params.startRow + data.length;
+              }
+              lastRow = lastRow <= params.endRow && data.length !== this.gridOptions.cacheBlockSize ? lastRow : -1;
+
               params.successCallback(data, lastRow);
             }));
       }
-    };
-    params.api.setDatasource(datasource);
+    }
+    this.gridApi.setDatasource(datasource);
+    this.gridApi.hideOverlay();
   }
 
   private getRowData(startRow: number, endRow: number): Observable<any> {
-    const cs = { OffSet: startRow, NextRow: endRow } as CustomerSearch;
-    return this.customerService.CustomerCollection(cs)
+    return this.customerService.CustomerCollection({ ...this.customerSearch, OffSet: startRow, NextRow: endRow })
   }
 
   getSelectedRows() {
@@ -144,5 +136,17 @@ export class CustomerGridComponent implements OnInit {
   onFilterChanged(e: Event) {
     e.preventDefault();
     this.showFilterPanel = !this.showFilterPanel;
+  }
+
+  onFilterClick(e: any) {
+    this.showFilterPanel = e.filterPanel;
+    if (e.data || e.reset) {
+      // this.store.dispatch(filterContatto({ cs: e.data }));
+
+      this.gridApi?.purgeInfiniteCache();
+      this.gridApi?.setInfiniteRowCount(null, false);
+      this.customerSearch = e.data || {};
+      this.getRowData(0, -1);
+    }
   }
 }

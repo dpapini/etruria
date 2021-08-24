@@ -9,8 +9,12 @@
       <div class="col-12" style='padding-bottom: 5px;'>
         <div class="card-body pr-0 pl-0">
           <ng-container [ngTemplateOutlet]="contattoComponent"></ng-container>
-          <router-outlet></router-outlet>
+
         </div>
+        <app-controlpanel [showBtnDelete]="showBtnDelete" [frmInvalid]="!this.frmContact.valid" *ngIf="showControlPanel"
+          (btnSalvaClick)="btnSalvaOnClick($event)" (btnAnnullaClick)="btnAnnullaOnClick($event)"
+          (btnEliminaClick)="btnEliminaOnClick($event)">
+        </app-controlpanel>
       </div>
     </div>
   </div>
@@ -181,256 +185,269 @@
             <fa-icon [icon]="['fas','at']"></fa-icon>
           </a>
           <ng-template ngbNavContent>
-            <div class="card-body pr-0 pl-0">
-              <a href="#" type="button" (click)="mailToggle($event)" class="text-secondary">
-                <div class="form-inline">
-                  <ng-container [ngSwitch]="mailCollapsed">
-                    <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
-                    </fa-icon>
-                    <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
-                    </fa-icon>
-                  </ng-container>
-                  <h5 class="card-title" [attr.aria-expanded]="!mailCollapsed">Mail</h5>
-                </div>
-              </a>
-              <div #mailCollapse [ngbCollapse]="mailCollapsed">
-                <div formArrayName="MailCollection">
-                  <div [formGroupName]="i" *ngFor="let mail of MailCollection.controls; let i=index">
-                    <div class="form-row">
-                      <input type="hidden" formControlName="IdContact">
-                      <div class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
-                        <ng-select #selectDMail [items]="dMail$|async" bindLabel="Label" bindValue="Id"
-                          class="ng-select-small" dropdownPosition="auto" placeholder="Tipologia" [openOnEnter]=false
-                          appendTo="body" [virtualScroll]="true" [loading]="!(dMail$|async)" formControlName="TyMail">
-                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
-                            <div>
-                              <span>{{item.Label}}</span>
-                            </div>
-                          </ng-template>
-                          <ng-template ng-loadingspinner-tmp>
-                            <div class="lds-ellipsis">
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </ng-template>
-                        </ng-select>
-                      </div>
-                      <div class="col-12 col-sm-4 col-md-7 col-lg-7 col-xl-7 form-group">
-                        <div class="input-group input-group-sm">
-                          <input type="email" class="form-control form-control-sm" #email
-                            [ngClass]="{'is-invalid': getMailFormGroup(i).controls.Email?.invalid}" setLowerCase
-                            formControlName="Email">
-                          <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button">
-                              <a href="{{'mailto:'+getMailFormGroup(i).controls.Email?.value}}">
-                                <fa-icon [icon]="['far','envelope']"></fa-icon>
-                              </a>
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                      <div class="col col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group">
-                        <div class="form-check mb-3 pt-1">
-                          <label class="form-check-label">
-                            <input class="form-check-input" type="checkbox" formControlName="FlPec"> Pec
-                          </label>
-                        </div>
-                      </div>
-
-                      <div class="form-group col-1">
-                        <a type="button" href="#" (click)="removeMail($event, i)">
-                          <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;" title="Rimuovi">
-                          </fa-icon>
-                        </a>
-                      </div>
+            <div class="card-body p0">
+              <div class="card-body pr-0 pl-0">
+                <div class="row ">
+                  <a href="#" type="button" (click)="mailToggle($event)" class="text-secondary">
+                    <div class="form-inline">
+                      <ng-container [ngSwitch]="mailCollapsed">
+                        <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
+                        </fa-icon>
+                        <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+                        </fa-icon>
+                      </ng-container>
+                      <h5 class="card-title" [attr.aria-expanded]="!mailCollapsed">Mail</h5>
                     </div>
-                  </div>
-                </div>
-                <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
-                  <a type="button" href="#" class="d-flex" (click)="addMail($event)"> + Add
+                  </a>
+
+                  <a type="button" href="#" class="d-flex ml-5" (click)="addMail($event)"> + Add
                   </a>
                 </div>
-              </div>
-            </div>
-
-            <div class="card-body pr-0 pl-0">
-              <a href="#" type="button" (click)="phoneToggle($event)" class="text-secondary">
-                <div class="form-inline">
-                  <ng-container [ngSwitch]="phoneCollapsed">
-                    <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
-                    </fa-icon>
-                    <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
-                    </fa-icon>
-                  </ng-container>
-                  <h5 class="card-title" [attr.aria-expanded]="!phoneCollapsed">Telefono</h5>
-                </div>
-              </a>
-              <div #phoneCollapse [ngbCollapse]="phoneCollapsed">
-                <div formArrayName="PhoneCollection">
-                  <div [formGroupName]="i" *ngFor="let phone of PhoneCollection.controls; let i=index">
-                    <div class="form-row">
-                      <input type="hidden" formControlName="IdContact">
-                      <span formGroupName="DPhone"><input type="hidden" formControlName="Regex"></span>
-                      <div class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
-                        <ng-select #selectDPhone [items]="dPhone$|async" bindLabel="Label" class="ng-select-small"
-                          bindValue="Id" dropdownPosition="auto" placeholder="Tipologia" [openOnEnter]=false
-                          appendTo="body" [virtualScroll]="true" [loading]="!(dPhone$|async)"
-                          (change)="onChangeTyPhone($event, i)" (clear)="onClearTyPhone($event, i)"
-                          formControlName="TyPhone">
-                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
-                            <div>
-                              <span>{{item.Label}}</span>
+                <div #mailCollapse [ngbCollapse]="mailCollapsed">
+                  <div formArrayName="MailCollection">
+                    <div [formGroupName]="i" *ngFor="let mail of MailCollection.controls; let i=index">
+                      <div class="form-row">
+                        <input type="hidden" formControlName="IdContact">
+                        <div class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
+                          <ng-select #selectDMail [items]="dMail$|async" bindLabel="Label" bindValue="Id"
+                            class="ng-select-small" dropdownPosition="auto" placeholder="Tipologia" [openOnEnter]=false
+                            appendTo="body" [virtualScroll]="true" [loading]="!(dMail$|async)" formControlName="TyMail">
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                              <div>
+                                <span>{{item.Label}}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template ng-loadingspinner-tmp>
+                              <div class="lds-ellipsis">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                              </div>
+                            </ng-template>
+                          </ng-select>
+                        </div>
+                        <div class="col-12 col-sm-4 col-md-7 col-lg-7 col-xl-7 form-group">
+                          <div class="input-group input-group-sm">
+                            <input type="email" class="form-control form-control-sm" #email
+                              [ngClass]="{'is-invalid': getMailFormGroup(i).controls.Email?.invalid}" setLowerCase
+                              formControlName="Email">
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="button">
+                                <a href="{{'mailto:'+getMailFormGroup(i).controls.Email?.value}}">
+                                  <fa-icon [icon]="['far','envelope']"></fa-icon>
+                                </a>
+                              </button>
                             </div>
-                          </ng-template>
-                          <ng-template ng-loadingspinner-tmp>
-                            <div class="lds-ellipsis">
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </ng-template>
-                        </ng-select>
-                      </div>
-                      <div class="col-10 col-sm-10 col-md-9 col-lg-9 col-xl-9 form-group">
-                        <div class="input-group input-group-sm">
-                          <input type="tel" class="form-control form-control-sm" mask=" 000 0000000" prefix="+39"
-                            placeholder="Nr. Telefono" formControlName="NrPhone">
-                          <div *ngIf="getPhoneFormGroup(i).controls.NrPhone?.errors" class="text-danger"> formato
-                            campo non valido </div>
-                          <div class="input-group-append">
-                            <button class="btn btn-outline-secondary" type="button">
-                              <a href="{{'tel:'+getPhoneFormGroup(i).controls.NrPhone?.value}}">
-                                <fa-icon [icon]="['fas','phone']"></fa-icon>
-                              </a>
-                            </button>
-                            <button class="btn btn-outline-secondary" type="button">
-                              <a
-                                href="{{'https://api.whatsapp.com/send?phone='+getPhoneFormGroup(i).controls.NrPhone?.value}}">
-                                <fa-icon [icon]="faWhatsapp" style="color: green;"></fa-icon>
-                              </a>
-                            </button>
                           </div>
                         </div>
-                      </div>
-                      <div class="form-group col-1">
-                        <a type="button" href="#" (click)="this.PhoneCollection.removeAt(i)">
-                          <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;" title="Rimuovi">
-                          </fa-icon>
-                        </a>
+                        <div class="col col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group">
+                          <div class="form-check mb-3 pt-1">
+                            <label class="form-check-label">
+                              <input class="form-check-input" type="checkbox" formControlName="FlPec"> Pec
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="form-group col-1">
+                          <a type="button" href="#" (click)="removeMail($event, i)">
+                            <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;"
+                              title="Rimuovi">
+                            </fa-icon>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
 
                 </div>
-                <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
-                  <a type="button" href="#" class="d-flex" (click)="addPhone($event)">
+              </div>
+
+              <div class="card-body pr-0 pl-0">
+                <div class="row ">
+                  <a href="#" type="button" (click)="phoneToggle($event)" class="text-secondary">
+                    <div class="form-inline">
+                      <ng-container [ngSwitch]="phoneCollapsed">
+                        <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
+                        </fa-icon>
+                        <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+                        </fa-icon>
+                      </ng-container>
+                      <h5 class="card-title" [attr.aria-expanded]="!phoneCollapsed">Telefono</h5>
+                    </div>
+                  </a>
+
+                  <a type="button" href="#" class="d-flex ml-5" (click)="addPhone($event)">
                     +
                     Add </a>
                 </div>
-              </div>
-            </div>
-
-            <div class="card-body pr-0 pl-0">
-              <a href="#" type="button" (click)="addressToggle($event)" class="text-secondary">
-                <div class="form-inline">
-                  <ng-container [ngSwitch]="addressCollapsed">
-                    <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
-                    </fa-icon>
-                    <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
-                    </fa-icon>
-                  </ng-container>
-                  <h5 class="card-title" [attr.aria-expanded]="!addressCollapsed">Indirizzo</h5>
-                </div>
-              </a>
-              <div #indirizzoCollapse [ngbCollapse]="addressCollapsed">
-                <div formArrayName="AddressCollection">
-                  <div [formGroupName]="i" *ngFor="let address of AddressCollection.controls; let i=index">
-                    <div class="form-row">
-                      <input type="hidden" formControlName="IdContact">
-                      <div class="col-6 col-sm-1 col-md-3 col-lg-2 col-xl-2 form-group">
-                        <ng-select #selectDEtichettaIndirizzo [items]="dLabelAddress$|async" class="ng-select-small"
-                          bindLabel="Label" bindValue="Id" dropdownPosition="auto" placeholder="Tipologia"
-                          [openOnEnter]=false appendTo="body" [virtualScroll]="true" [loading]="!(dLabelAddress$|async)"
-                          formControlName="TyLabel">
-                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
-                            <div>
-                              <span>{{item.Label}}</span>
+                <div #phoneCollapse [ngbCollapse]="phoneCollapsed">
+                  <div formArrayName="PhoneCollection">
+                    <div [formGroupName]="i" *ngFor="let phone of PhoneCollection.controls; let i=index">
+                      <div class="form-row">
+                        <input type="hidden" formControlName="IdContact">
+                        <span formGroupName="DPhone"><input type="hidden" formControlName="Regex"></span>
+                        <div class="col-12 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
+                          <ng-select #selectDPhone [items]="dPhone$|async" bindLabel="Label" class="ng-select-small"
+                            bindValue="Id" dropdownPosition="auto" placeholder="Tipologia" [openOnEnter]=false
+                            appendTo="body" [virtualScroll]="true" [loading]="!(dPhone$|async)"
+                            (change)="onChangeTyPhone($event, i)" (clear)="onClearTyPhone($event, i)"
+                            formControlName="TyPhone">
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                              <div>
+                                <span>{{item.Label}}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template ng-loadingspinner-tmp>
+                              <div class="lds-ellipsis">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                              </div>
+                            </ng-template>
+                          </ng-select>
+                        </div>
+                        <div class="col-10 col-sm-10 col-md-9 col-lg-9 col-xl-9 form-group">
+                          <div class="input-group input-group-sm">
+                            <input type="tel" class="form-control form-control-sm" mask=" 000 0000000" prefix="+39"
+                              placeholder="Nr. Telefono" formControlName="NrPhone">
+                            <div *ngIf="getPhoneFormGroup(i).controls.NrPhone?.errors" class="text-danger"> formato
+                              campo non valido </div>
+                            <div class="input-group-append">
+                              <button class="btn btn-outline-secondary" type="button">
+                                <a href="{{'tel:'+getPhoneFormGroup(i).controls.NrPhone?.value}}">
+                                  <fa-icon [icon]="['fas','phone']"></fa-icon>
+                                </a>
+                              </button>
+                              <button class="btn btn-outline-secondary" type="button">
+                                <a
+                                  href="{{'https://api.whatsapp.com/send?phone='+getPhoneFormGroup(i).controls.NrPhone?.value}}">
+                                  <fa-icon [icon]="faWhatsapp" style="color: green;"></fa-icon>
+                                </a>
+                              </button>
                             </div>
-                          </ng-template>
-                          <ng-template ng-loadingspinner-tmp>
-                            <div class="lds-ellipsis">
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </ng-template>
-                        </ng-select>
-                      </div>
-                      <div class="col-12 col-sm-7 col-md-8 col-lg-9 col-xl-9 form-group">
-                        <input type="text" class="form-control form-control-sm" placeholder="Indirizzo"
-                          formControlName="DsAddress">
+                          </div>
+                        </div>
+                        <div class="form-group col-1">
+                          <a type="button" href="#" (click)="this.PhoneCollection.removeAt(i)">
+                            <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;"
+                              title="Rimuovi">
+                            </fa-icon>
+                          </a>
+                        </div>
                       </div>
                     </div>
-                    <div class="form-row">
-                      <div class="col-6 col-sm-3 col-md-4 col-lg-3 col-xl-3 form-group">
-                        <ng-select #selectIdAdministrativeAreaAddress [items]="administrativeArea$|async"
-                          bindLabel="DsAdministrativeArea" class="ng-select-small" bindValue="Id"
-                          dropdownPosition="auto" placeholder="Comune" [openOnEnter]=false appendTo="body"
-                          [virtualScroll]="true" [loading]="!(administrativeArea$|async)"
-                          formControlName="IdAdministrativeArea" (change)=" onChangeAdministrativeAreaAddress($event,i)"
-                          (clear)="onClearAdministrativeAreaAddress($event, i)">
-                          <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
-                            <div>
-                              <span>{{item.DsAdministrativeArea}}</span>
-                            </div>
-                          </ng-template>
-                          <ng-template ng-loadingspinner-tmp>
-                            <div class="lds-ellipsis">
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                              <div></div>
-                            </div>
-                          </ng-template>
-                        </ng-select>
-                      </div>
-                      <div class="col-6 col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group"
-                        formGroupName="AdministrativeArea">
-                        <input type="text" class="form-control form-control-sm" placeholder="Cap" formControlName="Cap">
-                      </div>
-                      <div class="col-4 col-sm-1 col-md-1 col-lg-2 col-xl-2 form-group"
-                        formGroupName="AdministrativeArea">
-                        <input type="text" class="form-control form-control-sm" placeholder="Provincia" readonly
-                          formControlName="District">
-                      </div>
-                      <div class="col-4 col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group"
-                        formGroupName="AdministrativeArea">
-                        <input type="text" class="form-control form-control-sm" placeholder="Istat" readonly
-                          formControlName="CdIstat">
-                      </div>
-                      <span formGroupName="AdministrativeArea"
-                        class="col-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
-                        <div formGroupName="DRegion">
-                          <input type="text" class="form-control form-control-sm" placeholder="Regione" readonly
-                            formControlName="Label">
+
+                  </div>
+
+                </div>
+              </div>
+
+              <div class="card-body pr-0 pl-0">
+                <div class="row ">
+                  <a href="#" type="button" (click)="addressToggle($event)" class="text-secondary">
+                    <div class="form-inline">
+                      <ng-container [ngSwitch]="addressCollapsed">
+                        <fa-icon *ngSwitchCase="true" [icon]="['fas','chevron-right']" class="pr-2 mb-auto">
+                        </fa-icon>
+                        <fa-icon *ngSwitchDefault [icon]="['fas','chevron-down']" class="pr-2 mb-auto">
+                        </fa-icon>
+                      </ng-container>
+                      <h5 class="card-title" [attr.aria-expanded]="!addressCollapsed">Indirizzo</h5>
+                    </div>
+                  </a>
+
+                  <a type="button" href="#" class="d-flex ml-5" (click)="addAddress($event)">
+                    + Add </a>
+                </div>
+                <div #indirizzoCollapse [ngbCollapse]="addressCollapsed">
+                  <div formArrayName="AddressCollection">
+                    <div [formGroupName]="i" *ngFor="let address of AddressCollection.controls; let i=index">
+                      <div class="form-row">
+                        <input type="hidden" formControlName="IdContact">
+                        <div class="col-6 col-sm-1 col-md-3 col-lg-2 col-xl-2 form-group">
+                          <ng-select #selectDEtichettaIndirizzo [items]="dLabelAddress$|async" class="ng-select-small"
+                            bindLabel="Label" bindValue="Id" dropdownPosition="auto" placeholder="Tipologia"
+                            [openOnEnter]=false appendTo="body" [virtualScroll]="true"
+                            [loading]="!(dLabelAddress$|async)" formControlName="TyLabel">
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                              <div>
+                                <span>{{item.Label}}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template ng-loadingspinner-tmp>
+                              <div class="lds-ellipsis">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                              </div>
+                            </ng-template>
+                          </ng-select>
                         </div>
-                      </span>
-                      <div class="form-group col-1">
-                        <a type="button" href="#" (click)="removeAddress($event, i)">
-                          <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;" title="Rimuovi">
-                          </fa-icon>
-                        </a>
+                        <div class="col-12 col-sm-7 col-md-8 col-lg-9 col-xl-9 form-group">
+                          <input type="text" class="form-control form-control-sm" placeholder="Indirizzo"
+                            formControlName="DsAddress">
+                        </div>
+                      </div>
+                      <div class="form-row">
+                        <div class="col-6 col-sm-3 col-md-4 col-lg-3 col-xl-3 form-group">
+                          <ng-select #selectIdAdministrativeAreaAddress [items]="administrativeArea$|async"
+                            bindLabel="DsAdministrativeArea" class="ng-select-small" bindValue="Id"
+                            dropdownPosition="auto" placeholder="Comune" [openOnEnter]=false appendTo="body"
+                            [virtualScroll]="true" [loading]="!(administrativeArea$|async)"
+                            formControlName="IdAdministrativeArea"
+                            (change)=" onChangeAdministrativeAreaAddress($event,i)"
+                            (clear)="onClearAdministrativeAreaAddress($event, i)">
+                            <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                              <div>
+                                <span>{{item.DsAdministrativeArea}}</span>
+                              </div>
+                            </ng-template>
+                            <ng-template ng-loadingspinner-tmp>
+                              <div class="lds-ellipsis">
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                                <div></div>
+                              </div>
+                            </ng-template>
+                          </ng-select>
+                        </div>
+                        <div class="col-6 col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group"
+                          formGroupName="AdministrativeArea">
+                          <input type="text" class="form-control form-control-sm" placeholder="Cap"
+                            formControlName="Cap">
+                        </div>
+                        <div class="col-4 col-sm-1 col-md-1 col-lg-2 col-xl-2 form-group"
+                          formGroupName="AdministrativeArea">
+                          <input type="text" class="form-control form-control-sm" placeholder="Provincia" readonly
+                            formControlName="District">
+                        </div>
+                        <div class="col-4 col-sm-1 col-md-2 col-lg-2 col-xl-2 form-group"
+                          formGroupName="AdministrativeArea">
+                          <input type="text" class="form-control form-control-sm" placeholder="Istat" readonly
+                            formControlName="CdIstat">
+                        </div>
+                        <span formGroupName="AdministrativeArea"
+                          class="col-4 col-sm-2 col-md-2 col-lg-2 col-xl-2 form-group">
+                          <div formGroupName="DRegion">
+                            <input type="text" class="form-control form-control-sm" placeholder="Regione" readonly
+                              formControlName="Label">
+                          </div>
+                        </span>
+                        <div class="form-group col-1">
+                          <a type="button" href="#" (click)="removeAddress($event, i)">
+                            <fa-icon [icon]=" ['far', 'trash-alt' ]" style="color:gray;font-size: 20px;"
+                              title="Rimuovi">
+                            </fa-icon>
+                          </a>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
-                  <a type="button" href="#" class="d-flex" (click)="addAddress($event)">
-                    + Add </a>
+
                 </div>
               </div>
             </div>
@@ -439,10 +456,6 @@
       </nav>
       <div [ngbNavOutlet]="nav" class="mr-2 col"></div>
     </div>
-    <app-controlpanel [showBtnDelete]="showBtnDelete" [frmInvalid]="!this.frmContact.valid" *ngIf="showControlPanel"
-      (btnSalvaClick)="btnSalvaOnClick($event)" (btnAnnullaClick)="btnAnnullaOnClick($event)"
-      (btnEliminaClick)="btnEliminaOnClick($event)">
-    </app-controlpanel>
 
     <ng-template #fRagioneSociale>
       <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-8 pl-1 form-group">

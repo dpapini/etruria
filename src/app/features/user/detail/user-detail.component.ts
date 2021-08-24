@@ -164,7 +164,6 @@ export class UserDetailComponent implements OnInit {
 
   btnSalvaOnClick(e: Event) {
     e.preventDefault();
-    console.log('salva', this.frmUserDetail.getRawValue())
     this.store.dispatch(editUser({ userModel: this.frmUserDetail.getRawValue() }));
   }
 
