@@ -1,30 +1,30 @@
 <div class="modal-header">
-   <h4 class="modal-title">Linee prezzi</h4>
-   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('ko')">
-      <span aria-hidden="true">&times;</span>
-   </button>
+  <h4 class="modal-title">Linee prezzi</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('ko')">
+    <span aria-hidden="true">&times;</span>
+  </button>
 </div>
 <div class="modal-body" [formGroup]="frmLinePrice">
-   <div class="row col-12">
-      <div class="col-12" formArrayName="LinePriceCollection" *ngIf="linePrice$|async; else loading"
-         style="display: contents;">
-         <div [formGroupName]="i" *ngFor="let linePrice of FiltroCollection.controls; let i = index" class="col-6">
-            <label class="form-check-label">
-               <input type="checkbox" class="form-check-input"
-                  formControlName="Checked">{{getFiltroFormGroup(i).controls.Label.value}}
-            </label>
-         </div>
+  <div class="row col-12">
+    <div class="col-12" formArrayName="LinePriceCollection" *ngIf="linePrice$|async; else loading"
+      style="display: contents;">
+      <div [formGroupName]="i" *ngFor="let linePrice of FiltroCollection.controls; let i = index" class="col-6">
+        <label class="form-check-label">
+          <input type="checkbox" class="form-check-input"
+            formControlName="Checked">{{getFiltroFormGroup(i).controls.Label.value}}
+        </label>
       </div>
-   </div>
+    </div>
+  </div>
 
 </div>
 <div class="modal-footer">
-   <button type="button" class="btn btn-outline-secondary" (click)="onClickResetLinePrice($event)">Annulla</button>
-   <button type="button" class="btn btn-outline-primary" [disabled]="frmLinePrice.invalid"
-      (click)="activeModal.close(frmLinePrice.getRawValue())">Ricalcola</button>
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('ko')">Annulla</button>
+  <button type="button" class="btn btn-outline-primary" [disabled]="frmLinePrice.invalid"
+    (click)="activeModal.close(frmLinePrice.getRawValue())">Ricalcola</button>
 </div>
 
 <ng-template #loading>
-   <strong>Loading...</strong>
-   <div class="spinner-grow ml-auto" role="status" aria-hidden="true"></div>
+  <strong>Loading...</strong>
+  <div class="spinner-grow ml-auto" role="status" aria-hidden="true"></div>
 </ng-template>

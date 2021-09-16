@@ -32,6 +32,24 @@ export const getPurchasedValue = createSelector(
       (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {})).map(p => p.Purchased)
   }
 )
+
+export const getPurchasedYearByLine = (tyLine: string) => createSelector(
+  getSupplierState,
+  (s) => {
+    // return s.EtruriaSuppliers.supplierActive.Purchased.map(p => p.Year);
+    return Object.values<SupplierPurchasedModel>(s.EtruriaSuppliers.supplierActive?.Purchased.filter(p => p.TyLine === tyLine).reduce((r, o) =>
+      (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {})).map(p => p.Year)
+  }
+)
+
+export const getPurchasedValueByLine = (tyLine: string) => createSelector(
+  getSupplierState,
+  (s) => {
+    return Object.values<SupplierPurchasedModel>(s.EtruriaSuppliers.supplierActive?.Purchased.filter(p => p.TyLine === tyLine).reduce((r, o) =>
+      (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {})).map(p => p.Purchased)
+  }
+)
+
 export const getPurchasedValueAtDate = createSelector(
   getSupplierState,
   (s, y) => {
@@ -91,11 +109,10 @@ export const getPurchasedValueByYearLine = (year: number, line: string) => creat
 export const getPurchasedValueByYear = (year: number) => createSelector(
   getSupplierState,
   (s) => {
-
     const t = (s.EtruriaSuppliers?.supplierActive?.Purchased.filter(p => p.Year === year)?.reduce((r, o) =>
-      (r[o.Year, o.TyLine] ? (r[o.Year, o.TyLine].Purchased += o.Purchased) : (r[o.Year, o.TyLine] = { ...o }), r), {}))
+      (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {}))
     if (t)
-      return Object.values<SupplierPurchasedModel>(t);
+      return Object.values<SupplierPurchasedModel>(t).map(p => p.Purchased)[0];
     else return null;
   }
 )
@@ -134,4 +151,14 @@ export const getListinoSupplierByLine = (tyLine: string) => createSelector(
     return s ? s.EtruriaSuppliers.supplierListino.filter(l => l.TyLine === tyLine) : null;
   }
 )
+
+export const getCurrentYear = createSelector(
+  getSupplierState,
+  (s) => s.EtruriaSuppliers.currentYear
+);
+
+export const getBeforeYear = createSelector(
+  getSupplierState,
+  (s) => s.EtruriaSuppliers.beforeYear
+);
 

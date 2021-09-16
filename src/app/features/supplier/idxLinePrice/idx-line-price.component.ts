@@ -48,7 +48,7 @@ export class IdxLinePriceComponent implements OnInit {
   public market$ = this.idxLine$.pipe(
     map((dpm: DetectionPriceModel) => {
       return {
-        Title: `Market`,
+        Title: `Market/Express`,
         ValoreSx: dpm.Market?.toFixed(1),
         Symbol: '%',
         ColorProgressBar: 'bg-danger',

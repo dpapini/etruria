@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { AgGridSelectBtnCellRenderer } from 'src/app/core/component/aggrid/ag-grid-select-btn-cell-render';
-import { CustomerModel, CustomerSearch } from './../../../core/component/customer/model/customer';
+import { CustomerSearch } from './../../../core/component/customer/model/customer';
 import { CustomerService } from './../../../core/component/customer/service/customer.service';
 
 @Component({
@@ -37,8 +37,7 @@ import { CustomerService } from './../../../core/component/customer/service/cust
     }
     .filter-panel .card{
         border:0;
-      }
-
+    }
   `]
 })
 export class CustomerGridComponent implements OnInit {

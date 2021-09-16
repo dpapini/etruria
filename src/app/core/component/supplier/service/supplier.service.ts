@@ -1,10 +1,13 @@
+import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { DetectionPriceModel, DetectionPriceSearch } from '../model/detectionPrice';
 import { LinePriceModel } from '../model/linePrice';
+import { SupplierSearch } from '../model/supplier';
 import { SupplierAgreementModel, SupplierAgreementSearch } from '../model/supplierAgreement';
 import { environment } from './../../../../../environments/environment';
+import { SupplierBenchModel, SupplierBenchSearch } from '../model/supplierBench';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -19,6 +22,21 @@ const httpOptions = {
 export class SupplierService {
 
   constructor(private http: HttpClient) { }
+
+  SupplierCollection(ss: SupplierSearch) {
+    const param = new HttpParams({
+      fromObject: {
+        pId: (ss.pId ? ss.pId.toString().trim() : ''),
+        pSubId: (ss.pSubId ? ss.pSubId.toString().trim() : ''),
+        pLabel: (ss.pLabel ? ss.pLabel.toString().trim() : ''),
+        pOffSet: (ss.pOffSet ? ss.pOffSet.toString().trim() : ''),
+        pNextRow: (ss.pNextRow ? ss.pNextRow.toString().trim() : ''),
+        pIdBuyer: (ss.pIdBuyer ? ss.pIdBuyer.toString() : ''),
+        pFilter: ss.pFilter ? ss.pFilter.toString().trim() : '',
+      }
+    });
+    return this.http.get<SupplierModel[]>(environment.apiUrl + 'supplier/SupplierCollection', { params: param });
+  }
 
   DetectionPriceBySupplier(dps: DetectionPriceSearch) {
     const param = new HttpParams({
@@ -97,8 +115,19 @@ export class SupplierService {
   }
 
   PremiaAgreementCollectionFixSecondLivel(sas: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
-    console.log('PremiaAgreementCollectionFixSecondLivel', sas)
+    // console.log('PremiaAgreementCollectionFixSecondLivel', sas)
     return this.http.post<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/FissoPremiaSecondLivel', sas, httpOptions);
+  }
+
+  BenchMarkTotale(sbs: SupplierBenchSearch) {
+    const param = new HttpParams({
+      fromObject: {
+        pId: sbs.pId ? sbs.pId.toString().trim() : '',
+        pSubId: sbs.pSubId ? sbs.pSubId.toString().trim() : '',
+        pIdBuyer: sbs.pIdBuyer ? sbs.pIdBuyer.toString().trim() : ''
+      }
+    });
+    return this.http.get<SupplierBenchModel>(environment.apiUrl + 'supplier/BenchMarkTotale', { params: param });
   }
 }
 

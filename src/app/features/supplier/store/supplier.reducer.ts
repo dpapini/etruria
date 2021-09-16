@@ -10,7 +10,8 @@ export interface SuppliersState {
   supplierFirstAgreementModel: SupplierFirstAgreementModel[],
   suppliersModel: SupplierModel[];
   supplierActive: SupplierModel;
-  // filter: string;
+  currentYear: number,
+  beforeYear: number,
 }
 
 const initializeSupplierState: SuppliersState = {
@@ -19,6 +20,8 @@ const initializeSupplierState: SuppliersState = {
   supplierFirstAgreementModel: [],
   suppliersModel: [],
   supplierActive: null,
+  currentYear: new Date().getFullYear(),
+  beforeYear: new Date().getFullYear() - 1,
   // filter: '',
 }
 

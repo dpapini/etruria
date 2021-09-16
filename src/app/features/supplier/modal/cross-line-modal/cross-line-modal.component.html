@@ -1,0 +1,27 @@
+<div class="modal-header">
+  <h4 class="modal-title">Cross Fornitore-Linea anno: {{yearCross}}</h4>
+  <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('ko')">
+    <span aria-hidden="true">&times;</span>
+  </button>
+</div>
+<div class="modal-body" [formGroup]="frmCrossLine">
+  <div class="form-row d-flex">
+    <div class="col-12">
+      <span class="input-group input-group-sm">
+        <app-search-supplier class="col-12" (selectSupplier)="selectSupplierClick($event)" formControlName="IdSupplier">
+        </app-search-supplier>
+      </span>
+    </div>
+  </div>
+
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('ko')">Annulla</button>
+  <button type="button" class="btn btn-outline-primary" [disabled]="frmCrossLine.invalid"
+    (click)="activeModal.close(frmCrossLine.getRawValue())">Ricalcola</button> -->
+</div>
+
+<ng-template #loading>
+  <strong>Loading...</strong>
+  <div class="spinner-grow ml-auto" role="status" aria-hidden="true"></div>
+</ng-template>

@@ -5,11 +5,17 @@
   </button>
 </div>
 <div class="modal-body">
-  <div class="row col-12" *ngIf="purchasedValue$|async; else loading">
-    <app-line-chart class="col" [data]="purchasedValue$|async" [data2]="purchasedValueAtData$|async"
-      [labels]="purchasedYears$|async">
+  <div class="row d-flex justify-content-center" *ngIf="purchasedValue$|async; else loading">
+    <app-line-chart name="chartLineTitle" class="col-6" [data]="purchasedValue$|async"
+      [data2]="purchasedValueAtData$|async" [labels]="purchasedYears$|async" titleChart="Totale">
     </app-line-chart>
-
+  </div>
+  <div class="row" *ngIf="listLine$|async; else loading">
+    <div class="col-6" *ngFor="let item of (listLine$|async); let idx=index;">
+      <app-line-chart name="chartLine{{idx}}" [data]="item.TyLine|purchasedLineValue|async"
+        titleChart="{{item.TyLine}} - {{item.Label}}" [labels]="item.TyLine|purchasedLineYear|async">
+      </app-line-chart>
+    </div>
   </div>
 
 </div>

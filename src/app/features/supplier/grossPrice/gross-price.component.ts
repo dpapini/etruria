@@ -1,13 +1,13 @@
 import { Component, Input, OnInit, SimpleChanges } from '@angular/core';
 import { select, Store } from '@ngrx/store';
 import { BehaviorSubject, Observable, Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, withLatestFrom } from 'rxjs/operators';
 import { CounterupModel } from 'src/app/core/component/counterup/model/counterupModel';
 import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/model/listSupplier';
 import { setSupplierListino } from '../store/supplier.actions';
 import { AppState } from './../../../app.module';
 import { ListSupplierSearch } from './../../../core/component/supplier/model/listSupplier';
-import { getListinoSupplier } from './../store/supplier.selectors';
+import { getListinoSupplier, getCurrentYear } from './../store/supplier.selectors';
 
 @Component({
   selector: 'app-gross-price',
@@ -17,7 +17,6 @@ import { getListinoSupplier } from './../store/supplier.selectors';
 export class GrossPriceComponent implements OnInit {
   @Input() id: number = 0;
   @Input() subId: number = 0;
-  loaded$: BehaviorSubject<boolean> = new BehaviorSubject(false);
   rowData$: Observable<ListSupplierIndexDetailModel[]> = this.store.pipe(select(getListinoSupplier));
 
   subscription: Subscription[] = [];
@@ -26,7 +25,6 @@ export class GrossPriceComponent implements OnInit {
   gridColumnApi;
   gridOptions;
 
-  // private response$ = this.loaded$.pipe(map(() => { return { Id: this.id, SubId: this.subId } }));
 
   public idxTotal$ = this.rowData$.pipe(map((rows: ListSupplierIndexDetailModel[]) => {
     let imCy = 0;
@@ -76,14 +74,15 @@ export class GrossPriceComponent implements OnInit {
   ngOnChanges(changes: SimpleChanges) {
     const { id, subId } = changes;
     if (!(id && subId)) return;
-    const listSupplierSearch: ListSupplierSearch = { pId: id.currentValue, pSubId: subId.currentValue, pYear: new Date().getFullYear() }
-    this.store.dispatch(setSupplierListino({ listSupplierSearch }));
 
-    this.loaded$.next(true);
+    this.store.select(getCurrentYear).subscribe(cy => {
+      const listSupplierSearch: ListSupplierSearch = { pId: id.currentValue, pSubId: subId.currentValue, pYear: cy }
+      this.store.dispatch(setSupplierListino({ listSupplierSearch }));
+    }
+    );
   }
   ngOnDestroy(): void {
     this.subscription.forEach(s => s.unsubscribe());
-    this.loaded$.next(null);
   }
 
   ngOnInit(): void {

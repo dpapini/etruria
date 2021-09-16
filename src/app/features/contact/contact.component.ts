@@ -1,5 +1,7 @@
+import { getFilterContactParam } from './store/filter.selectors';
 import { AfterViewChecked, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-contact',
@@ -9,7 +11,11 @@ import { ActivatedRoute, Router } from '@angular/router';
 })
 export class ContactComponent implements OnInit, AfterViewChecked {
 
-  constructor(private router: Router, public route: ActivatedRoute,
+  filterContact$ = this.store.select(getFilterContactParam);
+
+  constructor(private router: Router,
+    private store: Store,
+    public route: ActivatedRoute,
     private cdref: ChangeDetectorRef,
   ) {
 

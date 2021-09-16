@@ -18,3 +18,9 @@ export const getPhotoById = (id: number) => createSelector(
   getUserById(id),
   (u) => u.Photo || null
 );
+
+
+export const getIdBuyerByUserid = (userId: string) => createSelector(
+  getUserList,
+  (ul) => ul?.filter(u => u.Userid === userId)[0].IdBuyer || null
+)

@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { EffectsModule } from '@ngrx/effects';
@@ -20,6 +20,10 @@ import { SuppliersEffects } from './store/supplier.effects';
 import { SuppliersReducer, SuppliersState } from './store/supplier.reducer';
 import { SupplierRoutingModule } from './supplier-routing.module';
 import { SupplierComponent } from './supplier.component';
+import { PurchasedLineYearPipe } from './modal/purchased-modal/purchased-line-year.pipe';
+import { PurchasedLineValuePipe } from './modal/purchased-modal/purchased-line-value.pipe';
+import { SupplierHeaderComponent } from './header/supplier-header.component';
+import { CrossLineModalComponent } from './modal/cross-line-modal/cross-line-modal.component';
 
 
 
@@ -33,11 +37,14 @@ const reducers: ActionReducerMap<SupplierState> = {
 
 @NgModule({
   declarations: [SupplierComponent, SupplierBenchmarkComponent, IdxLinePriceComponent, GrossPriceComponent,
-    LinePriceModalComponent, AgreementComponent, MyFilterPipe, PurchasedModalComponent],
+    LinePriceModalComponent, AgreementComponent, MyFilterPipe
+    , PurchasedModalComponent, PurchasedLineYearPipe, PurchasedLineValuePipe
+    , SupplierHeaderComponent, CrossLineModalComponent],
   imports: [
     CommonModule,
     CounterupModule,
     SupplierRoutingModule,
+    FormsModule,
     ReactiveFormsModule,
     FontAwesomeModule,
     AgGridComponentModule,
@@ -48,6 +55,6 @@ const reducers: ActionReducerMap<SupplierState> = {
     StoreModule.forFeature('EtruriaSuppliers', reducers),
     EffectsModule.forFeature([SuppliersEffects])
   ],
-  entryComponents: [LinePriceModalComponent, PurchasedModalComponent]
+  entryComponents: [LinePriceModalComponent, PurchasedModalComponent, CrossLineModalComponent]
 })
 export class SupplierModule { }

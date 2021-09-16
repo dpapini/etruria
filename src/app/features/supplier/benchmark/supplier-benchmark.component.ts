@@ -1,13 +1,15 @@
-import { PurchasedModalComponent } from './../modal/purchased-modal/purchased-modal.component';
-import { Component, OnDestroy, OnInit, ViewChild, ElementRef } from '@angular/core';
-import { ActivatedRoute, Params, Router } from '@angular/router';
+import { getBeforeYear, getCurrentYear } from './../store/supplier.selectors';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { select, Store } from '@ngrx/store';
-import { Subscription } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
+import { Observable, Subscription } from 'rxjs';
+import { filter, map } from 'rxjs/operators';
 import { AppState } from 'src/app/app.module';
+import { SupplierModel, SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
+import { clearDataSupplier, setSupplier } from '../store/supplier.actions';
 import { getSupplier } from '../store/supplier.selectors';
-import { clearDataSupplier } from '../store/supplier.actions';
+import { PurchasedModalComponent } from './../modal/purchased-modal/purchased-modal.component';
 
 @Component({
   selector: 'app-supplier-benchmark',
@@ -16,20 +18,9 @@ import { clearDataSupplier } from '../store/supplier.actions';
 })
 export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
   subscription: Subscription[] = [];
-  showEditCY = false;
-  showEditBY = false;
-  @ViewChild('currentYear', { read: ElementRef }) currentYear: ElementRef
-  @ViewChild('beforeYear', { read: ElementRef }) beforeYear: ElementRef
-
-  private route$ = this.route.params.pipe(map(p => p));
-
-  public supplier$ = this.route$.pipe(
-    switchMap((p: Params) => {
-      const id: number = +p.Id.split('.')[0]
-      const subId: number = +p.Id.split('.')[1];
-      return this.store.pipe(select(getSupplier(id, subId)))
-    })
-  );
+  supplier$: Observable<SupplierModel>;
+  cy = this.store.select(getCurrentYear);
+  by = this.store.select(getBeforeYear)
 
   constructor(private route: ActivatedRoute, private router: Router,
     private modalService: NgbModal,
@@ -39,34 +30,30 @@ export class SupplierBenchmarkComponent implements OnInit, OnDestroy {
     this.subscription.forEach(s => s.unsubscribe());
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+    this.route.params.pipe(
+      filter(p => +p.Id > 0),
+      map(p => {
+        const supplierSearch: SupplierSearch = { pId: +p.Id, pSubId: +p.SubId };
 
-  onFocusNumber(e) {
-    const target = e.currentTarget;
-    target.type = "text";
-    target.setSelectionRange(0, target.value.length);
-    target.type = "number";
+        this.store.dispatch(setSupplier({ supplierSearch }));
+        return supplierSearch;
+      })
+    ).subscribe((ss: SupplierSearch) =>
+      this.supplier$ = this.store.pipe(select(getSupplier(ss.pId, ss.pSubId)))
+    );
   }
 
-  onClickLabelCurrentYear(e: any) {
-    this.showEditCY = !this.showEditCY;
-    setTimeout(() => { this.currentYear.nativeElement.focus(); })
-  }
-  onClickLabelBeforeYear(e: any) {
-    this.showEditBY = !this.showEditBY;
-    setTimeout(() => { this.beforeYear.nativeElement.focus(); })
-  }
   onclickBtnRedo(e: Event) {
     console.log('onclickBtnRedo');
   }
 
   listSupplierClick(e: Event) {
-    e.preventDefault();
-    this.router.navigate(['.'], { relativeTo: this.route.parent });
+    this.router.navigateByUrl('/Home/Supplier');
     this.store.dispatch(clearDataSupplier())
   }
+
   listChartLineClick(e: Event) {
-    e.preventDefault();
-    const m = this.modalService.open(PurchasedModalComponent, { backdropClass: 'light-blue-backdrop' }).result.then((result) => { }, (reason) => { });
+    const m = this.modalService.open(PurchasedModalComponent, { backdropClass: 'light-blue-backdrop', size: 'xl' }).result.then((result) => { }, (reason) => { });
   }
 }

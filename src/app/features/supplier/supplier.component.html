@@ -2,13 +2,7 @@
   <div class="row">
     <div class="col-12" style="padding-bottom: 5px;">
       <div class="card">
-        <div class="card-header">
-          <h5>Fornitore
-            <span *ngIf="supplier$|async; let supplier">
-              <span *ngIf="supplier && route.children.length >0">: {{supplier.BusinessName}}</span>
-            </span>
-          </h5>
-        </div>
+        <app-supplier-header></app-supplier-header>
         <div class="card-body">
           <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
             <button class="btn btn-outline-primary mb-1" type="button" title="Excel" (click)="onClickBtnExcel($event)">
@@ -19,7 +13,10 @@
           </div>
 
           <ag-grid-angular style="width: 100%;height: 100%;" class="ag-theme-alpine" [gridOptions]="gridOptions"
-            [suppressDragLeaveHidesColumns]="true" [rowData]="rowData$|async"></ag-grid-angular>
+            (filterChanged)="onFilterColumnChanged($event)" [suppressDragLeaveHidesColumns]="true"
+            [rowData]="rowData$|async">
+          </ag-grid-angular>
+          <ng-container [ngTemplateOutlet]="TotaleLivello"></ng-container>
         </div>
       </div>
     </div>
@@ -28,3 +25,38 @@
 </div>
 
 <router-outlet></router-outlet>
+
+<ng-template #TotaleLivello>
+  <div class="form-row pt-3" *ngIf="dataTotale">
+    <div class="col-3">
+      <div class="col-12" style="background-color: white;border: 1px solid rgba(0, 0, 0, .0625);">
+        <div class="col-12 align-self-center p-0">
+          <div style="text-align: -webkit-center;">
+            <app-rounded-doughnut-chart [data]="dataTotale.Bench3" [value]="0" title="Totale">
+            </app-rounded-doughnut-chart>
+          </div>
+          <div class="d-flex justify-content-between col-12 p-0 " style="visibility: hidden !important;">
+            <span class="col-6">
+              <span class="form-row">
+                <div class="form-group">
+                  <label></label>
+                  <input type="number" class="form-control disabled" readonly [value]="">
+                  <small>% </small>
+                </div>
+              </span>
+            </span>
+            <span class="col-6">
+              <span class="form-row">
+                <div class="form-group">
+                  <label class="float-right"></label>
+                  <input type="number" class="form-control" [value]="">
+                  <small>%</small>
+                </div>
+              </span>
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-template>

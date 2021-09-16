@@ -18,4 +18,5 @@ export interface SupplierSearch {
   pOffSet?: number;
   pNextRow?: number;
   pIdBuyer?: number;
+  pFilter?: string;
 }

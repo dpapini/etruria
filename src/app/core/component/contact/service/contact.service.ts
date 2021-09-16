@@ -48,6 +48,8 @@ export class ContactService {
         pLabel: (cs.pLabel ? cs.pLabel.trim() : ''),
         pId: (cs.pId ? cs.pId?.toString().trim() : ''),
         pTySearch: (cs.pTySearch ? cs.pTySearch.toString().trim() : ''),
+        OffSet: cs.OffSet.toString(),
+        NextRow: (cs.NextRow - cs.OffSet).toString(),
       }
     });
 

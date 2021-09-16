@@ -41,6 +41,8 @@ export interface ContactSearch {
   pId?: number;
   pIdUser?: number;
   pTySearch?: ContactTypeSearch;
+  OffSet?: number;
+  NextRow?: number;
 }
 
 export enum ContactTypeSearch {

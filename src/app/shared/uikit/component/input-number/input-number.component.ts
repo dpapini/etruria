@@ -2,7 +2,6 @@ import { AfterViewChecked, ChangeDetectorRef, Component, ElementRef, forwardRef,
 import { ControlValueAccessor, NgControl, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
-  // tslint:disable-next-line: component-selector
   selector: 'dp-input-number',
   templateUrl: './input-number.component.html',
   styleUrls: ['./input-number.component.scss'],

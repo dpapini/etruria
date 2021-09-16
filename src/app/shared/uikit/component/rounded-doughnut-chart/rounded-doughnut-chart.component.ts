@@ -1,4 +1,3 @@
-import { first } from 'rxjs/operators';
 import { Component, ElementRef, Input, SimpleChanges, ViewChild } from '@angular/core';
 import * as Chart from 'chart.js';
 import { updateDoughnutChartConfig } from './rounded-doughnut-chart.config';
@@ -33,7 +32,10 @@ export class RoundedDoughnutChartComponent {
     if (!data || !title) return;
     if (data.firstChange && title.firstChange) {
       const ctx = this.roundedDoughnutChart.nativeElement.getContext('2d');
-      this.myChart = new Chart(ctx, updateDoughnutChartConfig(this.labels, data.currentValue, title.currentValue));
+      // this.myChart = new Chart(ctx, updateDoughnutChartConfig(this.labels, data.currentValue, title.currentValue));
+      this.myChart?.destroy();
+      this.myChart = new Chart(ctx, config);
+      // console.log(this.myChart.data.datasets[0])
     }
     else {
       console.log('nfg')

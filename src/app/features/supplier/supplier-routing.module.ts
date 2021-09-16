@@ -10,7 +10,7 @@ const routes: Routes = [
     component: SupplierComponent,
     children: [
       {
-        path: 'Benchmark/:Id',
+        path: 'Benchmark/:Id/:SubId',
         component: SupplierBenchmarkComponent,
       },
       // {

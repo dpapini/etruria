@@ -129,6 +129,7 @@ export class ContactDetailComponent implements OnInit, OnDestroy, ControlValueAc
     return this.frmContact.getRawValue();
   }
   set value(value: ContactModel) {
+    console.log('set value contact:', value)
     this.contactModel = value;
     this.valorizzaForm();
     this.onChange(value);
@@ -215,8 +216,9 @@ export class ContactDetailComponent implements OnInit, OnDestroy, ControlValueAc
 
   ngOnInit(): void {
     this.route.params.pipe(
-      filter(p => +p.Id > 0),
+      filter(p => +p.Id > 0 && this.router.url.includes('Contact')),
       switchMap((p: Params) => {
+        console.log(this.router.url)
         const id: number = +p.Id;
         this.showBtnDelete = true;
         this.frmContact.controls.Id.setValidators([Validators.required])

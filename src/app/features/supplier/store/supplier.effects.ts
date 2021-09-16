@@ -1,3 +1,4 @@
+import { getCurrentYear, getBeforeYear } from './supplier.selectors';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
@@ -42,20 +43,11 @@ export class SuppliersEffects {
       ofType(getSuppliers),
       withLatestFrom(this.store.select(getIdBuyer)),
       switchMap(([action, idBuyer]) => {
-        const param = new HttpParams({
-          fromObject: {
-            pId: (action.supplierSearch.pId ? action.supplierSearch.pId.toString().trim() : ''),
-            pSubId: (action.supplierSearch.pSubId ? action.supplierSearch.pSubId.toString().trim() : ''),
-            pLabel: (action.supplierSearch.pLabel ? action.supplierSearch.pLabel.toString().trim() : ''),
-            pOffSet: (action.supplierSearch.pOffSet ? action.supplierSearch.pOffSet.toString().trim() : ''),
-            pNextRow: (action.supplierSearch.pNextRow ? action.supplierSearch.pNextRow.toString().trim() : ''),
-            pIdBuyer: (idBuyer ? idBuyer.toString() : ''),
-          }
-        });
-        return this.http.get(environment.apiUrl + 'supplier/SupplierCollection', { params: param }).pipe(
+        const ss = { ...action.supplierSearch };
+        ss.pIdBuyer = idBuyer;
+        return this.supplierService.SupplierCollection(action.supplierSearch).pipe(
           map((suppliersModel: SupplierModel[]) => getSuppliersSuccess({ suppliersModel })),
-          catchError(error => of(getSuppliersFailure()))
-        )
+          catchError(error => of(getSuppliersFailure())))
       })
     )
   );
@@ -63,7 +55,11 @@ export class SuppliersEffects {
   setSuppliers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(setSupplier),
-      switchMap(action => {
+      withLatestFrom(
+        this.store.select(getCurrentYear),
+        this.store.select(getBeforeYear)
+      ),
+      switchMap(([action, cy, by]) => {
         const param = new HttpParams({
           fromObject: {
             pId: (action.supplierSearch.pId ? action.supplierSearch.pId.toString().trim() : ''),
@@ -75,9 +71,10 @@ export class SuppliersEffects {
           map((supplierPurchased: SupplierPurchasedModel[]) => supplierPurchased),
           catchError(error => of(error)));
 
+        //recupero il fatturato a pari data per l'anno precedente
         const dt = new Date();
-        const dtStart = new Date(dt.getFullYear() - 1, 0, 1);
-        const dtEnd = new Date(dt.getFullYear() - 1, dt.getMonth(), dt.getDate());
+        const dtStart = new Date(by, 0, 1);
+        const dtEnd = new Date(by, dt.getMonth(), dt.getDate());
         const param1 = new HttpParams({
           fromObject: {
             pIdSupplier: (action.supplierSearch.pId ? action.supplierSearch.pId.toString().trim() : ''),
@@ -110,21 +107,23 @@ export class SuppliersEffects {
   getSupplierFirstAgreement$ = createEffect(() =>
     this.actions$.pipe(
       ofType(getSupplierFirstAgreement),
-      switchMap(action => {
-        const haCY$ = this.supplierService.HeaderAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: new Date().getFullYear() }).
+      withLatestFrom(
+        this.store.select(getCurrentYear),
+        this.store.select(getBeforeYear)
+      ),
+      switchMap(([action, cy, by]) => {
+        const haCY$ = this.supplierService.HeaderAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: cy }).
           pipe(first(), shareReplay(1));
-        const haYB$ = this.supplierService.HeaderAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: new Date().getFullYear() - 1 }).
+        const haYB$ = this.supplierService.HeaderAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
           pipe(first(), shareReplay(1));
-        const paCY$ = this.supplierService.PremiaAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: new Date().getFullYear() }).
+        const paCY$ = this.supplierService.PremiaAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: cy }).
           pipe(first(), shareReplay(1));
-        const paYB$ = this.supplierService.PremiaAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: new Date().getFullYear() - 1 }).
+        const paYB$ = this.supplierService.PremiaAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
           pipe(first(), shareReplay(1));
 
         return forkJoin([haCY$, haYB$, paCY$, paYB$]).pipe(
           map(response => {
             // console.log('getSupplierFirstAgreement', response);
-            const cy = new Date().getFullYear();
-            const yb = new Date().getFullYear() - 1;
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
             // console.log(t);
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {
@@ -132,11 +131,11 @@ export class SuppliersEffects {
                 TyLine: tl,
                 Label: t.find(s => s.TyLine === tl).Label,
                 Cy: cy,
-                Yb: yb,
+                Yb: by,
                 hCY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === cy)?.Pc || null,
-                hYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === yb)?.Pc || null,
+                hYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === by)?.Pc || null,
                 pCY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.Pc || null,
-                pYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === yb)?.Pc || null,
+                pYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by)?.Pc || null,
                 stateDeal: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.DsStateDeal || null,
                 typeDeal: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.DsTypeDeal || null,
               } as SupplierFirstAgreementModel
@@ -150,10 +149,12 @@ export class SuppliersEffects {
 
   getSupplierSecondAgreement$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(getSupplierSecondAgreement)
-      , switchMap((action) => {
-        const cy = new Date().getFullYear();
-        const by = new Date().getFullYear() - 1;
+      ofType(getSupplierSecondAgreement),
+      withLatestFrom(
+        this.store.select(getCurrentYear),
+        this.store.select(getBeforeYear)
+      ),
+      switchMap(([action, cy, by]) => {
         const pcCY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: cy }).
           pipe(first(), shareReplay(1));
         const pcBY$ = this.supplierService.PremiaAgreementCollectionPcSecondLivel({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
@@ -165,7 +166,7 @@ export class SuppliersEffects {
 
         return forkJoin([pcCY$, pcBY$, fxCY$, fxYB$]).pipe(
           map(response => {
-            console.log('getSupplierSecondAgreement', response)
+            // console.log('getSupplierSecondAgreement', response)
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
 
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {

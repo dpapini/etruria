@@ -40,6 +40,7 @@ export class LinePriceModalComponent implements OnInit, OnDestroy {
   }
 
   onClickResetLinePrice(e: Event) { }
+
   createFiltroRow(lp?: LinePriceModel): FormGroup {
     return this.fb.group({
       Id: [lp?.Id],
