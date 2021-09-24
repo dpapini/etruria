@@ -1,8 +1,0 @@
-<ul class="nav" [className]="classText">
-   <li *ngFor="let item of collectionTab; let i=index" class="nav-item">
-      <a class="nav-link btn-sm py-0" href="#" [ngClass]="{'active': selectedTab===item}"
-         (click)="onClick($event,item, i, disable)">
-         {{item}}
-      </a>
-   </li>
-</ul>

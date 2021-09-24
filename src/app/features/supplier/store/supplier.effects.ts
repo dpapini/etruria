@@ -15,8 +15,8 @@ import { SupplierService } from 'src/app/core/component/supplier/service/supplie
 import { environment } from '../../../../environments/environment';
 import { RequestModel, RequestSearchModel, TYPEREQUEST } from './../../../core/component/request/request';
 import { SupplierFirstAgreementModel, TipologiaAgreement } from './../../../core/component/supplier/model/supplierAgreement';
-import { toastFailure, toastSuccess } from '../../../core/component/store/toaster/toaster.actions';
-import { addEtruriaRequest, addEtruriaRequestFailure, addEtruriaRequestSuccess, getSupplierFirstAgreement, setSupplierFirstAgreementSuccess, getEtruriaRequest, getEtruriaRequestFailure, getEtruriaRequestSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementSuccess, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess } from './supplier.actions';
+import { toastFailure, toastSuccess, toastSuccessReload } from '../../../core/component/store/toaster/toaster.actions';
+import { addEtruriaRequest, addEtruriaRequestFailure, addEtruriaRequestSuccess, getSupplierFirstAgreement, setSupplierFirstAgreementSuccess, getEtruriaRequest, getEtruriaRequestFailure, getEtruriaRequestSuccess, getSuppliers, getSupplierSecondAgreement, getSupplierSecondAgreementSuccess, getSuppliersFailure, getSuppliersSuccess, setSupplier, setSupplierListino, setSupplierListinoFailure, setSupplierListinoSuccess, setSupplierSuccess, addSupplierCrossLine, addSupplierCrossLineSuccess, getSupplierCrossLine, setSupplierCrossLineSuccess, deleteSupplierCrossLineSuccess, deleteSupplierCrossLine } from './supplier.actions';
 
 const httpOptions = {
   headers: new HttpHeaders({
@@ -45,7 +45,8 @@ export class SuppliersEffects {
       switchMap(([action, idBuyer]) => {
         const ss = { ...action.supplierSearch };
         ss.pIdBuyer = idBuyer;
-        return this.supplierService.SupplierCollection(action.supplierSearch).pipe(
+
+        return this.supplierService.SupplierCollection(ss).pipe(
           map((suppliersModel: SupplierModel[]) => getSuppliersSuccess({ suppliersModel })),
           catchError(error => of(getSuppliersFailure())))
       })
@@ -120,28 +121,30 @@ export class SuppliersEffects {
           pipe(first(), shareReplay(1));
         const paYB$ = this.supplierService.PremiaAgreementCollection({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: by }).
           pipe(first(), shareReplay(1));
+        const sCross$ = this.supplierService.GetSupplierCrossLine({ pId: action.supplierSearch.pId, pSubId: action.supplierSearch.pSubId, pYear: action.supplierSearch.pYear })
 
-        return forkJoin([haCY$, haYB$, paCY$, paYB$]).pipe(
-          map(response => {
+        return forkJoin([haCY$, haYB$, paCY$, paYB$, sCross$]).pipe(
+          switchMap(response => {
             // console.log('getSupplierFirstAgreement', response);
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
+            const supplierCrossModel = [...response[4]];
             // console.log(t);
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {
               return {
                 TyLine: tl,
                 Label: t.find(s => s.TyLine === tl).Label,
                 Cy: cy,
-                Yb: by,
+                By: by,
                 hCY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === cy)?.Pc || null,
-                hYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === by)?.Pc || null,
+                hBY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.HEADER && s.Year === by)?.Pc || supplierCrossModel.find(c => c.TyDiscountLine === tl && c.Year === by)?.PcDiscountHeader || null, //devo recpuerare evntuale cross
                 pCY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.Pc || null,
-                pYB: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by)?.Pc || null,
+                pBY: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by)?.Pc || supplierCrossModel.find(c => c.TyDiscountLine === tl && c.Year === by)?.PcDiscountPremia || null, //devo recpuerare evntuale cross
                 stateDeal: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.DsStateDeal || null,
                 typeDeal: t.find(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy)?.DsTypeDeal || null,
               } as SupplierFirstAgreementModel
             })
-            return setSupplierFirstAgreementSuccess({ supplieFirstAgreementModel: sfam })
-
+            return [setSupplierFirstAgreementSuccess({ supplieFirstAgreementModel: sfam }), setSupplierCrossLineSuccess({ supplierCrossModel })]
+            //supplierCrossModel.filter(c=>c.TyDiscountLine===tl && c.Year===by)?
           })
         );
       })
@@ -166,7 +169,6 @@ export class SuppliersEffects {
 
         return forkJoin([pcCY$, pcBY$, fxCY$, fxYB$]).pipe(
           map(response => {
-            // console.log('getSupplierSecondAgreement', response)
             let t = [...response[0], ...response[1], ...response[2], ...response[3]];
 
             let sfam = [...new Set(t.map(item => item.TyLine))].map(tl => {
@@ -174,9 +176,9 @@ export class SuppliersEffects {
                 TyLine: tl,
                 Label: t.find(s => s.TyLine === tl).Label,
                 Cy: cy,
-                Yb: by,
+                By: by,
                 pCY: t.filter(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === cy).reduce((sum, sam) => sum + sam.Pc, 0) || null,
-                pYB: t.filter(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by).reduce((sum, sam) => sum + sam.Pc, 0) || null
+                pBY: t.filter(s => s.TyLine === tl && s.TipologiaDiscount === TipologiaAgreement.PREMIA && s.Year === by).reduce((sum, sam) => sum + sam.Pc, 0) || null
               } as SupplierFirstAgreementModel
             })
             return getSupplierSecondAgreementSuccess({ supplieSecondAgreementModel: sfam });
@@ -233,6 +235,56 @@ export class SuppliersEffects {
                      <b>[${error.message}<br>${error.error.ExceptionMessage}<br>${error.error?.StackTrace}]</b>`
               }))
             return of(addEtruriaRequestFailure())
+          })
+        )
+      })
+    )
+  );
+
+  addSupplierCrossLine$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(addSupplierCrossLine),
+      // withLatestFrom(this.store.pipe(select(getIdUser))),
+      switchMap(action => {
+        return this.http.post(environment.apiUrl + 'supplier/UpdateSupplierCrossLine', action.scm, httpOptions).pipe(
+          switchMap(() => [
+            toastSuccessReload({ title: null, message: "Salvataggio avvenuto correttamente." }),
+            addSupplierCrossLineSuccess()
+          ]
+          ),
+          catchError(error => {
+            return of(toastFailure(
+              {
+                title: null,
+                message: `Il salvataggio ha generato un errore.<br>
+                     Se l'errore persiste contattare l'amministatore.<br>
+                     <b>[${error.message}<br>${error.error.ExceptionMessage}<br>${error.error?.StackTrace}]</b>`
+              }))
+          })
+        )
+      })
+    )
+  );
+
+  deleteSupplierCrossLine$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(deleteSupplierCrossLine),
+      // withLatestFrom(this.store.pipe(select(getIdUser))),
+      switchMap(action => {
+        return this.http.post(environment.apiUrl + 'supplier/DeleteSupplierCrossLine', action.scm, httpOptions).pipe(
+          switchMap(() => [
+            toastSuccessReload({ title: null, message: "Cancellazione avvenuta correttamente." }),
+            deleteSupplierCrossLineSuccess()
+          ]
+          ),
+          catchError(error => {
+            return of(toastFailure(
+              {
+                title: null,
+                message: `La cancellazione ha generato un errore.<br>
+                     Se l'errore persiste contattare l'amministatore.<br>
+                     <b>[${error.message}<br>${error.error.ExceptionMessage}<br>${error.error?.StackTrace}]</b>`
+              }))
           })
         )
       })

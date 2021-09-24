@@ -1,11 +1,11 @@
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { LoaderService } from './loader.service';
-import { Component, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
 
 @Component({
   selector: 'app-loader',
   templateUrl: './loader.component.html',
-  styleUrls: ['./loader.component.scss']
+  styleUrls: ['./loader.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoaderComponent implements OnInit {
   isLoading$ = this.loadService.isLoading;

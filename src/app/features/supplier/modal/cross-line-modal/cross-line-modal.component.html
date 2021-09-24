@@ -1,25 +1,76 @@
 <div class="modal-header">
-  <h4 class="modal-title">Cross Fornitore-Linea anno: {{yearCross}}</h4>
+  <h4 class="modal-title">Cross Fornitore-Linea</h4>
   <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('ko')">
     <span aria-hidden="true">&times;</span>
   </button>
 </div>
-<div class="modal-body" [formGroup]="frmCrossLine">
-  <div class="form-row d-flex">
-    <div class="col-12">
-      <span class="input-group input-group-sm">
-        <app-search-supplier class="col-12" (selectSupplier)="selectSupplierClick($event)" formControlName="IdSupplier">
-        </app-search-supplier>
+<div class="modal-body">
+  <h6>Fornitore: {{supplierModel.Id}}.{{supplierModel.SubId}} - {{supplierModel.BusinessName}}</h6>
+  <h6><label>Anno: {{yearCross}}</label></h6>
+  <br>
+  <form [formGroup]="frmCrossLine">
+    <div class="form-group d-flex">
+      <div class="col-12">
+        <span class="input-group input-group-sm">
+          <app-search-supplier class="col-12" (selectSupplier)="selectSupplierClick($event)"
+            (clearSupplier)="clearSupplierClick($event)" formControlName="Supplier">
+          </app-search-supplier>
+        </span>
+      </div>
+    </div>
+    <div class="form-group d-flex" *ngIf="(supplierDiscounLine$|async)?.length>0">
+      <div class="col-12">
+        <span class="input-group input-group-sm">
+          <span class="col-12">
+            <ng-select [items]="supplierDiscounLine$|async" bindVale="TyDiscountLine" bindLabel="Label"
+              #searchDiscountLine formControlName="DiscountLine" placeholder="Selezionare una linea sconto"
+              (change)="onChangeDiscountLine($event)" dropdownPosition="auto" appendTo="body"
+              class="ng-select-small col-12 p-0" [virtualScroll]="true">
+              <ng-template ng-option-tmp let-item="item" let-search="searchTerm">
+                <div class="d-flex justify-content-between">
+                  <span>{{item.TyDiscountLine}} - {{item.Label}}</span>
+                  <span>
+                    <fa-icon [icon]="['fas','ban']" *ngIf="item.disabled" style="color: red;"></fa-icon>
+                  </span>
+                </div>
+              </ng-template>
+            </ng-select>
+          </span>
+        </span>
+      </div>
+    </div>
+    <div class="form-group d-flex col-12 justify-content-between" *ngIf="this.frmCrossLine.controls.DiscountLine.value">
+      <span class="col-6 form-group row">
+        <label for="PcDiscountHeader" class="col-4 col-form-label">% fattura</label>
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="PcDiscountHeader">
+        </div>
+      </span>
+      <span class="col-6 form-group row justify-content-end">
+        <label for="PcDiscountPremia" class="col-5 col-form-label">% fuori fattura</label>
+        <div class="col-4">
+          <input type="text" class="form-control" formControlName="PcDiscountPremia">
+        </div>
       </span>
     </div>
-  </div>
 
+
+  </form>
 </div>
-<div class="modal-footer">
-  <button type="button" class="btn btn-outline-secondary" (click)="activeModal.dismiss('ko')">Annulla</button>
-  <button type="button" class="btn btn-outline-primary" [disabled]="frmCrossLine.invalid"
-    (click)="activeModal.close(frmCrossLine.getRawValue())">Ricalcola</button> -->
+<div class="modal-footer justify-content-between">
+  <small class="text-danger " *ngIf="this.frmCrossLine.controls.DiscountLine.value && frmCrossLine.hasError('error')">
+    {{frmCrossLine.errors.error.value}}
+  </small>
+  <span class="ml-auto">
+    <button type="button" class="btn btn-outline-secondary mr-1" (click)="activeModal.dismiss('ko')">Annulla</button>
+    <button class="btn btn-outline-danger mr-1"
+      (click)="activeModal.close({action:'delete', data: frmCrossLine.getRawValue()})"
+      *ngIf="supplierCrossModel">Elimina</button>
+    <button type="button" class="btn btn-outline-primary" [disabled]="frmCrossLine.invalid"
+      (click)="activeModal.close({action:'save', data: frmCrossLine.getRawValue()})">Salva</button>
+  </span>
 </div>
+
 
 <ng-template #loading>
   <strong>Loading...</strong>

@@ -5,7 +5,8 @@
         <app-supplier-header></app-supplier-header>
         <div class="card-body">
           <div class="row justify-content-between" style="margin:0 -5px 0 -5px">
-            <button class="btn btn-outline-primary mb-1" type="button" title="Excel" (click)="onClickBtnExcel($event)">
+            <button class="btn btn-outline-primary mb-1" type="button" title="Excel"
+              [style.visibility]="(user$|async)?.IdRole<=1?'visible':'hidden'" (click)="onClickBtnExcel($event)">
               <fa-icon [icon]="['far', 'file-excel']"></fa-icon>
             </button>
             <input class="form-control form-control-sm col-2 mb-1" type="text" id="filter-text-box"
@@ -32,7 +33,7 @@
       <div class="col-12" style="background-color: white;border: 1px solid rgba(0, 0, 0, .0625);">
         <div class="col-12 align-self-center p-0">
           <div style="text-align: -webkit-center;">
-            <app-rounded-doughnut-chart [data]="dataTotale.Bench3" [value]="0" title="Totale">
+            <app-rounded-doughnut-chart [data]="dataTotale.Bench3" [value]="getValueBenchTotale()" title="Totale">
             </app-rounded-doughnut-chart>
           </div>
           <div class="d-flex justify-content-between col-12 p-0 " style="visibility: hidden !important;">

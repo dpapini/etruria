@@ -1,9 +1,14 @@
 <div class="card">
   <div class="card-header">
     <span class="d-flex justify-content-between">
-      <h6>Accordo quadro</h6>
+      <span class="form-row">
+        <h6>Accordo quadro</h6>
+        <dp-navtab class="col" #wizard [classText]="wizzardClassText" [defaultTab]="0"
+          [collectionTab]="wizzardCollectionYear$|async" (tabClicked)="this.wizardYear = $event.data;">
+        </dp-navtab>
+      </span>
       <dp-navtab class="col" #wizard [classText]="wizzardClassText" [defaultTab]="0" [collectionTab]="wizzardCollection"
-        (tabClicked)="this.wizardStep = $event;">
+        (tabClicked)="this.wizardStep = $event.step;">
       </dp-navtab>
     </span>
   </div>
@@ -41,8 +46,8 @@
                 <!-- <a href="#" class="col-1" (click)="listChartLineClick($event)">
                   <fa-icon [icon]="['fas','chart-line']" style="color: rgb(65, 63, 63);"></fa-icon>
                 </a> -->
-                <a href="#" class="col-1" (click)="listCrossLineClick($event)">
-                  <fa-icon [icon]="['fas','cog']" style="color: rgb(65, 63, 63);"></fa-icon>
+                <a href="#" class="col-1" (click)="listCrossLineClick($event,item)">
+                  <fa-icon [icon]="['fas','cog']" [style.color]="getCrossLine(item)|async"></fa-icon>
                 </a>
               </span>
             </span>
@@ -54,13 +59,13 @@
             <span class="col-6">
               <span class="form-row">
                 <div class="form-group col-6">
-                  <label>{{item.Yb}}</label>
-                  <input type="number" class="form-control disabled" readonly [value]="item.hYB?.toFixed(2)">
+                  <label>{{item.By}}</label>
+                  <input type="number" class="form-control disabled" readonly [value]="item.hBY?.toFixed(2)">
                   <small>% fattura</small>
                 </div>
                 <div class="form-group col-6">
                   <label>&nbsp;</label>
-                  <input type="number" class="form-control" readonly [value]="item.pYB?.toFixed(2)">
+                  <input type="number" class="form-control" readonly [value]="item.pBY?.toFixed(2)">
                   <small>% fuori fattura</small>
                 </div>
               </span>
@@ -100,7 +105,7 @@
 </ng-template>
 
 <ng-template #TotaleLivello>
-  <div class="row">
+  <div class="row" *ngIf="dataTotale.Bench3">
     <div class="col-3">
       <div class="col-12" style="background-color: white;border: 1px solid rgba(0, 0, 0, .0625);">
         <div class="col-12 align-self-center p-0">
@@ -150,8 +155,8 @@
             <span class="col-6">
               <span class="form-row">
                 <div class="form-group">
-                  <label>{{item.Yb}}</label>
-                  <input type="number" class="form-control disabled" readonly [value]="item.pYB?.toFixed(2)">
+                  <label>{{item.By}}</label>
+                  <input type="number" class="form-control disabled" readonly [value]="item.pBY?.toFixed(2)">
                   <small>% </small>
                 </div>
               </span>
@@ -171,6 +176,7 @@
     </div>
   </div>
 </ng-template>
+
 <ng-template #IIbench>
   <div class="row" *ngIf="(data$|async)?.length>0 else loading">
     <div class="col-3" *ngFor="let item of (data$|async); let i=index">
@@ -186,13 +192,13 @@
             <span class="col-6">
               <span class="form-row">
                 <div class="form-group col-6">
-                  <label>{{item.Yb}}</label>
-                  <input type="number" class="form-control disabled" readonly [value]="item.hYB?.toFixed(2)">
+                  <label>{{item.By}}</label>
+                  <input type="number" class="form-control disabled" readonly [value]="item.hBY?.toFixed(2)">
                   <small>% fattura</small>
                 </div>
                 <div class="form-group col-6">
                   <label>&nbsp;</label>
-                  <input type="number" class="form-control" readonly [value]="item.pYB?.toFixed(2)">
+                  <input type="number" class="form-control" readonly [value]="item.pBY?.toFixed(2)">
                   <small>% fuori fattura</small>
                 </div>
               </span>

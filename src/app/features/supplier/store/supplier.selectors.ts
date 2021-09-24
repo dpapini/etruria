@@ -76,7 +76,7 @@ export const getListLineAllPurchased = (year: number) => createSelector(
     // console.log('getListLineAllPurchased', s.EtruriaSuppliers.supplierFirstAgreementModel)
     return [...new Set(s.EtruriaSuppliers?.supplierFirstAgreementModel?.map(item => item.TyLine))].map(tyLine => {
 
-      const t = (s.EtruriaSuppliers?.supplierActive?.Purchased?.filter(p => p.Year === year)?.reduce((r, o) =>
+      const t = (s.EtruriaSuppliers?.supplierActive?.Purchased?.filter(p => p.Year === +year)?.reduce((r, o) =>
         (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {}));
       // console.log('t', t)
       if (t) {
@@ -94,14 +94,15 @@ export const getListLineAllPurchased = (year: number) => createSelector(
   }
 )
 
-
 export const getPurchasedValueByYearLine = (year: number, line: string) => createSelector(
   getSupplierState,
   (s) => {
-    const t = (s.EtruriaSuppliers.supplierActive?.Purchased.filter(p => p.Year === year && p.TyLine === line)?.reduce((r, o) =>
+
+    const t = (s.EtruriaSuppliers.supplierActive?.Purchased.filter(p => p.Year === +year && p.TyLine.trim() === line.trim())?.reduce((r, o) =>
       (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {}))
-    if (t)
+    if (t) {
       return Object.values<SupplierPurchasedModel>(t).map(p => p.Purchased)[0]
+    }
     else return null;
   }
 )
@@ -109,7 +110,7 @@ export const getPurchasedValueByYearLine = (year: number, line: string) => creat
 export const getPurchasedValueByYear = (year: number) => createSelector(
   getSupplierState,
   (s) => {
-    const t = (s.EtruriaSuppliers?.supplierActive?.Purchased.filter(p => p.Year === year)?.reduce((r, o) =>
+    const t = (s.EtruriaSuppliers?.supplierActive?.Purchased.filter(p => p.Year === +year)?.reduce((r, o) =>
       (r[o.Year] ? (r[o.Year].Purchased += o.Purchased) : (r[o.Year] = { ...o }), r), {}))
     if (t)
       return Object.values<SupplierPurchasedModel>(t).map(p => p.Purchased)[0];
@@ -162,3 +163,28 @@ export const getBeforeYear = createSelector(
   (s) => s.EtruriaSuppliers.beforeYear
 );
 
+export const getYearsBench = createSelector(
+  getSupplierState,
+  (s) => {
+    const years = [];
+    years.push(s.EtruriaSuppliers.beforeYear.toString());
+    years.push(s.EtruriaSuppliers.currentYear.toString());
+    return years;
+  }
+
+)
+
+export const getCrossLine = (TyLine: string) => createSelector(
+  getSupplierState,
+  getSupplierList,
+  (s, l) => {
+    const scl = { ...s.EtruriaSuppliers.supplierCrossLine.find(s => s.TyDiscountLine === TyLine) } || null;
+    if (Object.keys(scl).length === 0) return null;
+
+    if (scl) {
+      scl.Supplier = l.find(s => s.Id === scl.IdSupplier && s.SubId === scl.SubIdSupplier) || null;
+      scl.DiscountLine = { TyDiscountLine: scl.TyDiscountLineCross, Label: scl.LabelDiscountLineCross }
+    }
+    return scl || null
+  }
+)

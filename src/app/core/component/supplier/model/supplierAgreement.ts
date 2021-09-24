@@ -29,11 +29,17 @@ export interface SupplierFirstAgreementModel {
   TyLine: string;
   Label: string;
   Cy: number;
-  Yb: number;
+  By: number;
   hCY: number;
-  hYB: number;
+  hBY: number;
   pCY: number;
-  pYB: number;
+  pBY: number;
   stateDeal: string;
   typeDeal: string
+}
+
+
+export interface SupplierDiscountLine {
+  TyDiscountLine: string;
+  Label: string;
 }

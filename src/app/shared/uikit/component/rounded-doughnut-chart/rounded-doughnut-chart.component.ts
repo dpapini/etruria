@@ -27,7 +27,7 @@ export class RoundedDoughnutChartComponent {
   ngOnChanges(changes: SimpleChanges) {
     const { data, title } = changes;
 
-    const config = updateDoughnutChartConfig(this.labels, data.currentValue, title.currentValue)
+    const config = updateDoughnutChartConfig(this.labels, data?.currentValue, title?.currentValue)
 
     if (!data || !title) return;
     if (data.firstChange && title.firstChange) {

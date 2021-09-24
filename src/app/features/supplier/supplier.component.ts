@@ -1,6 +1,6 @@
 import { SupplierService } from './../../core/component/supplier/service/supplier.service';
 import { switchMap } from 'rxjs/operators';
-import { getIdBuyer } from './../../core/component/store/login/login.selectors';
+import { getIdBuyer, getUserModel } from './../../core/component/store/login/login.selectors';
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { select, Store } from '@ngrx/store';
@@ -27,8 +27,10 @@ export class SupplierComponent implements OnInit, OnDestroy {
   gridColumnApi;
   gridOptions;
   subscription: Subscription[] = [];
-  rowData$: Observable<SupplierModel[]> = this.store.pipe(select(getSupplierList))
   dataTotale: SupplierBenchModel;
+  rowData$: Observable<SupplierModel[]> = this.store.pipe(select(getSupplierList))
+  user$ = this.store.select(getUserModel)
+
 
   constructor(private router: Router,
     private supplierService: SupplierService,
@@ -130,4 +132,7 @@ export class SupplierComponent implements OnInit, OnDestroy {
     this.store.dispatch(addEtruriaRequest({ etruriaRequest }))
   }
 
+  getValueBenchTotale() {
+    return this.dataTotale.ImAc / this.dataTotale.Bench3 * 100;
+  }
 }

@@ -1,3 +1,5 @@
+import { SupplierCrossModel, SupplierCrossSearch } from './../model/supplierCross';
+import { SupplierDiscountLine } from './../model/supplierAgreement';
 import { SupplierModel } from 'src/app/core/component/supplier/model/supplier';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
@@ -39,42 +41,15 @@ export class SupplierService {
   }
 
   DetectionPriceBySupplier(dps: DetectionPriceSearch) {
-    const param = new HttpParams({
-      fromObject: {
-        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
-        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
-        pTyRicerca: (dps.pTyRicerca ? dps.pTyRicerca.toString().trim() : ''),
-        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
-      }
-    });
-
-    return this.http.get<DetectionPriceModel[]>(environment.apiUrl + 'supplier/DetectionPriceBySupplier', { params: param });
+    return this.http.get<DetectionPriceModel[]>(environment.apiUrl + 'supplier/DetectionPriceBySupplier', { params: this.getParamDetectionPrice(dps) });
   }
 
   DetectionPriceBylinea(dps: DetectionPriceSearch) {
-    const param = new HttpParams({
-      fromObject: {
-        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
-        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
-        pTyRicerca: (dps.pTyRicerca !== null ? dps.pTyRicerca.toString().trim() : ''),
-        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
-      }
-    });
-
-    return this.http.get<DetectionPriceModel>(environment.apiUrl + 'supplier/DetectionPriceBylinea', { params: param });
+    return this.http.get<DetectionPriceModel>(environment.apiUrl + 'supplier/DetectionPriceBylinea', { params: this.getParamDetectionPrice(dps) });
   }
 
   DetectionPriceByTotal(dps: DetectionPriceSearch) {
-    const param = new HttpParams({
-      fromObject: {
-        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
-        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
-        pTyRicerca: (dps.pTyRicerca !== null ? dps.pTyRicerca.toString().trim() : ''),
-        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
-      }
-    });
-
-    return this.http.get<DetectionPriceModel>(environment.apiUrl + 'supplier/DetectionPriceTotal', { params: param });
+    return this.http.get<DetectionPriceModel>(environment.apiUrl + 'supplier/DetectionPriceTotal', { params: this.getParamDetectionPrice(dps) });
   }
 
   LinePriceCollection() {
@@ -82,41 +57,31 @@ export class SupplierService {
   }
 
   HeaderAgreementCollection(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
-    const param = new HttpParams({
-      fromObject: {
-        pId: (as.pId ? as.pId.toString().trim() : ''),
-        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
-        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
-      }
-    });
-    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualeTestata', { params: param });
+    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualeTestata', { params: this.getParamSupplierAgreement(as) });
   }
 
   PremiaAgreementCollection(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
-    const param = new HttpParams({
-      fromObject: {
-        pId: (as.pId ? as.pId.toString().trim() : ''),
-        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
-        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
-      }
-    });
-    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualePremia', { params: param });
+    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualePremia', { params: this.getParamSupplierAgreement(as) });
   }
 
   PremiaAgreementCollectionPcSecondLivel(as: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
-    const param = new HttpParams({
-      fromObject: {
-        pId: (as.pId ? as.pId.toString().trim() : ''),
-        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
-        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
-      }
-    });
-    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualePremiaSecondLivel', { params: param });
+    return this.http.get<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/PercentualePremiaSecondLivel', { params: this.getParamSupplierAgreement(as) });
   }
 
   PremiaAgreementCollectionFixSecondLivel(sas: SupplierAgreementSearch): Observable<SupplierAgreementModel[]> {
-    // console.log('PremiaAgreementCollectionFixSecondLivel', sas)
     return this.http.post<SupplierAgreementModel[]>(environment.apiUrl + 'supplier/FissoPremiaSecondLivel', sas, httpOptions);
+  }
+
+  GetSupplierCrossLine(scs: SupplierCrossSearch) {
+    const param = new HttpParams({
+      fromObject: {
+        pId: scs.pId ? scs.pId.toString().trim() : '',
+        pSubId: scs.pSubId ? scs.pSubId.toString().trim() : '',
+        pYear: scs.pYear ? scs.pYear.toString().trim() : '',
+        pTyDiscountLine: scs.pTyDiscountLine ? scs.pTyDiscountLine.toString().trim() : '',
+      }
+    });
+    return this.http.get<SupplierCrossModel[]>(environment.apiUrl + 'supplier/GetSupplierCrossLine', { params: param });
   }
 
   BenchMarkTotale(sbs: SupplierBenchSearch) {
@@ -129,5 +94,31 @@ export class SupplierService {
     });
     return this.http.get<SupplierBenchModel>(environment.apiUrl + 'supplier/BenchMarkTotale', { params: param });
   }
+
+  GetLineBySupplierYear(as: SupplierAgreementSearch) {
+    return this.http.get<SupplierDiscountLine[]>(environment.apiUrl + 'supplier/GetLineBySupplierYear', { params: this.getParamSupplierAgreement(as) });
+  }
+
+  private getParamSupplierAgreement(as: SupplierAgreementSearch) {
+    return new HttpParams({
+      fromObject: {
+        pId: (as.pId ? as.pId.toString().trim() : ''),
+        pSubId: (as.pSubId ? as.pSubId.toString().trim() : ''),
+        pYear: (as.pYear ? as.pYear.toString().trim() : ''),
+      }
+    });
+  }
+
+  private getParamDetectionPrice(dps: DetectionPriceSearch) {
+    return new HttpParams({
+      fromObject: {
+        pIdSupplier: (dps.pIdSupplier ? dps.pIdSupplier.toString().trim() : ''),
+        pSubIdSupplier: (dps.pSubIdSupplier ? dps.pSubIdSupplier.toString().trim() : ''),
+        pTyRicerca: (dps.pTyRicerca !== null ? dps.pTyRicerca.toString().trim() : ''),
+        pIdLine: (dps.pIdLine ? dps.pIdLine.toString().trim() : ''),
+      }
+    });
+  }
+
 }
 

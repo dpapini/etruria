@@ -1,3 +1,4 @@
+import { SupplierCrossSearch } from './../../../core/component/supplier/model/supplierCross';
 import { RequestModel, RequestSearchModel } from './../../../core/component/request/request';
 import { SupplierPurchasedModel } from 'src/app/core/component/supplier/model/supplierPurchased';
 import { createAction, props } from '@ngrx/store';
@@ -5,6 +6,7 @@ import { ListSupplierIndexDetailModel } from 'src/app/core/component/supplier/mo
 import { SupplierModel, SupplierSearch } from 'src/app/core/component/supplier/model/supplier';
 import { ListSupplierSearch } from './../../../core/component/supplier/model/listSupplier';
 import { SupplierFirstAgreementModel } from './../../../core/component/supplier/model/supplierAgreement';
+import { SupplierCrossModel } from 'src/app/core/component/supplier/model/supplierCross';
 
 export enum SupplierActionTypes {
   GET_SUPPLIERS = '[Supplier] Get Suppliers',
@@ -26,6 +28,15 @@ export enum SupplierActionTypes {
   ADD_REQUEST_ETRURIA = '[Supplier] Add Request BenchMarck ',
   ADD_REQUEST_ETRURIA_SUCCESS = '[Supplier] Add Request BenchMarck Success',
   ADD_REQUEST_ETRURIA_FAILURE = '[Supplier] Add Request BenchMarck Failure',
+  ADD_SUPPLIER_CROSS_LINE = '[Supplier] Add SupplierCrossLine  ',
+  ADD_SUPPLIER_CROSS_LINE_SUCCESS = '[Supplier] Add SupplierCrossLine Success',
+  ADD_SUPPLIER_CROSS_LINE_FAILURE = '[Supplier] Add SupplierCrossLine Failure',
+  DELETE_SUPPLIER_CROSS_LINE = '[Supplier] Delete SupplierCrossLine  ',
+  DELETE_SUPPLIER_CROSS_LINE_SUCCESS = '[Supplier] Delete SupplierCrossLine Success',
+  DELETE_SUPPLIER_CROSS_LINE_FAILURE = '[Supplier] Delete SupplierCrossLine Failure',
+  GET_SUPPLIER_CROSS_LINE = '[Supplier] Get SupplierCrossLine  ',
+  GET_SUPPLIER_CROSS_LINE_SUCCESS = '[Supplier] Get SupplierCrossLine Success',
+  GET_SUPPLIER_CROSS_LINE_FAILURE = '[Supplier] Get SupplierCrossLine Failure',
   GET_REQUEST_ETRURIA = '[Supplier] Get Request BenchMarck ',
   GET_REQUEST_ETRURIA_SUCCESS = '[Supplier] Get Request BenchMarck Success',
   GET_REQUEST_ETRURIA_FAILURE = '[Supplier] Get Request BenchMarck Failure',
@@ -86,3 +97,22 @@ export const getEtruriaRequest = createAction(SupplierActionTypes.GET_REQUEST_ET
 );
 export const getEtruriaRequestSuccess = createAction(SupplierActionTypes.GET_REQUEST_ETRURIA_SUCCESS);
 export const getEtruriaRequestFailure = createAction(SupplierActionTypes.GET_REQUEST_ETRURIA_FAILURE);
+
+export const addSupplierCrossLine = createAction(SupplierActionTypes.ADD_SUPPLIER_CROSS_LINE,
+  props<{ scm: SupplierCrossModel }>()
+);
+export const addSupplierCrossLineSuccess = createAction(SupplierActionTypes.ADD_SUPPLIER_CROSS_LINE_SUCCESS);
+export const addSupplierCrossLineFailure = createAction(SupplierActionTypes.ADD_SUPPLIER_CROSS_LINE_FAILURE);
+
+export const deleteSupplierCrossLine = createAction(SupplierActionTypes.DELETE_SUPPLIER_CROSS_LINE,
+  props<{ scm: SupplierCrossModel }>()
+);
+export const deleteSupplierCrossLineSuccess = createAction(SupplierActionTypes.DELETE_SUPPLIER_CROSS_LINE_SUCCESS);
+export const deleteSupplierCrossLineFailure = createAction(SupplierActionTypes.DELETE_SUPPLIER_CROSS_LINE_FAILURE);
+
+export const getSupplierCrossLine = createAction(SupplierActionTypes.GET_SUPPLIER_CROSS_LINE,
+  props<{ supplierCrossSearch: SupplierCrossSearch }>()
+);
+export const setSupplierCrossLineSuccess = createAction(SupplierActionTypes.GET_SUPPLIER_CROSS_LINE_SUCCESS,
+  props<{ supplierCrossModel: SupplierCrossModel[] }>()
+);
